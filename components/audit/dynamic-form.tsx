@@ -76,7 +76,7 @@ export function DynamicForm({ schema, onSubmit }: DynamicFormProps) {
           <span>Section {currentSection + 1} of {schema.sections.length}</span>
           <span>{Math.round(progress)}% Completed</span>
         </div>
-        <Progress value={progress} className="h-2 bg-slate-100 dark:bg-slate-800" indicatorClassName="bg-vyxo-gold" />
+        <Progress value={progress} className="h-2" />
       </div>
 
       <motion.div
