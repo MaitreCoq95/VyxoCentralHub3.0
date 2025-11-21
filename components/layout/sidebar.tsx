@@ -51,13 +51,6 @@ export function Sidebar({ className }: SidebarProps) {
       color: "text-emerald-500",
     },
     {
-      label: t("nav.ai"),
-      icon: Bot,
-      href: "/ai",
-      color: "text-vyxo-gold",
-      premium: true,
-    },
-    {
       label: t("nav.settings"),
       icon: Settings,
       href: "/settings",
