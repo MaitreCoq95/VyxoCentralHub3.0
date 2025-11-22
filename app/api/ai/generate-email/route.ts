@@ -5,78 +5,114 @@ export async function POST(req: Request) {
   try {
     const { prospectName, companyName, industry, triggerEvent, painPoint, valueProp, cta } = await req.json()
 
-    const prompt = `
-# ROLE & OBJECTIVE
-You are an elite B2B Sales Strategist and Copywriter. Your goal is to generate high-intensity, hyper-personalized cold outreach campaigns. You do not write generic emails; you write conversations that convert.
-
-# INPUT VARIABLES
-- Prospect Name: ${prospectName}
-- Company: ${companyName}
-- Industry: ${industry}
-- Context/Trigger: ${triggerEvent || 'General industry trend'}
-- Pain Point: ${painPoint || 'Inefficient processes'}
-- My Value Proposition: ${valueProp || 'Operational excellence and digital transformation'}
-- My Goal/CTA: ${cta || '15-minute discovery call'}
-
-# STRATEGIC RULES
-1. **NO FLUFF:** Ban phrases like "I hope you are well", "Just checking in", "I wanted to reach out".
-2. **THE "ICEBREAKER" RULE:** The first sentence MUST reference the Context/Trigger or a specific observation about ${companyName}. Prove you are not a bot.
-3. **THE GAP:** articulate the gap between their current situation (Pain Point) and the future state (Value Prop).
-4. **TONE:** Conversational, peer-to-peer, confident. Write like a human, not a marketing brochure.
-5. **FORMAT:** Short paragraphs. Max 120 words per email.
-
-# TASK
-Generate a JSON output containing 3 distinct variations of the initial email AND a follow-up sequence.
-
-## 1. VARIATION A: The "Sniper" (Direct & Trigger-based)
-Focus heavily on the Context/Trigger. Tie it immediately to the solution. Best for high-intent prospects.
-
-## 2. VARIATION B: The "Problem-First" (Pain-Agitation-Solution)
-Focus on the Pain Point. Agitate the problem (what happens if they don't fix it?), then present the solution.
-
-## 3. VARIATION C: The "Low Friction" (Curiosity-based)
-A shorter, intriguing email. Ask a question related to their industry without pitching hard.
-
-## 4. FOLLOW-UP SEQUENCE (The "Drip")
-- **Follow-up 1 (Day +3):** Short bump + a resource or case study mention (Value add).
-- **Follow-up 2 (Day +7):** The "Break-up" or final pivot.
-
-# OUTPUT FORMAT (Strict JSON Structure)
-Return ONLY raw JSON.
-
-{
-  "analysis": "One sentence analyzing why this angle works for this prospect.",
-  "variations": [
-    {
-      "type": "Sniper",
-      "subject": "...",
-      "body": "..."
-    },
-    {
-      "type": "Problem-First",
-      "subject": "...",
-      "body": "..."
-    },
-    {
-      "type": "Low-Friction",
-      "subject": "...",
-      "body": "..."
+    // Settings par défaut (style Vivien/Vyxo)
+    const settings = {
+      formality: 'professional-casual',
+      length: 'concise',
+      personality: 'Direct, humain, pro, jamais mielleux',
+      avoidPhrases: [
+        'Je me permets',
+        "N'hésitez pas",
+        'Cordialement',
+        'Je vous remercie par avance',
+        'Dans le cadre de',
+        'Suite à',
+        'Faire un point'
+      ],
+      preferredPhrases: [
+        'Si ça vous parle',
+        'On peut en discuter',
+        'Parlons-en',
+        'Photo claire',
+        'Vrai gain',
+        'Niveau supérieur'
+      ],
+      signature: 'Bien à vous,\nVivien\nVyxo Consulting'
     }
+
+    const prompt = `
+Tu es un expert en prospection B2B pour Vyxo Consulting et tu écris EXACTEMENT comme Vivien parle : direct, humain, pro, jamais mielleux.
+
+STYLE & TON :
+- Cash mais respectueux
+- Pas de phrases longues, pas de jargon vide
+- Confiance tranquille, pas de survente
+- Fluide, simple, orienté résultats
+
+PARAMÈTRES :
+- Formalité : ${settings.formality}
+- Longueur : ${settings.length}
+- Personnalité : ${settings.personality}
+
+RÈGLES :
+- INTERDIT : ${settings.avoidPhrases.join(', ')}
+- À UTILISER : ${settings.preferredPhrases.join(', ')}
+- Signature : ${settings.signature}
+- Zéro "je me permets", zéro "n'hésitez pas", zéro corpo
+- Valeur directe dès la première ligne
+
+MISSION :
+Adapter chaque message selon le secteur en sélectionnant les compétences pertinentes :
+(Transport/Logistique, Agro, Pharma, Industrie, Startups, Boîtes désorganisées, Digitalisation…)
+
+Toujours mettre l'accent sur :
+- Excellence opérationnelle  
+- Gain de temps  
+- Réduction des erreurs  
+- Mise en ordre rapide  
+- Clarté dans les process  
+- Passage au niveau supérieur  
+
+AUDIT EXPRESS :
+Toujours diriger vers l'audit express (2 minutes) qui renvoie vers le site Vyxo :
+Formulation possible :
+"Si vous voulez une photo claire de votre niveau actuel (2 min), j'ai mis un audit express ici 👉 [lien audit Vyxo]"
+
+CTA FINAL (obligatoire) :
+- Appel simple, naturel, léger :
+"Si ça vous parle, on peut en discuter 10 minutes pour voir si je peux vous apporter un vrai gain."
+- Jamais agressif, jamais lourd.
+
+INSTRUCTIONS FINALES :
+- Message court, précis, structuré
+- Un problème du client → une solution Vyxo → audit express → CTA court
+
+INPUT VARIABLES :
+- Prospect : ${prospectName}
+- Entreprise : ${companyName}
+- Secteur : ${industry || 'Non spécifié'}
+- Événement déclencheur : ${triggerEvent || 'Aucun'}
+- Point de douleur : ${painPoint || 'Amélioration de l\'efficacité générale'}
+- Proposition de valeur : ${valueProp || 'Excellence opérationnelle et optimisation des process'}
+- CTA souhaité : ${cta || 'Échange de 10 minutes'}
+
+GÉNÈRE 3 VARIATIONS + SÉQUENCE DE RELANCE :
+
+Variation types:
+- Direct : Ultra court (3-4 lignes max), droit au but
+- Valeur : Focus ROI et bénéfices concrets
+- Relationnel : Ton humain, connexion personnelle
+
+Séquence de relance (3 emails) :
+- Relance 1 (3 jours) : Rappel léger avec valeur ajoutée
+- Relance 2 (7 jours) : Angle différent ou exemple concret
+- Relance 3 (14 jours) : Dernière tentative, simple et direct
+
+RETOURNE JSON EXACTEMENT DANS CE FORMAT :
+{
+  "analysis": "Analyse brève du prospect et approche recommandée",
+  "variations": [
+    { "type": "Direct", "subject": "...", "body": "..." },
+    { "type": "Valeur", "subject": "...", "body": "..." },
+    { "type": "Relationnel", "subject": "...", "body": "..." }
   ],
   "sequence": [
-    {
-      "step": "Follow-up Day 3",
-      "subject": "Re: [Original Subject]",
-      "body": "..."
-    },
-    {
-      "step": "Follow-up Day 7",
-      "subject": "Re: [Original Subject]",
-      "body": "..."
-    }
+    { "step": "Relance 1 (Jour 3)", "subject": "...", "body": "..." },
+    { "step": "Relance 2 (Jour 7)", "subject": "...", "body": "..." },
+    { "step": "Relance 3 (Jour 14)", "subject": "...", "body": "..." }
   ]
 }
-    `
+`
 
     // Check if API key is available
     const apiKey = process.env.OPENAI_API_KEY

@@ -16,6 +16,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
+import { useLanguage } from "@/components/language-provider"
 
 interface EmailVariation {
   type: string
@@ -36,6 +37,7 @@ interface AIResponse {
 }
 
 export function EmailGenerator() {
+  const { t } = useLanguage()
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<AIResponse | null>(null)
   const [copied, setCopied] = useState(false)
@@ -57,8 +59,8 @@ export function EmailGenerator() {
     if (!formData.prospectName || !formData.companyName) {
       toast({
         variant: "destructive",
-        title: "Missing Information",
-        description: "Please fill in at least the prospect name and company.",
+        title: t("email.missingInfo"),
+        description: t("email.missingInfoDesc"),
       })
       return
     }
@@ -79,15 +81,15 @@ export function EmailGenerator() {
       const data = await response.json()
       setResult(data)
       toast({
-        title: "Campaign Generated",
-        description: "3 variations and follow-up sequence ready!",
+        title: t("email.campaignGenerated"),
+        description: t("email.campaignGeneratedDesc"),
       })
     } catch (error: any) {
       console.error("Generation error:", error)
       toast({
         variant: "destructive",
-        title: "Generation Failed",
-        description: error.message || "Failed to generate email. Please try again.",
+        title: t("email.generationFailed"),
+        description: error.message || t("email.generationFailedDesc"),
       })
     } finally {
       setLoading(false)
@@ -130,14 +132,14 @@ export function EmailGenerator() {
       if (!activityRes.ok) throw new Error('Failed to log activity')
 
       toast({
-        title: "Saved to CRM",
-        description: `${formData.companyName} added as a Lead with campaign details.`,
+        title: t("email.savedToCrm"),
+        description: `${formData.companyName} ${t("email.savedToCrmDesc")}`,
       })
     } catch (error: any) {
       console.error("CRM Save error:", error)
       toast({
         variant: "destructive",
-        title: "Save Failed",
+        title: t("email.saveFailed"),
         description: error.message,
       })
     } finally {
@@ -150,8 +152,8 @@ export function EmailGenerator() {
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
     toast({
-      title: "Copied!",
-      description: "Content copied to clipboard.",
+      title: t("email.copied"),
+      description: t("email.copiedDesc"),
     })
   }
 
@@ -159,8 +161,8 @@ export function EmailGenerator() {
     if (!recipientEmail) {
       toast({
         variant: "destructive",
-        title: "Missing Email",
-        description: "Please enter a recipient email address.",
+        title: t("email.missingEmail"),
+        description: t("email.missingEmailDesc"),
       })
       return
     }
@@ -181,14 +183,14 @@ export function EmailGenerator() {
       if (!response.ok) throw new Error('Failed to send email')
 
       toast({
-        title: "Email Sent!",
-        description: `Email sent to ${recipientEmail}`,
+        title: t("email.emailSent"),
+        description: `${t("email.emailSentDesc")} ${recipientEmail}`,
       })
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Send Failed",
-        description: "Failed to send email. Please check your API key.",
+        title: t("email.sendFailed"),
+        description: t("email.sendFailedDesc"),
       })
     } finally {
       setSendingEmail(null)
@@ -202,60 +204,60 @@ export function EmailGenerator() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-vyxo-gold" />
-            Campaign Setup
+            {t("email.campaignSetup")}
           </CardTitle>
           <CardDescription>
-            Define your target and strategy.
+            {t("email.defineStrategy")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Prospect Name</Label>
+            <Label>{t("email.prospectName")}</Label>
             <Input 
-              placeholder="John Doe" 
+              placeholder={t("email.prospectNamePlaceholder")} 
               value={formData.prospectName}
               onChange={(e) => setFormData({...formData, prospectName: e.target.value})}
             />
           </div>
           <div className="space-y-2">
-            <Label>Company Name</Label>
+            <Label>{t("email.companyName")}</Label>
             <Input 
-              placeholder="Acme Corp" 
+              placeholder={t("email.companyNamePlaceholder")} 
               value={formData.companyName}
               onChange={(e) => setFormData({...formData, companyName: e.target.value})}
             />
           </div>
           <div className="space-y-2">
-            <Label>Industry</Label>
+            <Label>{t("email.industry")}</Label>
             <Input 
-              placeholder="SaaS, Healthcare, etc." 
+              placeholder={t("email.industryPlaceholder")} 
               value={formData.industry}
               onChange={(e) => setFormData({...formData, industry: e.target.value})}
             />
           </div>
           
           <div className="space-y-2">
-            <Label className="text-vyxo-gold">Trigger Event (The "Icebreaker")</Label>
+            <Label className="text-vyxo-gold">{t("email.triggerEvent")}</Label>
             <Input 
-              placeholder="e.g., Recent Series B funding, Hiring new VP Sales" 
+              placeholder={t("email.triggerEventPlaceholder")} 
               value={formData.triggerEvent}
               onChange={(e) => setFormData({...formData, triggerEvent: e.target.value})}
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Pain Point</Label>
+            <Label>{t("email.painPoint")}</Label>
             <Input 
-              placeholder="e.g., High churn rate, Inefficient manual processes" 
+              placeholder={t("email.painPointPlaceholder")} 
               value={formData.painPoint}
               onChange={(e) => setFormData({...formData, painPoint: e.target.value})}
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Value Proposition</Label>
+            <Label>{t("email.valueProp")}</Label>
             <Textarea 
-              placeholder="e.g., We automate outreach to save 20h/week" 
+              placeholder={t("email.valuePropPlaceholder")} 
               className="h-20 resize-none"
               value={formData.valueProp}
               onChange={(e) => setFormData({...formData, valueProp: e.target.value})}
@@ -263,19 +265,19 @@ export function EmailGenerator() {
           </div>
 
           <div className="space-y-2">
-            <Label>Call to Action</Label>
+            <Label>{t("email.cta")}</Label>
             <Input 
-              placeholder="e.g., 15-min discovery call" 
+              placeholder={t("email.ctaPlaceholder")} 
               value={formData.cta}
               onChange={(e) => setFormData({...formData, cta: e.target.value})}
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Recipient Email (for sending)</Label>
+            <Label>{t("email.recipientEmail")}</Label>
             <Input 
               type="email"
-              placeholder="prospect@company.com" 
+              placeholder={t("email.recipientEmailPlaceholder")} 
               value={recipientEmail}
               onChange={(e) => setRecipientEmail(e.target.value)}
             />
@@ -289,11 +291,11 @@ export function EmailGenerator() {
             >
               {loading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating Strategy...
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("email.generating")}
                 </>
               ) : (
                 <>
-                  <Sparkles className="mr-2 h-4 w-4" /> Generate Campaign
+                  <Sparkles className="mr-2 h-4 w-4" /> {t("email.generateCampaign")}
                 </>
               )}
             </Button>
@@ -304,7 +306,7 @@ export function EmailGenerator() {
               onClick={handleSaveToCRM}
               disabled={loading || !result}
             >
-              <RefreshCw className="mr-2 h-4 w-4" /> Save to CRM
+              <RefreshCw className="mr-2 h-4 w-4" /> {t("email.saveToCrm")}
             </Button>
           </div>
         </CardContent>
@@ -313,22 +315,22 @@ export function EmailGenerator() {
       {/* Right Column: Results */}
       <Card className="lg:col-span-8 h-full flex flex-col overflow-hidden">
         <CardHeader className="pb-2">
-          <CardTitle>Generated Campaign</CardTitle>
+          <CardTitle>{t("email.generatedCampaign")}</CardTitle>
           <CardDescription>
-            {result ? result.analysis : "Your AI-generated outreach strategy will appear here."}
+            {result ? result.analysis : t("email.strategyAppear")}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex-1 overflow-y-auto p-6 bg-slate-50/50 dark:bg-slate-900/50">
           {!result ? (
             <div className="h-full flex flex-col items-center justify-center text-muted-foreground opacity-50">
               <Sparkles className="h-16 w-16 mb-4" />
-              <p>Fill out the form to generate your campaign</p>
+              <p>{t("email.fillForm")}</p>
             </div>
           ) : (
             <Tabs defaultValue="variations" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="variations">Email Variations</TabsTrigger>
-                <TabsTrigger value="sequence">Follow-up Sequence</TabsTrigger>
+                <TabsTrigger value="variations">{t("email.emailVariations")}</TabsTrigger>
+                <TabsTrigger value="sequence">{t("email.followUpSequence")}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="variations" className="space-y-6">
