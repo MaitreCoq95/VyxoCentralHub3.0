@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
 import { useLanguage } from "@/components/language-provider"
+import { EmailEditor } from "./email-editor"
 
 interface EmailVariation {
   type: string
@@ -335,57 +336,33 @@ export function EmailGenerator() {
 
               <TabsContent value="variations" className="space-y-6">
                 {result.variations.map((variation, index) => (
-                  <Card key={index} className="border-l-4 border-l-vyxo-gold">
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-center">
-                        <CardTitle className="text-lg text-vyxo-navy dark:text-white">{variation.type}</CardTitle>
-                        <div className="flex gap-2">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => sendEmail(variation, index)}
-                            disabled={sendingEmail !== null || !recipientEmail}
-                          >
-                            {sendingEmail === index ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Mail className="h-4 w-4" />
-                            )}
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => copyToClipboard(`Subject: ${variation.subject}\n\n${variation.body}`)}>
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      <CardDescription className="font-mono text-xs">Subject: {variation.subject}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700 dark:text-slate-300">
-                        {variation.body}
-                      </p>
-                    </CardContent>
-                  </Card>
+                  <EmailEditor
+                    key={index}
+                    initialSubject={variation.subject}
+                    initialBody={variation.body}
+                    type={variation.type}
+                    onSave={(subject, body) => {
+                      const updated = {...result}
+                      updated.variations[index] = { ...variation, subject, body }
+                      setResult(updated)
+                    }}
+                  />
                 ))}
               </TabsContent>
 
               <TabsContent value="sequence" className="space-y-6">
                 {result.sequence.map((step, index) => (
-                  <Card key={index} className="border-l-4 border-l-blue-500">
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-center">
-                        <CardTitle className="text-lg text-vyxo-navy dark:text-white">{step.step}</CardTitle>
-                        <Button variant="ghost" size="sm" onClick={() => copyToClipboard(`Subject: ${step.subject}\n\n${step.body}`)}>
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <CardDescription className="font-mono text-xs">Subject: {step.subject}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700 dark:text-slate-300">
-                        {step.body}
-                      </p>
-                    </CardContent>
-                  </Card>
+                  <EmailEditor
+                    key={index}
+                    initialSubject={step.subject}
+                    initialBody={step.body}
+                    type={step.step}
+                    onSave={(subject, body) => {
+                      const updated = {...result}
+                      updated.sequence[index] = { ...step, subject, body }
+                      setResult(updated)
+                    }}
+                  />
                 ))}
               </TabsContent>
             </Tabs>
