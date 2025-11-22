@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^2.0.40",
+    "@ai-sdk/openai": "^2.0.71",
     "@ai-sdk/react": "^2.0.98",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^5.2.2",

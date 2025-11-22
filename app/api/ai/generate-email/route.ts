@@ -1,5 +1,5 @@
 import { generateText } from 'ai'
-import { google } from '@ai-sdk/google'
+import { openai } from '@ai-sdk/openai'
 
 export async function POST(req: Request) {
   try {
@@ -20,14 +20,14 @@ export async function POST(req: Request) {
     `
 
     // Check if API key is available
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY
+    const apiKey = process.env.OPENAI_API_KEY
     if (!apiKey) {
-      console.error('❌ GOOGLE_GENERATIVE_AI_API_KEY is missing')
+      console.error('❌ OPENAI_API_KEY is missing')
       return Response.json({ error: 'Server configuration error: API Key missing' }, { status: 500 })
     }
 
     const { text } = await generateText({
-      model: google('gemini-pro'),
+      model: openai('gpt-4o'),
       prompt: prompt,
     })
 
