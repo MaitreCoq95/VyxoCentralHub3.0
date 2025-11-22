@@ -7,6 +7,8 @@ export const translations = {
     // Navigation
     "nav.dashboard": "Dashboard",
     "nav.clients": "Clients",
+    "nav.prospecting": "Prospecting",
+    "nav.emailgen": "Email Generator",
     "nav.audits": "Audits",
     "nav.documents": "Documents",
     "nav.ai": "Vyxo Society",
@@ -71,6 +73,8 @@ export const translations = {
     // Navigation
     "nav.dashboard": "Tableau de Bord",
     "nav.clients": "Clients",
+    "nav.prospecting": "Prospection",
+    "nav.emailgen": "Générateur d'Emails",
     "nav.audits": "Audits",
     "nav.documents": "Documents",
     "nav.ai": "Vyxo Society",

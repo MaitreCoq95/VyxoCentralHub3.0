@@ -40,10 +40,16 @@ export function Sidebar({ className }: SidebarProps) {
       color: "text-violet-500",
     },
     {
-      label: "Prospecting",
+      label: t("nav.prospecting"),
       icon: Target,
       href: "/prospecting",
       color: "text-amber-500",
+    },
+    {
+      label: t("nav.emailgen"),
+      icon: Bot,
+      href: "/prospecting/email-generator",
+      color: "text-purple-500",
     },
     {
       label: t("nav.audits"),

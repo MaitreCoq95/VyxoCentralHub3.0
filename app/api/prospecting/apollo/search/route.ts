@@ -34,12 +34,24 @@ export async function POST(request: Request) {
     const response = await fetch('https://api.apollo.io/v1/mixed_people/search', options)
     
     if (!response.ok) {
-      const errorData = await response.json()
-      console.error('❌ Apollo API Error:', errorData)
-      throw new Error(errorData.message || 'Failed to fetch from Apollo')
+      const errorText = await response.text()
+      console.error('❌ Apollo API Error:', response.status, errorText)
+      return NextResponse.json(
+        { error: 'Apollo API error', message: `API returned ${response.status}. Please check your API key.` },
+        { status: response.status }
+      )
     }
 
     const data = await response.json()
+    
+    // Check if data structure is valid
+    if (!data.people || !Array.isArray(data.people)) {
+      console.error('❌ Invalid Apollo response structure:', data)
+      return NextResponse.json(
+        { error: 'Invalid response from Apollo', prospects: [] },
+        { status: 200 }
+      )
+    }
     
     // Transform data to our format
     const prospects = data.people.map((p: any) => ({
@@ -57,10 +69,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ prospects, total: data.pagination?.total_entries })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('💥 Prospect search error:', error)
     return NextResponse.json(
-      { error: 'Failed to search prospects', details: error },
+      { error: 'Failed to search prospects', message: error.message || 'Unknown error' },
       { status: 500 }
     )
   }
