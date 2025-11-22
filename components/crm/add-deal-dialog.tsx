@@ -36,7 +36,7 @@ import { useToast } from "@/components/ui/use-toast"
 const formSchema = z.object({
   name: z.string().min(2, "Deal name is required"),
   client_id: z.string().min(1, "Client is required"),
-  budget_amount: z.coerce.number().min(0, "Amount must be positive"),
+  budget_amount: z.number().min(0, "Amount must be positive"),
   status: z.string().default("draft"),
 })
 
@@ -174,7 +174,11 @@ export function AddDealDialog({ onDealAdded }: AddDealDialogProps) {
                 <FormItem>
                   <FormLabel>Estimated Value (€)</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input 
+                      type="number" 
+                      {...field} 
+                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
