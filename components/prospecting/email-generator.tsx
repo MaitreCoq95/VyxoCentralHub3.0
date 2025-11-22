@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Loader2, Sparkles, Copy, Check } from "lucide-react"
+import { Loader2, Sparkles, Copy, Check, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -14,11 +14,30 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
+
+interface EmailVariation {
+  type: string
+  subject: string
+  body: string
+}
+
+interface SequenceStep {
+  step: string
+  subject: string
+  body: string
+}
+
+interface AIResponse {
+  analysis: string
+  variations: EmailVariation[]
+  sequence: SequenceStep[]
+}
 
 export function EmailGenerator() {
   const [loading, setLoading] = useState(false)
-  const [generatedEmail, setGeneratedEmail] = useState("")
+  const [result, setResult] = useState<AIResponse | null>(null)
   const [copied, setCopied] = useState(false)
   const { toast } = useToast()
 
@@ -26,7 +45,10 @@ export function EmailGenerator() {
     prospectName: "",
     companyName: "",
     industry: "",
-    tone: "professional",
+    triggerEvent: "",
+    painPoint: "",
+    valueProp: "",
+    cta: "15-minute discovery call",
   })
 
   const handleGenerate = async () => {
@@ -53,10 +75,10 @@ export function EmailGenerator() {
       }
 
       const data = await response.json()
-      setGeneratedEmail(data.text)
+      setResult(data)
       toast({
-        title: "Email Generated",
-        description: "Your cold email is ready!",
+        title: "Campaign Generated",
+        description: "3 variations and follow-up sequence ready!",
       })
     } catch (error: any) {
       console.error("Generation error:", error)
@@ -70,26 +92,27 @@ export function EmailGenerator() {
     }
   }
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(generatedEmail)
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
     toast({
       title: "Copied!",
-      description: "Email copied to clipboard.",
+      description: "Content copied to clipboard.",
     })
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
-      <Card>
+    <div className="grid gap-6 lg:grid-cols-12 h-[calc(100vh-200px)]">
+      {/* Left Column: Inputs */}
+      <Card className="lg:col-span-4 h-full overflow-y-auto">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-vyxo-gold" />
-            Prospect Details
+            Campaign Setup
           </CardTitle>
           <CardDescription>
-            Enter information about your lead to generate a personalized email.
+            Define your target and strategy.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -112,27 +135,49 @@ export function EmailGenerator() {
           <div className="space-y-2">
             <Label>Industry</Label>
             <Input 
-              placeholder="Technology, Healthcare, etc." 
+              placeholder="SaaS, Healthcare, etc." 
               value={formData.industry}
               onChange={(e) => setFormData({...formData, industry: e.target.value})}
             />
           </div>
+          
           <div className="space-y-2">
-            <Label>Tone</Label>
-            <Select 
-              value={formData.tone} 
-              onValueChange={(val) => setFormData({...formData, tone: val})}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="professional">Professional & Direct</SelectItem>
-                <SelectItem value="friendly">Friendly & Casual</SelectItem>
-                <SelectItem value="persuasive">Persuasive & Bold</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label className="text-vyxo-gold">Trigger Event (The "Icebreaker")</Label>
+            <Input 
+              placeholder="e.g., Recent Series B funding, Hiring new VP Sales" 
+              value={formData.triggerEvent}
+              onChange={(e) => setFormData({...formData, triggerEvent: e.target.value})}
+            />
           </div>
+
+          <div className="space-y-2">
+            <Label>Pain Point</Label>
+            <Input 
+              placeholder="e.g., High churn rate, Inefficient manual processes" 
+              value={formData.painPoint}
+              onChange={(e) => setFormData({...formData, painPoint: e.target.value})}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Value Proposition</Label>
+            <Textarea 
+              placeholder="e.g., We automate outreach to save 20h/week" 
+              className="h-20 resize-none"
+              value={formData.valueProp}
+              onChange={(e) => setFormData({...formData, valueProp: e.target.value})}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Call to Action</Label>
+            <Input 
+              placeholder="e.g., 15-min discovery call" 
+              value={formData.cta}
+              onChange={(e) => setFormData({...formData, cta: e.target.value})}
+            />
+          </div>
+
           <Button 
             className="w-full bg-vyxo-gold text-vyxo-navy hover:bg-vyxo-gold/90 font-semibold mt-4"
             onClick={handleGenerate}
@@ -140,37 +185,81 @@ export function EmailGenerator() {
           >
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating Strategy...
               </>
             ) : (
               <>
-                <Sparkles className="mr-2 h-4 w-4" /> Generate Email
+                <Sparkles className="mr-2 h-4 w-4" /> Generate Campaign
               </>
             )}
           </Button>
         </CardContent>
       </Card>
 
-      <Card className="h-full flex flex-col">
-        <CardHeader>
-          <CardTitle>Generated Email</CardTitle>
+      {/* Right Column: Results */}
+      <Card className="lg:col-span-8 h-full flex flex-col overflow-hidden">
+        <CardHeader className="pb-2">
+          <CardTitle>Generated Campaign</CardTitle>
           <CardDescription>
-            Review and copy your AI-generated draft.
+            {result ? result.analysis : "Your AI-generated outreach strategy will appear here."}
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col">
-          <Textarea 
-            className="flex-1 min-h-[300px] font-mono text-sm p-4 leading-relaxed resize-none bg-slate-50 dark:bg-slate-900"
-            placeholder="Your generated email will appear here..."
-            value={generatedEmail}
-            readOnly
-          />
-          <div className="flex justify-end mt-4">
-            <Button variant="outline" onClick={copyToClipboard} disabled={!generatedEmail}>
-              {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-              {copied ? "Copied" : "Copy to Clipboard"}
-            </Button>
-          </div>
+        <CardContent className="flex-1 overflow-y-auto p-6 bg-slate-50/50 dark:bg-slate-900/50">
+          {!result ? (
+            <div className="h-full flex flex-col items-center justify-center text-muted-foreground opacity-50">
+              <Sparkles className="h-16 w-16 mb-4" />
+              <p>Fill out the form to generate your campaign</p>
+            </div>
+          ) : (
+            <Tabs defaultValue="variations" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="variations">Email Variations</TabsTrigger>
+                <TabsTrigger value="sequence">Follow-up Sequence</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="variations" className="space-y-6">
+                {result.variations.map((variation, index) => (
+                  <Card key={index} className="border-l-4 border-l-vyxo-gold">
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-center">
+                        <CardTitle className="text-lg text-vyxo-navy dark:text-white">{variation.type}</CardTitle>
+                        <Button variant="ghost" size="sm" onClick={() => copyToClipboard(`Subject: ${variation.subject}\n\n${variation.body}`)}>
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <CardDescription className="font-mono text-xs">Subject: {variation.subject}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                        {variation.body}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </TabsContent>
+
+              <TabsContent value="sequence" className="space-y-6">
+                {result.sequence.map((step, index) => (
+                  <Card key={index} className="border-l-4 border-l-blue-500">
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-center">
+                        <CardTitle className="text-lg text-vyxo-navy dark:text-white">{step.step}</CardTitle>
+                        <Button variant="ghost" size="sm" onClick={() => copyToClipboard(`Subject: ${step.subject}\n\n${step.body}`)}>
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <CardDescription className="font-mono text-xs">Subject: {step.subject}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                        {step.body}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </TabsContent>
+            </Tabs>
+          )}
         </CardContent>
       </Card>
     </div>
