@@ -32,3 +32,51 @@ export async function GET() {
     )
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json()
+    console.log('📝 Creating new client:', body)
+
+    // Validate required fields
+    if (!body.name) {
+      return NextResponse.json(
+        { error: 'Name is required' },
+        { status: 400 }
+      )
+    }
+
+    // Prepare client data
+    const clientData = {
+      organization_id: '00000000-0000-0000-0000-000000000001', // Demo Org ID
+      name: body.name,
+      sector: body.sector,
+      status: body.status || 'lead',
+      city: body.city,
+      contact_email: body.email,
+      contact_phone: body.phone,
+      logo_url: body.logo
+    }
+
+    const { data: newClient, error } = await supabase
+      .from('vch_clients')
+      .insert([clientData])
+      .select()
+      .single()
+
+    if (error) {
+      console.error('❌ Create client error:', error)
+      throw error
+    }
+
+    console.log('✅ Client created:', newClient)
+
+    return NextResponse.json({ client: newClient })
+  } catch (error) {
+    console.error('💥 Error creating client:', error)
+    return NextResponse.json(
+      { error: 'Failed to create client', details: error },
+      { status: 500 }
+    )
+  }
+}

@@ -5,6 +5,7 @@ import { Plus, Search, Filter, LayoutGrid, List as ListIcon, Kanban, Loader2 } f
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { AddClientDialog } from "@/components/crm/add-client-dialog"
 import { ClientCard } from "@/components/crm/client-card"
 import { KanbanBoard } from "@/components/crm/kanban-board"
 import { useLanguage } from "@/components/language-provider"
@@ -16,20 +17,21 @@ export default function ClientsPage() {
   const [loading, setLoading] = useState(true)
   const { t } = useLanguage()
 
-  useEffect(() => {
-    async function fetchClients() {
-      try {
-        const response = await fetch('/api/crm/clients')
-        if (!response.ok) throw new Error('Failed to fetch clients')
-        const data = await response.json()
-        setClients(data.clients || [])
-      } catch (error) {
-        console.error('Error fetching clients:', error)
-      } finally {
-        setLoading(false)
-      }
+  async function fetchClients() {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/crm/clients')
+      if (!response.ok) throw new Error('Failed to fetch clients')
+      const data = await response.json()
+      setClients(data.clients || [])
+    } catch (error) {
+      console.error('Error fetching clients:', error)
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchClients()
   }, [])
 
@@ -40,9 +42,7 @@ export default function ClientsPage() {
           <h2 className="text-3xl font-bold tracking-tight text-vyxo-navy dark:text-white">{t("crm.title")}</h2>
           <p className="text-muted-foreground">{t("crm.subtitle")}</p>
         </div>
-        <Button className="bg-vyxo-gold hover:bg-vyxo-gold/90 text-vyxo-navy font-semibold">
-          <Plus className="mr-2 h-4 w-4" /> {t("crm.addClient")}
-        </Button>
+        <AddClientDialog onClientAdded={fetchClients} />
       </div>
 
       <Tabs defaultValue="list" className="flex-1 flex flex-col">
