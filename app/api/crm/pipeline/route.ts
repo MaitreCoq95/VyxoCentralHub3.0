@@ -38,3 +38,46 @@ export async function GET() {
     )
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json()
+    console.log('📝 Creating new deal:', body)
+
+    // Get the demo organization ID
+    const { data: orgs } = await supabase
+      .from('vch_organizations')
+      .select('id')
+      .limit(1)
+      .single()
+
+    if (!orgs) {
+      return NextResponse.json({ error: 'Organization not found' }, { status: 500 })
+    }
+
+    const { data, error } = await supabase
+      .from('vch_engagements')
+      .insert([
+        {
+          ...body,
+          organization_id: orgs.id,
+          type: 'consulting', // Default type
+        }
+      ])
+      .select()
+      .single()
+
+    if (error) {
+      console.error('❌ Create deal error:', error)
+      throw error
+    }
+
+    return NextResponse.json(data)
+  } catch (error) {
+    console.error('💥 Error creating deal:', error)
+    return NextResponse.json(
+      { error: 'Failed to create deal', details: error },
+      { status: 500 }
+    )
+  }
+}

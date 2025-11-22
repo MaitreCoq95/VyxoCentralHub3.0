@@ -22,6 +22,7 @@ import {
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
 import { useToast } from "@/components/ui/use-toast"
+import { AddDealDialog } from "./add-deal-dialog"
 
 // Map Supabase statuses to Kanban columns
 const statusToColumn: Record<string, string> = {
@@ -244,9 +245,10 @@ export function KanbanBoard() {
                     {provided.placeholder}
                   </div>
                   
-                  <Button variant="ghost" className="w-full mt-2 text-zinc-400 hover:text-vyxo-navy hover:bg-white border border-transparent hover:border-dashed hover:border-slate-300">
-                      <Plus className="h-4 w-4 mr-2" /> Add Deal
-                  </Button>
+                    {provided.placeholder}
+                  </div>
+                  
+                  <AddDealDialog onDealAdded={fetchPipeline} />
                 </div>
               )}
             </Droppable>
