@@ -53,6 +53,19 @@ export const translations = {
     "ai.startPrompt": "Start a conversation with",
     "ai.placeholder.walter": "Ask about invoices...",
     "ai.placeholder.audit": "Ask about ISO standards...",
+
+    // Prospecting
+    "prospect.title": "Prospecting",
+    "prospect.subtitle": "Find your next clients using Apollo's database.",
+    "prospect.search": "Search Criteria",
+    "prospect.jobTitle": "Job Title",
+    "prospect.location": "Location",
+    "prospect.industry": "Industry",
+    "prospect.findProspects": "Find Prospects",
+    "prospect.results": "Results",
+    "prospect.addToCrm": "Add to CRM",
+    "prospect.noResults": "No prospects found",
+    "prospect.emailNotFound": "Email not found",
   },
   fr: {
     // Navigation
@@ -104,5 +117,18 @@ export const translations = {
     "ai.startPrompt": "Commencez une conversation avec",
     "ai.placeholder.walter": "Posez une question sur les factures...",
     "ai.placeholder.audit": "Posez une question sur les normes ISO...",
+
+    // Prospecting
+    "prospect.title": "Prospection",
+    "prospect.subtitle": "Trouvez vos prochains clients avec la base Apollo.",
+    "prospect.search": "Critères de Recherche",
+    "prospect.jobTitle": "Poste",
+    "prospect.location": "Localisation",
+    "prospect.industry": "Secteur",
+    "prospect.findProspects": "Trouver des Prospects",
+    "prospect.results": "Résultats",
+    "prospect.addToCrm": "Ajouter au CRM",
+    "prospect.noResults": "Aucun prospect trouvé",
+    "prospect.emailNotFound": "Email non trouvé",
   }
 }

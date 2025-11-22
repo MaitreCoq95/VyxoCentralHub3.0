@@ -12,12 +12,16 @@ type LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<Language>("en")
+  const [language, setLanguage] = useState<Language>("fr")
 
   useEffect(() => {
     const savedLang = localStorage.getItem("vyxo-language") as Language
     if (savedLang) {
       setLanguage(savedLang)
+    } else {
+      // Set French as default if no saved preference
+      setLanguage("fr")
+      localStorage.setItem("vyxo-language", "fr")
     }
   }, [])
 
