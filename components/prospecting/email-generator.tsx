@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Loader2, Sparkles, Copy, Check, RefreshCw } from "lucide-react"
+import { Loader2, Sparkles, Copy, Check, RefreshCw, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -39,6 +39,8 @@ export function EmailGenerator() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<AIResponse | null>(null)
   const [copied, setCopied] = useState(false)
+  const [sendingEmail, setSendingEmail] = useState<number | null>(null)
+  const [recipientEmail, setRecipientEmail] = useState("")
   const { toast } = useToast()
 
   const [formData, setFormData] = useState({
@@ -153,6 +155,46 @@ export function EmailGenerator() {
     })
   }
 
+  const sendEmail = async (variation: EmailVariation, index: number) => {
+    if (!recipientEmail) {
+      toast({
+        variant: "destructive",
+        title: "Missing Email",
+        description: "Please enter a recipient email address.",
+      })
+      return
+    }
+
+    try {
+      setSendingEmail(index)
+      const response = await fetch('/api/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: recipientEmail,
+          subject: variation.subject,
+          html: `<p>${variation.body.replace(/\n/g, '<br>')}</p>`,
+          text: variation.body
+        })
+      })
+
+      if (!response.ok) throw new Error('Failed to send email')
+
+      toast({
+        title: "Email Sent!",
+        description: `Email sent to ${recipientEmail}`,
+      })
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Send Failed",
+        description: "Failed to send email. Please check your API key.",
+      })
+    } finally {
+      setSendingEmail(null)
+    }
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-12 h-[calc(100vh-200px)]">
       {/* Left Column: Inputs */}
@@ -229,6 +271,16 @@ export function EmailGenerator() {
             />
           </div>
 
+          <div className="space-y-2">
+            <Label>Recipient Email (for sending)</Label>
+            <Input 
+              type="email"
+              placeholder="prospect@company.com" 
+              value={recipientEmail}
+              onChange={(e) => setRecipientEmail(e.target.value)}
+            />
+          </div>
+
           <div className="flex gap-2 mt-4">
             <Button 
               className="flex-1 bg-vyxo-gold text-vyxo-navy hover:bg-vyxo-gold/90 font-semibold"
@@ -286,6 +338,18 @@ export function EmailGenerator() {
                       <div className="flex justify-between items-center">
                         <CardTitle className="text-lg text-vyxo-navy dark:text-white">{variation.type}</CardTitle>
                         <div className="flex gap-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => sendEmail(variation, index)}
+                            disabled={sendingEmail !== null || !recipientEmail}
+                          >
+                            {sendingEmail === index ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Mail className="h-4 w-4" />
+                            )}
+                          </Button>
                           <Button variant="ghost" size="sm" onClick={() => copyToClipboard(`Subject: ${variation.subject}\n\n${variation.body}`)}>
                             <Copy className="h-4 w-4" />
                           </Button>
