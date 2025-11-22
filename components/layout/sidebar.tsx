@@ -1,5 +1,55 @@
+"use client"
+
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
+import {
+  LayoutDashboard,
+  Users,
+  ClipboardCheck,
+  FileText,
+  FolderOpen,
+  Bot,
+  Settings,
+  LogOut,
+  Menu,
+  Target
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { useState, useEffect } from "react"
+import { useLanguage } from "@/components/language-provider"
+
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
 
+export function Sidebar({ className }: SidebarProps) {
+  const pathname = usePathname()
+  const { t } = useLanguage()
+
+  const routes = [
+    {
+      label: t("nav.dashboard"),
+      icon: LayoutDashboard,
+      href: "/",
+      color: "text-sky-500",
+    },
+    {
+      label: t("nav.clients"),
+      icon: Users,
+      href: "/clients",
+      color: "text-violet-500",
+    },
+    {
+      label: "Prospecting",
+      icon: Target,
+      href: "/prospecting",
+      color: "text-amber-500",
+    },
+    {
+      label: t("nav.audits"),
+      icon: ClipboardCheck,
+      href: "/audits",
+      color: "text-pink-700",
     },
     {
       label: t("nav.documents"),
