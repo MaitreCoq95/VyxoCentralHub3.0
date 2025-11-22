@@ -1,27 +1,37 @@
 "use client"
 
-import { useState } from "react"
-import { Plus, Search, Filter, LayoutGrid, List as ListIcon, Kanban } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Plus, Search, Filter, LayoutGrid, List as ListIcon, Kanban, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ClientCard } from "@/components/crm/client-card"
 import { KanbanBoard } from "@/components/crm/kanban-board"
 import { useLanguage } from "@/components/language-provider"
-
-// Dummy data
-const clients = [
-  { id: "1", name: "TechCorp SAS", sector: "Technology", status: "active", city: "Paris" },
-  { id: "2", name: "GreenEnergy Ltd", sector: "Energy", status: "active", city: "Lyon" },
-  { id: "3", name: "BuildIt Now", sector: "Construction", status: "lead", city: "Bordeaux" },
-  { id: "4", name: "MediCare Plus", sector: "Healthcare", status: "inactive", city: "Lille" },
-  { id: "5", name: "FinServe Group", sector: "Finance", status: "active", city: "Paris" },
-  { id: "6", name: "LogiTrans", sector: "Logistics", status: "lead", city: "Marseille" },
-] as const
+import { type Client } from "@/lib/supabase"
 
 export default function ClientsPage() {
   const [view, setView] = useState<"grid" | "list">("grid")
+  const [clients, setClients] = useState<Client[]>([])
+  const [loading, setLoading] = useState(true)
   const { t } = useLanguage()
+
+  useEffect(() => {
+    async function fetchClients() {
+      try {
+        const response = await fetch('/api/crm/clients')
+        if (!response.ok) throw new Error('Failed to fetch clients')
+        const data = await response.json()
+        setClients(data.clients || [])
+      } catch (error) {
+        console.error('Error fetching clients:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchClients()
+  }, [])
 
   return (
     <div className="h-full flex flex-col space-y-6">
@@ -61,11 +71,32 @@ export default function ClientsPage() {
         </div>
 
         <TabsContent value="list" className="flex-1 mt-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {clients.map((client) => (
-              <ClientCard key={client.id} client={client} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex h-[400px] items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-vyxo-gold" />
+            </div>
+          ) : clients.length === 0 ? (
+            <div className="flex h-[400px] items-center justify-center text-muted-foreground">
+              No clients found. Add your first client to get started.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {clients.map((client) => (
+                <ClientCard 
+                  key={client.id} 
+                  client={{
+                    id: client.id,
+                    name: client.name,
+                    sector: client.sector || 'Unknown',
+                    status: client.status,
+                    logo: client.logo_url,
+                    city: client.city,
+                    contactName: client.contact_email // Using email as contact for now
+                  }} 
+                />
+              ))}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="pipeline" className="flex-1 mt-0 h-full min-h-[500px]">
