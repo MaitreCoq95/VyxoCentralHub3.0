@@ -10,7 +10,8 @@ import {
   Building2, 
   Phone, 
   History,
-  Sparkles
+  Sparkles,
+  Plus
 } from "lucide-react"
 import {
   Dialog,
@@ -23,6 +24,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useToast } from "@/components/ui/use-toast"
 
 interface Activity {
   id: string
@@ -50,6 +54,10 @@ interface ClientDetailsDialogProps {
 export function ClientDetailsDialog({ client, open, onOpenChange }: ClientDetailsDialogProps) {
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(true)
+  const [newActivityType, setNewActivityType] = useState<'note' | 'call' | 'meeting' | 'email'>('note')
+  const [newActivityText, setNewActivityText] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { toast } = useToast()
 
   useEffect(() => {
     if (open && client.id) {
@@ -69,6 +77,42 @@ export function ClientDetailsDialog({ client, open, onOpenChange }: ClientDetail
       console.error("Failed to fetch activities", error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleAddActivity() {
+    if (!newActivityText.trim()) return
+
+    try {
+      setIsSubmitting(true)
+      const res = await fetch('/api/crm/activities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          entity_type: 'client',
+          entity_id: client.id,
+          action: `manual_${newActivityType}`,
+          description: newActivityText,
+          metadata: { type: newActivityType }
+        })
+      })
+
+      if (!res.ok) throw new Error('Failed to add activity')
+
+      setNewActivityText('')
+      fetchActivities()
+      toast({
+        title: "Activity Added",
+        description: `New ${newActivityType} logged successfully.`,
+      })
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to add activity.",
+      })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -121,8 +165,67 @@ export function ClientDetailsDialog({ client, open, onOpenChange }: ClientDetail
 
         <Separator />
 
-        <div className="flex-1 overflow-hidden flex flex-col mt-4">
-          <h3 className="font-semibold mb-3 flex items-center gap-2">
+        <div className="mt-4 mb-4">
+          <div className="flex gap-2 mb-2">
+            <Button 
+              variant={newActivityType === 'note' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setNewActivityType('note')}
+              className="h-7 text-xs"
+            >
+              Note
+            </Button>
+            <Button 
+              variant={newActivityType === 'call' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setNewActivityType('call')}
+              className="h-7 text-xs"
+            >
+              Call
+            </Button>
+            <Button 
+              variant={newActivityType === 'meeting' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setNewActivityType('meeting')}
+              className="h-7 text-xs"
+            >
+              Meeting
+            </Button>
+            <Button 
+              variant={newActivityType === 'email' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setNewActivityType('email')}
+              className="h-7 text-xs"
+            >
+              Email
+            </Button>
+          </div>
+          <div className="flex gap-2">
+            <Input
+              placeholder={`Add a ${newActivityType} note...`}
+              value={newActivityText}
+              onChange={(e) => setNewActivityText(e.target.value)}
+              className="h-8 text-sm"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault()
+                  handleAddActivity()
+                }
+              }}
+            />
+            <Button 
+              size="sm" 
+              className="h-8 bg-vyxo-gold text-vyxo-navy hover:bg-vyxo-gold/90"
+              onClick={handleAddActivity}
+              disabled={!newActivityText.trim() || isSubmitting}
+            >
+              {isSubmitting ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />}
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-hidden flex flex-col">
+          <h3 className="font-semibold mb-3 flex items-center gap-2 text-sm">
             <History className="h-4 w-4 text-vyxo-gold" /> Activity Timeline
           </h3>
           
