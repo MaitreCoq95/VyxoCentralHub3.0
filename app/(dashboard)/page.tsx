@@ -21,33 +21,51 @@ export default function DashboardPage() {
   useEffect(() => {
     async function fetchDashboardData() {
       try {
+        console.log('🔍 Fetching dashboard data from Supabase...')
+        console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+        
         // Fetch clients
-        const { data: clients } = await supabase
+        const { data: clients, error: clientsError } = await supabase
           .from('VCH_Clients')
           .select('*')
           .eq('status', 'active')
 
+        console.log('✅ Clients fetched:', clients?.length || 0, 'clients')
+        if (clientsError) console.error('❌ Clients error:', clientsError)
+
         // Fetch invoices
-        const { data: invoices } = await supabase
+        const { data: invoices, error: invoicesError } = await supabase
           .from('VCH_Invoices')
           .select('*')
 
+        console.log('✅ Invoices fetched:', invoices?.length || 0, 'invoices')
+        if (invoicesError) console.error('❌ Invoices error:', invoicesError)
+
         // Fetch audits
-        const { data: audits } = await supabase
+        const { data: audits, error: auditsError } = await supabase
           .from('VCH_Audits')
           .select('*')
           .in('status', ['draft', 'in_progress', 'review'])
 
+        console.log('✅ Audits fetched:', audits?.length || 0, 'audits')
+        if (auditsError) console.error('❌ Audits error:', auditsError)
+
         // Fetch recent activities
-        const { data: recentActivities } = await supabase
+        const { data: recentActivities, error: activitiesError } = await supabase
           .from('VCH_Activities')
           .select('*')
           .order('created_at', { ascending: false })
           .limit(5)
 
+        console.log('✅ Activities fetched:', recentActivities?.length || 0, 'activities')
+        if (activitiesError) console.error('❌ Activities error:', activitiesError)
+
         // Calculate stats
         const totalRevenue = invoices?.reduce((sum, inv) => sum + (inv.amount || 0), 0) || 0
         const paidRevenue = invoices?.filter(inv => inv.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0) || 0
+        
+        console.log('💰 Total Revenue:', totalRevenue)
+        console.log('💰 Paid Revenue:', paidRevenue)
         
         setStats({
           totalRevenue: paidRevenue,
@@ -56,10 +74,16 @@ export default function DashboardPage() {
           revenueGrowth: 12.5 // TODO: Calculate from previous month
         })
 
+        console.log('📊 Stats set:', {
+          totalRevenue: paidRevenue,
+          activeClients: clients?.length || 0,
+          pendingAudits: audits?.length || 0
+        })
+
         setActivities(recentActivities || [])
         setLoading(false)
       } catch (error) {
-        console.error('Error fetching dashboard data:', error)
+        console.error('💥 Error fetching dashboard data:', error)
         setLoading(false)
       }
     }
