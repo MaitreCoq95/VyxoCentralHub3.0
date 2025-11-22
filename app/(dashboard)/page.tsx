@@ -7,8 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { supabase, type Client, type Invoice, type Audit, type Activity as ActivityType } from "@/lib/supabase"
+import { useLanguage } from "@/components/language-provider"
 
 export default function DashboardPage() {
+  const { t } = useLanguage()
   const [stats, setStats] = useState({
     totalRevenue: 0,
     activeClients: 0,
@@ -88,7 +90,7 @@ export default function DashboardPage() {
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-vyxo-navy mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading dashboard...</p>
+          <p className="mt-4 text-muted-foreground">{t("dash.loading")}</p>
         </div>
       </div>
     )
@@ -103,15 +105,15 @@ export default function DashboardPage() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-vyxo-navy dark:text-white">Tableau de Bord</h2>
-          <p className="text-muted-foreground">Bienvenue dans votre centre de commande.</p>
+          <h2 className="text-3xl font-bold tracking-tight text-vyxo-navy dark:text-white">{t("dash.title")}</h2>
+          <p className="text-muted-foreground">{t("dash.subtitle")}</p>
         </div>
         <div className="flex items-center space-x-2">
           <Button className="bg-vyxo-navy hover:bg-vyxo-navy/90 text-white">
-            <FileText className="mr-2 h-4 w-4" /> Nouvel Audit
+            <FileText className="mr-2 h-4 w-4" /> {t("dash.newAudit")}
           </Button>
           <Button className="bg-vyxo-gold hover:bg-vyxo-gold/90 text-vyxo-navy font-semibold">
-            <Users className="mr-2 h-4 w-4" /> Ajouter Client
+            <Users className="mr-2 h-4 w-4" /> {t("dash.addClient")}
           </Button>
         </div>
       </div>
@@ -124,10 +126,10 @@ export default function DashboardPage() {
           <Card className="h-full border-none shadow-lg bg-gradient-to-br from-vyxo-navy to-slate-900 text-white overflow-hidden relative">
             <div className="absolute top-0 right-0 p-32 bg-vyxo-gold/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
             <CardHeader>
-              <CardTitle className="text-lg font-medium text-zinc-300">Revenu Total (Payé)</CardTitle>
+              <CardTitle className="text-lg font-medium text-zinc-300">{t("dash.totalRevenue")}</CardTitle>
               <div className="text-4xl font-bold text-white mt-2">{formatCurrency(stats.totalRevenue)}</div>
               <p className="text-sm text-emerald-400 flex items-center mt-1">
-                <ArrowUpRight className="h-4 w-4 mr-1" /> +{stats.revenueGrowth}% par rapport au mois dernier
+                <ArrowUpRight className="h-4 w-4 mr-1" /> +{stats.revenueGrowth}% {t("dash.vsLastMonth")}
               </p>
             </CardHeader>
             <CardContent>
@@ -151,11 +153,11 @@ export default function DashboardPage() {
         <motion.div variants={item} className="col-span-1">
             <Card className="h-full border-l-4 border-l-vyxo-gold shadow-md hover:shadow-lg transition-all">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Clients Actifs</CardTitle>
+                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t("dash.activeClientsCount")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-3xl font-bold text-vyxo-navy dark:text-white">{stats.activeClients}</div>
-                    <p className="text-xs text-muted-foreground mt-1">Depuis Supabase</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t("dash.fromSupabase")}</p>
                 </CardContent>
             </Card>
         </motion.div>
@@ -164,11 +166,11 @@ export default function DashboardPage() {
         <motion.div variants={item} className="col-span-1">
             <Card className="h-full border-l-4 border-l-vyxo-navy shadow-md hover:shadow-lg transition-all">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Audits en Attente</CardTitle>
+                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t("dash.pendingAudits")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-3xl font-bold text-vyxo-navy dark:text-white">{stats.pendingAudits}</div>
-                    <p className="text-xs text-muted-foreground mt-1">En cours ou en révision</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t("dash.inProgressOrReview")}</p>
                 </CardContent>
             </Card>
         </motion.div>
@@ -178,7 +180,7 @@ export default function DashboardPage() {
              <Card className="h-full shadow-md overflow-hidden flex flex-col">
                 <CardHeader className="bg-slate-50 dark:bg-slate-900/50 border-b">
                     <CardTitle className="text-base font-medium flex items-center">
-                        <MapPin className="h-4 w-4 mr-2 text-vyxo-gold" /> Répartition Clients
+                        <MapPin className="h-4 w-4 mr-2 text-vyxo-gold" /> {t("dash.clientMap")}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0 flex-1 relative bg-slate-100 dark:bg-slate-950">
@@ -196,7 +198,7 @@ export default function DashboardPage() {
                     <div className="absolute bottom-1/3 right-1/4 h-3 w-3 bg-vyxo-navy rounded-full"></div>
                     
                     <div className="absolute bottom-4 left-4 bg-white/80 dark:bg-black/80 backdrop-blur px-3 py-1 rounded-full text-xs font-medium shadow-sm">
-                        {stats.activeClients} Clients Actifs
+                        {stats.activeClients} {t("dash.activeClientsCount")}
                     </div>
                 </CardContent>
             </Card>
@@ -207,7 +209,7 @@ export default function DashboardPage() {
             <Card className="h-full shadow-md flex flex-col">
                 <CardHeader>
                     <CardTitle className="text-base font-medium flex items-center">
-                        <Activity className="h-4 w-4 mr-2 text-vyxo-navy" /> Activité Récente
+                        <Activity className="h-4 w-4 mr-2 text-vyxo-navy" /> {t("dash.recentActivity")}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0 flex-1">
@@ -224,7 +226,7 @@ export default function DashboardPage() {
                                 </div>
                             )) : (
                                 <div className="p-4 text-center text-muted-foreground">
-                                    Aucune activité récente
+                                    {t("dash.noActivity")}
                                 </div>
                             )}
                         </div>
@@ -237,11 +239,11 @@ export default function DashboardPage() {
         <motion.div variants={item} className="col-span-1">
              <Card className="h-full border-l-4 border-l-emerald-500 shadow-md hover:shadow-lg transition-all">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Taux de Réussite</CardTitle>
+                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t("dash.winRate")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-3xl font-bold text-vyxo-navy dark:text-white">{stats.conversionRate}%</div>
-                    <p className="text-xs text-muted-foreground mt-1">Basé sur {stats.totalDeals} deals</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t("dash.basedOnDeals")} {stats.totalDeals} {t("dash.deals")}</p>
                 </CardContent>
             </Card>
         </motion.div>

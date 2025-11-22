@@ -16,8 +16,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageSwitcher } from "@/components/language-switcher"
+import { useLanguage } from "@/components/language-provider"
 
 export function Header() {
+  const { t } = useLanguage()
   return (
     <div className="fixed top-0 w-full z-50 flex items-center h-16 px-4 border-b border-white/10 bg-vyxo-navy/80 backdrop-blur-md transition-all duration-300">
       <MobileSidebar />
@@ -27,7 +29,7 @@ export function Header() {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-400" />
             <Input 
                 type="search" 
-                placeholder="Search clients, audits..." 
+                placeholder={t("header.searchPlaceholder")} 
                 className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-zinc-400 w-[200px] lg:w-[300px] focus-visible:ring-vyxo-gold focus-visible:ring-offset-0"
             />
         </div>
@@ -54,7 +56,7 @@ export function Header() {
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">Vyxo Consultant</p>
+                <p className="text-sm font-medium leading-none">{t("header.vyxoConsultant")}</p>
                 <p className="text-xs leading-none text-muted-foreground">
                   admin@vyxo.com
                 </p>
@@ -62,17 +64,17 @@ export function Header() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              Profile
+              {t("header.profile")}
             </DropdownMenuItem>
             <DropdownMenuItem>
-              Settings
+              {t("header.settings")}
             </DropdownMenuItem>
             <DropdownMenuItem>
-              Billing
+              {t("header.billing")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-600 focus:text-red-600">
-              Log out
+              {t("header.logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

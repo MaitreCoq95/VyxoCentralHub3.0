@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 import {
   LayoutDashboard,
   Users,
@@ -76,12 +77,17 @@ export function Sidebar({ className }: SidebarProps) {
       <div className="space-y-4 py-4">
         <div className="px-3 py-2">
           <Link href="/" className="flex items-center pl-3 mb-14">
-            <div className="relative w-8 h-8 mr-4">
-              <div className="absolute inset-0 bg-vyxo-gold rounded-lg transform rotate-45"></div>
-              <div className="absolute inset-0 flex items-center justify-center text-vyxo-navy font-bold text-lg">V</div>
+            <div className="relative w-10 h-10 mr-3">
+              <Image 
+                src="/vyxo-logo.png" 
+                alt="Vyxo Logo" 
+                width={40} 
+                height={40}
+                className="object-contain"
+              />
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-wider">
-              VYXO<span className="text-vyxo-gold">.CH</span>
+            <h1 className="text-xl font-bold text-white tracking-wide">
+              Vyxo <span className="text-vyxo-gold">Central Hub</span>
             </h1>
           </Link>
           <div className="space-y-1">
@@ -108,7 +114,7 @@ export function Sidebar({ className }: SidebarProps) {
             <div className="space-y-1">
                 <Button variant="ghost" className="w-full justify-start text-zinc-400 hover:text-red-500 hover:bg-red-500/10">
                     <LogOut className="h-5 w-5 mr-3" />
-                    Logout
+                    {t("nav.logout")}
                 </Button>
             </div>
         </div>

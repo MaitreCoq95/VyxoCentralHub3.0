@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useToast } from "@/components/ui/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useLanguage } from "@/components/language-provider"
 
 interface Prospect {
   id: string
@@ -24,6 +25,7 @@ interface Prospect {
 }
 
 export default function ProspectingPage() {
+  const { t } = useLanguage()
   const [searchParams, setSearchParams] = useState({
     jobTitle: "",
     location: "",
@@ -40,8 +42,8 @@ export default function ProspectingPage() {
     if (!searchParams.jobTitle && !searchParams.industry) {
       toast({
         variant: "destructive",
-        title: "Missing criteria",
-        description: "Please enter at least a Job Title or Industry."
+        title: t("prospect.missingCriteria"),
+        description: t("prospect.missingCriteriaDesc")
       })
       return
     }
@@ -66,8 +68,8 @@ export default function ProspectingPage() {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Search Error",
-        description: "Failed to fetch prospects. Please check your API key."
+        title: t("prospect.searchError"),
+        description: t("prospect.searchErrorDesc")
       })
     } finally {
       setLoading(false)
@@ -96,14 +98,14 @@ export default function ProspectingPage() {
       if (!clientRes.ok) throw new Error('Failed to create client')
 
       toast({
-        title: "Success",
-        description: `${prospect.first_name} added to CRM as a Lead.`,
+        title: t("prospect.success"),
+        description: `${prospect.first_name} ${t("prospect.addedToCrm")}`,
       })
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to add prospect to CRM."
+        title: t("prospect.error"),
+        description: t("prospect.addError")
       })
     } finally {
       setAddingToCrm(null)
@@ -114,25 +116,25 @@ export default function ProspectingPage() {
     <div className="space-y-6 pb-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-vyxo-navy dark:text-white">Prospection</h2>
-          <p className="text-muted-foreground">Trouvez vos prochains clients avec la base Apollo.</p>
+          <h2 className="text-3xl font-bold tracking-tight text-vyxo-navy dark:text-white">{t("prospect.title")}</h2>
+          <p className="text-muted-foreground">{t("prospect.subtitle")}</p>
         </div>
       </div>
 
       {/* SEARCH FORM */}
       <Card className="border-t-4 border-t-vyxo-gold">
         <CardHeader>
-          <CardTitle>Critères de Recherche</CardTitle>
-          <CardDescription>Ciblez des décideurs spécifiques par rôle, localisation et secteur.</CardDescription>
+          <CardTitle>{t("prospect.search")}</CardTitle>
+          <CardDescription>{t("prospect.targetDecisionMakers")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Poste</label>
+              <label className="text-sm font-medium">{t("prospect.jobTitle")}</label>
               <div className="relative">
                 <Briefcase className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input 
-                  placeholder="ex. CEO, Directeur Marketing" 
+                  placeholder={t("prospect.jobTitlePlaceholder")} 
                   className="pl-9"
                   value={searchParams.jobTitle}
                   onChange={(e) => setSearchParams({...searchParams, jobTitle: e.target.value})}
@@ -140,11 +142,11 @@ export default function ProspectingPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Localisation</label>
+              <label className="text-sm font-medium">{t("prospect.location")}</label>
               <div className="relative">
                 <MapPin className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input 
-                  placeholder="ex. Paris, France" 
+                  placeholder={t("prospect.locationPlaceholder")} 
                   className="pl-9"
                   value={searchParams.location}
                   onChange={(e) => setSearchParams({...searchParams, location: e.target.value})}
@@ -152,11 +154,11 @@ export default function ProspectingPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Secteur</label>
+              <label className="text-sm font-medium">{t("prospect.industry")}</label>
               <div className="relative">
                 <Building2 className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input 
-                  placeholder="ex. SaaS, Finance" 
+                  placeholder={t("prospect.industryPlaceholder")} 
                   className="pl-9"
                   value={searchParams.industry}
                   onChange={(e) => setSearchParams({...searchParams, industry: e.target.value})}
@@ -165,7 +167,7 @@ export default function ProspectingPage() {
             </div>
             <Button type="submit" disabled={loading} className="bg-vyxo-navy hover:bg-vyxo-navy/90 text-white">
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
-              Trouver des Prospects
+              {t("prospect.findProspects")}
             </Button>
           </form>
         </CardContent>
@@ -176,7 +178,7 @@ export default function ProspectingPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold flex items-center gap-2">
-              Résultats <Badge variant="secondary">{results.length}</Badge>
+              {t("prospect.results")} <Badge variant="secondary">{results.length}</Badge>
             </h3>
           </div>
 
@@ -186,9 +188,9 @@ export default function ProspectingPage() {
                 <div className="h-12 w-12 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center mb-4">
                   <Search className="h-6 w-6 text-muted-foreground" />
                 </div>
-                <h3 className="font-semibold text-lg">Aucun prospect trouvé</h3>
+                <h3 className="font-semibold text-lg">{t("prospect.noProspectsFound")}</h3>
                 <p className="text-muted-foreground max-w-sm mt-2">
-                  Essayez d'ajuster vos critères de recherche. Élargissez votre localisation ou poste pour voir plus de résultats.
+                  {t("prospect.adjustCriteria")}
                 </p>
               </CardContent>
             </Card>
@@ -222,11 +224,11 @@ export default function ProspectingPage() {
                     <div className="space-y-2 text-sm mb-4">
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Building2 className="h-3.5 w-3.5" />
-                        <span className="truncate">{prospect.organization || 'Entreprise Inconnue'}</span>
+                        <span className="truncate">{prospect.organization || t("prospect.unknownCompany")}</span>
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <MapPin className="h-3.5 w-3.5" />
-                        <span className="truncate">{prospect.location || 'Localisation Inconnue'}</span>
+                        <span className="truncate">{prospect.location || t("prospect.unknownLocation")}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Mail className="h-3.5 w-3.5 text-muted-foreground" />
@@ -235,7 +237,7 @@ export default function ProspectingPage() {
                             {prospect.email}
                           </span>
                         ) : (
-                          <span className="text-muted-foreground text-xs italic">Email non trouvé</span>
+                          <span className="text-muted-foreground text-xs italic">{t("prospect.emailNotFound")}</span>
                         )}
                       </div>
                     </div>
@@ -251,7 +253,7 @@ export default function ProspectingPage() {
                       ) : (
                         <UserPlus className="h-4 w-4 mr-2" />
                       )}
-                      {addingToCrm === prospect.id ? 'Ajout...' : 'Ajouter au CRM'}
+                      {addingToCrm === prospect.id ? t("prospect.adding") : t("prospect.addToCrm")}
                     </Button>
                   </CardContent>
                 </Card>
