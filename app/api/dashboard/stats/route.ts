@@ -12,45 +12,45 @@ export async function GET() {
     console.log('📊 Fetching dashboard stats from Supabase...')
 
     // Fetch all data in parallel
-    const [clientsRes, invoicesRes, auditsRes, activitiesRes] = await Promise.all([
-      supabase.from('vch_clients').select('*').eq('status', 'active'),
+    const [clientsRes, invoicesRes, auditsRes, activitiesRes, engagementsRes] = await Promise.all([
+      supabase.from('vch_clients').select('*'),
       supabase.from('vch_invoices').select('*'),
       supabase.from('vch_audits').select('*').in('status', ['draft', 'in_progress', 'review']),
-      supabase.from('vch_activities').select('*').order('created_at', { ascending: false }).limit(5)
+      supabase.from('vch_activities').select('*').order('created_at', { ascending: false }).limit(5),
+      supabase.from('vch_engagements').select('*')
     ])
 
     // Check for errors
-    if (clientsRes.error) {
-      console.error('Clients error:', clientsRes.error)
-      throw clientsRes.error
-    }
-    if (invoicesRes.error) {
-      console.error('Invoices error:', invoicesRes.error)
-      throw invoicesRes.error
-    }
-    if (auditsRes.error) {
-      console.error('Audits error:', auditsRes.error)
-      throw auditsRes.error
-    }
-    if (activitiesRes.error) {
-      console.error('Activities error:', activitiesRes.error)
-      throw activitiesRes.error
-    }
+    if (clientsRes.error) throw clientsRes.error
+    if (invoicesRes.error) throw invoicesRes.error
+    if (auditsRes.error) throw auditsRes.error
+    if (activitiesRes.error) throw activitiesRes.error
+    if (engagementsRes.error) throw engagementsRes.error
 
     const clients = clientsRes.data || []
     const invoices = invoicesRes.data || []
     const audits = auditsRes.data || []
     const activities = activitiesRes.data || []
+    const engagements = engagementsRes.data || []
 
     // Calculate stats
     const totalRevenue = invoices.reduce((sum, inv) => sum + (inv.amount || 0), 0)
     const paidRevenue = invoices.filter(inv => inv.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0)
+    
+    const activeClients = clients.filter(c => c.status === 'active').length
+    
+    // Conversion Rate: Won Deals / Total Deals
+    const totalDeals = engagements.length
+    const wonDeals = engagements.filter(e => e.status === 'completed').length
+    const conversionRate = totalDeals > 0 ? Math.round((wonDeals / totalDeals) * 100) : 0
 
     const stats = {
       totalRevenue: paidRevenue,
-      activeClients: clients.length,
+      activeClients: activeClients,
       pendingAudits: audits.length,
-      revenueGrowth: 12.5
+      revenueGrowth: 12.5,
+      conversionRate: conversionRate,
+      totalDeals: totalDeals
     }
 
     console.log('✅ Stats calculated:', stats)

@@ -13,7 +13,9 @@ export default function DashboardPage() {
     totalRevenue: 0,
     activeClients: 0,
     pendingAudits: 0,
-    revenueGrowth: 0
+    revenueGrowth: 0,
+    conversionRate: 0,
+    totalDeals: 0
   })
   const [activities, setActivities] = useState<ActivityType[]>([])
   const [loading, setLoading] = useState(true)
@@ -231,15 +233,16 @@ export default function DashboardPage() {
             </Card>
         </motion.div>
 
-        {/* QUICK STATS ROW */}
+        {/* WIN RATE */}
         <motion.div variants={item} className="col-span-1">
-             <Card className="h-full bg-slate-50 dark:bg-slate-900 border-dashed border-2 flex items-center justify-center hover:border-vyxo-gold hover:bg-vyxo-gold/5 transition-all cursor-pointer group">
-                <div className="text-center">
-                    <div className="h-10 w-10 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto shadow-sm group-hover:scale-110 transition-transform">
-                        <FileText className="h-5 w-5 text-muted-foreground group-hover:text-vyxo-gold" />
-                    </div>
-                    <p className="text-sm font-medium mt-2 text-muted-foreground group-hover:text-vyxo-navy dark:group-hover:text-white">Draft Proposal</p>
-                </div>
+             <Card className="h-full border-l-4 border-l-emerald-500 shadow-md hover:shadow-lg transition-all">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Win Rate</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="text-3xl font-bold text-vyxo-navy dark:text-white">{stats.conversionRate}%</div>
+                    <p className="text-xs text-muted-foreground mt-1">Based on {stats.totalDeals} deals</p>
+                </CardContent>
             </Card>
         </motion.div>
         
