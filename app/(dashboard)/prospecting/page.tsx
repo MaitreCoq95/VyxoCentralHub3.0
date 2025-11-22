@@ -114,25 +114,25 @@ export default function ProspectingPage() {
     <div className="space-y-6 pb-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-vyxo-navy dark:text-white">Prospecting</h2>
-          <p className="text-muted-foreground">Find your next clients using Apollo's database.</p>
+          <h2 className="text-3xl font-bold tracking-tight text-vyxo-navy dark:text-white">Prospection</h2>
+          <p className="text-muted-foreground">Trouvez vos prochains clients avec la base Apollo.</p>
         </div>
       </div>
 
       {/* SEARCH FORM */}
       <Card className="border-t-4 border-t-vyxo-gold">
         <CardHeader>
-          <CardTitle>Search Criteria</CardTitle>
-          <CardDescription>Target specific decision makers by role, location, and industry.</CardDescription>
+          <CardTitle>Critères de Recherche</CardTitle>
+          <CardDescription>Ciblez des décideurs spécifiques par rôle, localisation et secteur.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Job Title</label>
+              <label className="text-sm font-medium">Poste</label>
               <div className="relative">
                 <Briefcase className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input 
-                  placeholder="e.g. CEO, Marketing Director" 
+                  placeholder="ex. CEO, Directeur Marketing" 
                   className="pl-9"
                   value={searchParams.jobTitle}
                   onChange={(e) => setSearchParams({...searchParams, jobTitle: e.target.value})}
@@ -140,11 +140,11 @@ export default function ProspectingPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Location</label>
+              <label className="text-sm font-medium">Localisation</label>
               <div className="relative">
                 <MapPin className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input 
-                  placeholder="e.g. Paris, France" 
+                  placeholder="ex. Paris, France" 
                   className="pl-9"
                   value={searchParams.location}
                   onChange={(e) => setSearchParams({...searchParams, location: e.target.value})}
@@ -152,11 +152,11 @@ export default function ProspectingPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Industry</label>
+              <label className="text-sm font-medium">Secteur</label>
               <div className="relative">
                 <Building2 className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input 
-                  placeholder="e.g. SaaS, Finance" 
+                  placeholder="ex. SaaS, Finance" 
                   className="pl-9"
                   value={searchParams.industry}
                   onChange={(e) => setSearchParams({...searchParams, industry: e.target.value})}
@@ -165,7 +165,7 @@ export default function ProspectingPage() {
             </div>
             <Button type="submit" disabled={loading} className="bg-vyxo-navy hover:bg-vyxo-navy/90 text-white">
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
-              Find Prospects
+              Trouver des Prospects
             </Button>
           </form>
         </CardContent>
@@ -176,7 +176,7 @@ export default function ProspectingPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold flex items-center gap-2">
-              Results <Badge variant="secondary">{results.length}</Badge>
+              Résultats <Badge variant="secondary">{results.length}</Badge>
             </h3>
           </div>
 
@@ -186,9 +186,9 @@ export default function ProspectingPage() {
                 <div className="h-12 w-12 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center mb-4">
                   <Search className="h-6 w-6 text-muted-foreground" />
                 </div>
-                <h3 className="font-semibold text-lg">No prospects found</h3>
+                <h3 className="font-semibold text-lg">Aucun prospect trouvé</h3>
                 <p className="text-muted-foreground max-w-sm mt-2">
-                  Try adjusting your search criteria. Broaden your location or job title to see more results.
+                  Essayez d'ajuster vos critères de recherche. Élargissez votre localisation ou poste pour voir plus de résultats.
                 </p>
               </CardContent>
             </Card>
@@ -222,11 +222,11 @@ export default function ProspectingPage() {
                     <div className="space-y-2 text-sm mb-4">
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Building2 className="h-3.5 w-3.5" />
-                        <span className="truncate">{prospect.organization || 'Unknown Company'}</span>
+                        <span className="truncate">{prospect.organization || 'Entreprise Inconnue'}</span>
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <MapPin className="h-3.5 w-3.5" />
-                        <span className="truncate">{prospect.location || 'Unknown Location'}</span>
+                        <span className="truncate">{prospect.location || 'Localisation Inconnue'}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Mail className="h-3.5 w-3.5 text-muted-foreground" />
@@ -235,7 +235,7 @@ export default function ProspectingPage() {
                             {prospect.email}
                           </span>
                         ) : (
-                          <span className="text-muted-foreground text-xs italic">Email not found</span>
+                          <span className="text-muted-foreground text-xs italic">Email non trouvé</span>
                         )}
                       </div>
                     </div>
@@ -251,7 +251,7 @@ export default function ProspectingPage() {
                       ) : (
                         <UserPlus className="h-4 w-4 mr-2" />
                       )}
-                      {addingToCrm === prospect.id ? 'Adding...' : 'Add to CRM'}
+                      {addingToCrm === prospect.id ? 'Ajout...' : 'Ajouter au CRM'}
                     </Button>
                   </CardContent>
                 </Card>

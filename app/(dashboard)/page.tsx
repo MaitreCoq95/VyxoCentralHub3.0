@@ -103,15 +103,15 @@ export default function DashboardPage() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-vyxo-navy dark:text-white">Dashboard</h2>
-          <p className="text-muted-foreground">Welcome back to your command center.</p>
+          <h2 className="text-3xl font-bold tracking-tight text-vyxo-navy dark:text-white">Tableau de Bord</h2>
+          <p className="text-muted-foreground">Bienvenue dans votre centre de commande.</p>
         </div>
         <div className="flex items-center space-x-2">
           <Button className="bg-vyxo-navy hover:bg-vyxo-navy/90 text-white">
-            <FileText className="mr-2 h-4 w-4" /> New Audit
+            <FileText className="mr-2 h-4 w-4" /> Nouvel Audit
           </Button>
           <Button className="bg-vyxo-gold hover:bg-vyxo-gold/90 text-vyxo-navy font-semibold">
-            <Users className="mr-2 h-4 w-4" /> Add Client
+            <Users className="mr-2 h-4 w-4" /> Ajouter Client
           </Button>
         </div>
       </div>
@@ -124,10 +124,10 @@ export default function DashboardPage() {
           <Card className="h-full border-none shadow-lg bg-gradient-to-br from-vyxo-navy to-slate-900 text-white overflow-hidden relative">
             <div className="absolute top-0 right-0 p-32 bg-vyxo-gold/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
             <CardHeader>
-              <CardTitle className="text-lg font-medium text-zinc-300">Total Revenue (Paid)</CardTitle>
+              <CardTitle className="text-lg font-medium text-zinc-300">Revenu Total (Payé)</CardTitle>
               <div className="text-4xl font-bold text-white mt-2">{formatCurrency(stats.totalRevenue)}</div>
               <p className="text-sm text-emerald-400 flex items-center mt-1">
-                <ArrowUpRight className="h-4 w-4 mr-1" /> +{stats.revenueGrowth}% from last month
+                <ArrowUpRight className="h-4 w-4 mr-1" /> +{stats.revenueGrowth}% par rapport au mois dernier
               </p>
             </CardHeader>
             <CardContent>
@@ -151,11 +151,11 @@ export default function DashboardPage() {
         <motion.div variants={item} className="col-span-1">
             <Card className="h-full border-l-4 border-l-vyxo-gold shadow-md hover:shadow-lg transition-all">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Active Clients</CardTitle>
+                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Clients Actifs</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-3xl font-bold text-vyxo-navy dark:text-white">{stats.activeClients}</div>
-                    <p className="text-xs text-muted-foreground mt-1">From Supabase data</p>
+                    <p className="text-xs text-muted-foreground mt-1">Depuis Supabase</p>
                 </CardContent>
             </Card>
         </motion.div>
@@ -164,11 +164,11 @@ export default function DashboardPage() {
         <motion.div variants={item} className="col-span-1">
             <Card className="h-full border-l-4 border-l-vyxo-navy shadow-md hover:shadow-lg transition-all">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Pending Audits</CardTitle>
+                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Audits en Attente</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-3xl font-bold text-vyxo-navy dark:text-white">{stats.pendingAudits}</div>
-                    <p className="text-xs text-muted-foreground mt-1">In progress or review</p>
+                    <p className="text-xs text-muted-foreground mt-1">En cours ou en révision</p>
                 </CardContent>
             </Card>
         </motion.div>
@@ -178,7 +178,7 @@ export default function DashboardPage() {
              <Card className="h-full shadow-md overflow-hidden flex flex-col">
                 <CardHeader className="bg-slate-50 dark:bg-slate-900/50 border-b">
                     <CardTitle className="text-base font-medium flex items-center">
-                        <MapPin className="h-4 w-4 mr-2 text-vyxo-gold" /> Client Distribution
+                        <MapPin className="h-4 w-4 mr-2 text-vyxo-gold" /> Répartition Clients
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0 flex-1 relative bg-slate-100 dark:bg-slate-950">
@@ -196,7 +196,7 @@ export default function DashboardPage() {
                     <div className="absolute bottom-1/3 right-1/4 h-3 w-3 bg-vyxo-navy rounded-full"></div>
                     
                     <div className="absolute bottom-4 left-4 bg-white/80 dark:bg-black/80 backdrop-blur px-3 py-1 rounded-full text-xs font-medium shadow-sm">
-                        {stats.activeClients} Active Clients
+                        {stats.activeClients} Clients Actifs
                     </div>
                 </CardContent>
             </Card>
@@ -207,7 +207,7 @@ export default function DashboardPage() {
             <Card className="h-full shadow-md flex flex-col">
                 <CardHeader>
                     <CardTitle className="text-base font-medium flex items-center">
-                        <Activity className="h-4 w-4 mr-2 text-vyxo-navy" /> Recent Activity
+                        <Activity className="h-4 w-4 mr-2 text-vyxo-navy" /> Activité Récente
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0 flex-1">
@@ -224,7 +224,7 @@ export default function DashboardPage() {
                                 </div>
                             )) : (
                                 <div className="p-4 text-center text-muted-foreground">
-                                    No recent activities
+                                    Aucune activité récente
                                 </div>
                             )}
                         </div>
@@ -237,11 +237,11 @@ export default function DashboardPage() {
         <motion.div variants={item} className="col-span-1">
              <Card className="h-full border-l-4 border-l-emerald-500 shadow-md hover:shadow-lg transition-all">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Win Rate</CardTitle>
+                    <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Taux de Réussite</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-3xl font-bold text-vyxo-navy dark:text-white">{stats.conversionRate}%</div>
-                    <p className="text-xs text-muted-foreground mt-1">Based on {stats.totalDeals} deals</p>
+                    <p className="text-xs text-muted-foreground mt-1">Basé sur {stats.totalDeals} deals</p>
                 </CardContent>
             </Card>
         </motion.div>
