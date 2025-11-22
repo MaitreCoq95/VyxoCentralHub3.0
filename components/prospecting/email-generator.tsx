@@ -47,7 +47,10 @@ export function EmailGenerator() {
         body: JSON.stringify(formData),
       })
 
-      if (!response.ok) throw new Error("Failed to generate")
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to generate")
+      }
 
       const data = await response.json()
       setGeneratedEmail(data.text)
@@ -55,11 +58,12 @@ export function EmailGenerator() {
         title: "Email Generated",
         description: "Your cold email is ready!",
       })
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Generation error:", error)
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to generate email. Please try again.",
+        title: "Generation Failed",
+        description: error.message || "Failed to generate email. Please try again.",
       })
     } finally {
       setLoading(false)
