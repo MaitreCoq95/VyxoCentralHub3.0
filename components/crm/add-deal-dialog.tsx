@@ -37,7 +37,7 @@ const formSchema = z.object({
   name: z.string().min(2, "Deal name is required"),
   client_id: z.string().min(1, "Client is required"),
   budget_amount: z.number().min(0, "Amount must be positive"),
-  status: z.string().default("draft"),
+  status: z.string(),
 })
 
 interface AddDealDialogProps {
