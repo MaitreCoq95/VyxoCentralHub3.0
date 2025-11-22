@@ -17,28 +17,6 @@ import { useToast } from "@/components/ui/use-toast"
 
 interface ClientCardProps {
   client: {
-    id: string
-    name: string
-    sector: string
-    status: "active" | "lead" | "inactive" | "archived"
-    logo?: string
-    city?: string
-    contactName?: string
-    contact_email?: string
-    contact_phone?: string
-  }
-  onRefresh?: () => void
-}
-
-export function ClientCard({ client, onRefresh }: ClientCardProps) {
-  const [isEditOpen, setIsEditOpen] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
-  const { toast } = useToast()
-
-  const statusColors = {
-    active: "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20",
-    lead: "bg-vyxo-gold/10 text-vyxo-gold hover:bg-vyxo-gold/20",
-    inactive: "bg-zinc-500/10 text-zinc-500 hover:bg-zinc-500/20",
     archived: "bg-red-500/10 text-red-500 hover:bg-red-500/20",
   }
 
@@ -68,24 +46,6 @@ export function ClientCard({ client, onRefresh }: ClientCardProps) {
     } finally {
       setIsDeleting(false)
     }
-  }
-
-  return (
-    <>
-      <EditClientDialog 
-        client={client} 
-        open={isEditOpen} 
-        onOpenChange={setIsEditOpen}
-        onClientUpdated={() => onRefresh?.()} 
-      />
-      
-      <Card className="group hover:shadow-md transition-all duration-300 border-l-4 border-l-transparent hover:border-l-vyxo-gold">
-        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-12 w-12 rounded-lg border border-border">
-              <AvatarImage src={client.logo} alt={client.name} />
-              <AvatarFallback className="rounded-lg bg-vyxo-navy text-white font-bold">
-                {client.name.substring(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>
@@ -96,24 +56,6 @@ export function ClientCard({ client, onRefresh }: ClientCardProps) {
                 <Building2 className="h-3 w-3 mr-1" /> {client.sector}
               </p>
             </div>
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" disabled={isDeleting}>
-                {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreHorizontal className="h-4 w-4" />}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setIsEditOpen(true)}>Edit Client</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600" onClick={handleDelete}>
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center text-xs text-muted-foreground">
               <MapPin className="h-3 w-3 mr-1" /> {client.city || "Paris, FR"}
           </div>
           <Badge variant="secondary" className={statusColors[client.status]}>
