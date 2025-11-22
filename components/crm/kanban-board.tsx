@@ -245,9 +245,6 @@ export function KanbanBoard() {
                     {provided.placeholder}
                   </div>
                   
-                    {provided.placeholder}
-                  </div>
-                  
                   <AddDealDialog onDealAdded={fetchPipeline} />
                 </div>
               )}
