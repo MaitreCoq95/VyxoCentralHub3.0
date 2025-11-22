@@ -19,14 +19,25 @@ export async function POST(req: Request) {
       Body: [Email body]
     `
 
+    // Check if API key is available
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY
+    if (!apiKey) {
+      console.error('❌ GOOGLE_GENERATIVE_AI_API_KEY is missing')
+      return Response.json({ error: 'Server configuration error: API Key missing' }, { status: 500 })
+    }
+
     const { text } = await generateText({
       model: google('gemini-1.5-flash'),
       prompt: prompt,
     })
 
     return Response.json({ text })
-  } catch (error) {
-    console.error('AI Generation Error:', error)
-    return Response.json({ error: 'Failed to generate email' }, { status: 500 })
+  } catch (error: any) {
+    console.error('💥 AI Generation Error:', error)
+    // Return the actual error message for debugging
+    return Response.json({ 
+      error: error.message || 'Failed to generate email',
+      details: error.toString()
+    }, { status: 500 })
   }
 }
