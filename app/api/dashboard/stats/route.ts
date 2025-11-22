@@ -13,10 +13,10 @@ export async function GET() {
 
     // Fetch all data in parallel
     const [clientsRes, invoicesRes, auditsRes, activitiesRes] = await Promise.all([
-      supabase.from('VCH_Clients').select('*').eq('status', 'active'),
-      supabase.from('VCH_Invoices').select('*'),
-      supabase.from('VCH_Audits').select('*').in('status', ['draft', 'in_progress', 'review']),
-      supabase.from('VCH_Activities').select('*').order('created_at', { ascending: false }).limit(5)
+      supabase.from('vch_clients').select('*').eq('status', 'active'),
+      supabase.from('vch_invoices').select('*'),
+      supabase.from('vch_audits').select('*').in('status', ['draft', 'in_progress', 'review']),
+      supabase.from('vch_activities').select('*').order('created_at', { ascending: false }).limit(5)
     ])
 
     // Check for errors
