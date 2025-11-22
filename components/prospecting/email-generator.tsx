@@ -92,6 +92,57 @@ export function EmailGenerator() {
     }
   }
 
+  const handleSaveToCRM = async () => {
+    if (!result) return
+    setLoading(true)
+
+    try {
+      // 1. Create Client (Lead)
+      const clientRes = await fetch('/api/crm/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.companyName,
+          contact_email: '', // We don't have email in form yet, maybe add it?
+          status: 'lead',
+          notes: `Prospect: ${formData.prospectName}\nIndustry: ${formData.industry}\nPain Point: ${formData.painPoint}`
+        })
+      })
+
+      if (!clientRes.ok) throw new Error('Failed to create client')
+      const client = await clientRes.json()
+
+      // 2. Log Activity (Campaign Generated)
+      const activityRes = await fetch('/api/crm/activities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          entity_type: 'client',
+          entity_id: client.id,
+          action: 'campaign_generated',
+          description: `Generated outreach campaign for ${formData.prospectName}`,
+          metadata: result
+        })
+      })
+
+      if (!activityRes.ok) throw new Error('Failed to log activity')
+
+      toast({
+        title: "Saved to CRM",
+        description: `${formData.companyName} added as a Lead with campaign details.`,
+      })
+    } catch (error: any) {
+      console.error("CRM Save error:", error)
+      toast({
+        variant: "destructive",
+        title: "Save Failed",
+        description: error.message,
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
     setCopied(true)
@@ -178,21 +229,32 @@ export function EmailGenerator() {
             />
           </div>
 
-          <Button 
-            className="w-full bg-vyxo-gold text-vyxo-navy hover:bg-vyxo-gold/90 font-semibold mt-4"
-            onClick={handleGenerate}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating Strategy...
-              </>
-            ) : (
-              <>
-                <Sparkles className="mr-2 h-4 w-4" /> Generate Campaign
-              </>
-            )}
-          </Button>
+          <div className="flex gap-2 mt-4">
+            <Button 
+              className="flex-1 bg-vyxo-gold text-vyxo-navy hover:bg-vyxo-gold/90 font-semibold"
+              onClick={handleGenerate}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating Strategy...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="mr-2 h-4 w-4" /> Generate Campaign
+                </>
+              )}
+            </Button>
+            
+            <Button 
+              variant="outline"
+              className="border-vyxo-gold text-vyxo-gold hover:bg-vyxo-gold/10"
+              onClick={handleSaveToCRM}
+              disabled={loading || !result}
+            >
+              <RefreshCw className="mr-2 h-4 w-4" /> Save to CRM
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -223,9 +285,11 @@ export function EmailGenerator() {
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
                         <CardTitle className="text-lg text-vyxo-navy dark:text-white">{variation.type}</CardTitle>
-                        <Button variant="ghost" size="sm" onClick={() => copyToClipboard(`Subject: ${variation.subject}\n\n${variation.body}`)}>
-                          <Copy className="h-4 w-4" />
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="sm" onClick={() => copyToClipboard(`Subject: ${variation.subject}\n\n${variation.body}`)}>
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                       <CardDescription className="font-mono text-xs">Subject: {variation.subject}</CardDescription>
                     </CardHeader>
