@@ -122,5 +122,6 @@ export function ClientCard({ client, onRefresh }: ClientCardProps) {
         </div>
       </CardContent>
     </Card>
+    </>
   )
 }
