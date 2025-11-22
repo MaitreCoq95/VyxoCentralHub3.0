@@ -91,8 +91,11 @@ export default function ClientsPage() {
                     status: client.status,
                     logo: client.logo_url,
                     city: client.city,
-                    contactName: client.contact_email // Using email as contact for now
+                    contactName: client.contact_email,
+                    contact_email: client.contact_email,
+                    contact_phone: client.contact_phone
                   }} 
+                  onRefresh={fetchClients}
                 />
               ))}
             </div>
