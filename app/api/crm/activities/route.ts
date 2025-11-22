@@ -1,12 +1,15 @@
-import { createClient } from '@/lib/supabase'
 import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const entityId = searchParams.get('entityId')
   const entityType = searchParams.get('entityType')
-
-  const supabase = createClient()
 
   let query = supabase
     .from('vch_activities')
@@ -26,10 +29,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const supabase = createClient()
   const body = await request.json()
 
-  // Get the demo organization ID (since we don't have auth yet)
+  // Get the demo organization ID
   const { data: orgs } = await supabase
     .from('vch_organizations')
     .select('id')
