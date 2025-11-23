@@ -23,9 +23,77 @@ export async function POST(
     const { 
       recipientEmail, 
       recipientName, 
-      emailType = 'initial' 
+      emailType = 'initial',
+      contactName,
+      emailStyle
     } = body
 
+    console.log('✉️ Generating email for company:', id)
+
+    // Validate email type
+    if (!['initial', 'follow_up_1', 'follow_up_2', 'follow_up_3'].includes(emailType)) {
+      return NextResponse.json(
+        { error: 'Invalid email type' },
+        { status: 400 }
+      )
+    }
+
+    // Fetch company
+    const { data: company, error: companyError } = await supabase
+      .from('vch_vyxhunter_companies')
+      .select('*')
+      .eq('id', id)
+      .eq('organization_id', DEMO_ORG_ID)
+      .single()
+
+    if (companyError) throw companyError
+    if (!company) {
+      return NextResponse.json(
+        { error: 'Company not found' },
+        { status: 404 }
+      )
+    }
+
+    // Fetch latest analysis
+    const { data: analysis, error: analysisError } = await supabase
+      .from('vch_vyxhunter_analyses')
+      .select('*')
+      .eq('company_id', id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (analysisError || !analysis) {
+      return NextResponse.json(
+        { error: 'No analysis found. Please analyze the company first.' },
+        { status: 400 }
+      )
+    }
+
+    // Fetch latest Gamma slide (optional)
+    const { data: gammaSlide } = await supabase
+      .from('vch_vyxhunter_gamma_slides')
+      .select('*')
+      .eq('company_id', id)
+      .eq('status', 'ready')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    // Generate email
+    const emailData = await generateVyxHunterEmail(
+      company,
+      analysis,
+      gammaSlide?.gamma_url,
+      emailType as any,
+      contactName,
+      emailStyle
+    )
+
+    // Save draft email to database
+    const { data: newEmail, error: emailError } = await supabase
+      .from('vch_vyxhunter_emails')
+      .insert([{
         organization_id: DEMO_ORG_ID,
         company_id: id,
         gamma_slide_id: gammaSlide?.id,
