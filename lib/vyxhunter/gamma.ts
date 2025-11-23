@@ -171,9 +171,13 @@ export async function getGammaSlide(slideId: string): Promise<{
 
     const data = await response.json()
     
+    console.log('🔍 Gamma API response for slideId', slideId, ':', JSON.stringify(data, null, 2))
+    
     // Check if it's a generation response or document response
     const status = data.status || 'ready'
     const url = data.url || data.webUrl || (data.result && data.result.url)
+    
+    console.log('📊 Parsed status:', status, 'url:', url)
     
     // If generation is done, we might get the document ID/URL
     if (status === 'SUCCESS' || status === 'ready') {
