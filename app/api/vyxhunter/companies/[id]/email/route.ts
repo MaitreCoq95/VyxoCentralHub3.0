@@ -25,9 +25,7 @@ export async function POST(
       recipientName, 
       emailType = 'initial',
       contactName,
-      emailStyle,
-      gammaOption = 'none',
-      gammaUrl
+      emailStyle
     } = body
 
     console.log('✉️ Generating email for company:', id)
@@ -82,15 +80,14 @@ export async function POST(
       .limit(1)
       .maybeSingle()
 
-    // Generate email with Gamma options
+    // Generate email
     const emailData = await generateVyxHunterEmail(
       company,
       analysis,
-      gammaSlide?.gamma_url || gammaUrl,
+      gammaSlide?.gamma_url,
       emailType as any,
       contactName,
-      emailStyle,
-      gammaOption
+      emailStyle
     )
 
     // Save draft email to database

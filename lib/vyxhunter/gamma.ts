@@ -100,15 +100,9 @@ export async function generateGammaSlide(
       requestBody.additionalInstructions += `\n\nImage instructions: ${config.imageInstructions}`
     }
 
-    // Add card options with logo
+    // Add card options (simplified - no header/footer as it causes API errors)
     requestBody.cardOptions = {
-      dimensions: 'fluid',
-      headerFooter: {
-        position: 'topRight',
-        type: 'image',
-        source: logoUrl,
-        size: 'sm'
-      }
+      dimensions: 'fluid'
     }
 
     // Add number of slides if specified
@@ -117,8 +111,8 @@ export async function generateGammaSlide(
       requestBody.cardSplit = 'auto'
     }
 
-    // Add additional instructions for branding
-    const brandInstructions = 'Use Vyxo Consulting brand colors: Navy blue (#1e3a8a) as primary, Gold (#d4af37) for accents and CTAs. Maintain a premium, minimalist aesthetic.'
+    // Add additional instructions for branding (including logo)
+    const brandInstructions = `Use Vyxo Consulting brand colors: Navy blue (#1e3a8a) as primary, Gold (#d4af37) for accents and CTAs. Maintain a premium, minimalist aesthetic. Include Vyxo Consulting logo if possible.`
     requestBody.additionalInstructions = (requestBody.additionalInstructions || '') + '\n\n' + brandInstructions
 
     // Gamma API v1.0 endpoint

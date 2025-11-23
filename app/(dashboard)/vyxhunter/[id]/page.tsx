@@ -50,7 +50,6 @@ export default function CompanyPage() {
   // New state for email customization
   const [contactName, setContactName] = useState('')
   const [emailStyle, setEmailStyle] = useState<'short' | 'structured'>('structured')
-  const [gammaOption, setGammaOption] = useState<'none' | 'link' | 'pdf'>('none')
   
   // Gamma customization state
   const [isGammaDialogOpen, setIsGammaDialogOpen] = useState(false)
@@ -203,10 +202,10 @@ export default function CompanyPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           recipientEmail: 'contact@example.com', // Placeholder, will be editable
-          contactName: contactName || company?.name,
-          emailStyle: emailStyle,
-          gammaOption: gammaOption,
-          gammaUrl: latestGamma?.gamma_url
+          recipientName: contactName || company?.name,
+          contactName: contactName,
+          emailType: 'initial',
+          emailStyle: emailStyle
         })
       })
 
@@ -543,18 +542,6 @@ export default function CompanyPage() {
                     >
                       <option value="structured">Structuré</option>
                       <option value="short">Court</option>
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-muted-foreground">Présentation Gamma</label>
-                    <select 
-                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                      value={gammaOption}
-                      onChange={(e) => setGammaOption(e.target.value as 'none' | 'link' | 'pdf')}
-                    >
-                      <option value="none">Ne pas inclure</option>
-                      <option value="link" disabled={!latestGamma?.gamma_url}>Inclure le lien</option>
-                      <option value="pdf">Mentionner PDF joint</option>
                     </select>
                   </div>
                 </div>
