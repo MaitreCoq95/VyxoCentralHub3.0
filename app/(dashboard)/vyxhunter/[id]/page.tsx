@@ -60,6 +60,9 @@ export default function CompanyPage() {
         return
       }
 
+      const { data: sessionData } = await supabase.auth.getSession()
+      console.log('🔐 Auth Session:', sessionData.session ? 'Authenticated' : 'No Session', sessionData.session?.user?.id)
+
       const { data, error } = await supabase
         .from('vch_vyxhunter_companies')
         .select(`
