@@ -53,23 +53,19 @@ export async function generateGammaSlide(
   try {
     console.log('📊 Generating Gamma presentation via API...')
     
-    // Gamma API v1.0 endpoint (Corrected)
-    const response = await fetch('https://public-api.gamma.app/v1.0/generate', {
+    // Gamma API v1.0 endpoint
+    const response = await fetch('https://public-api.gamma.app/v1.0/generations', {
       method: 'POST',
       headers: {
         'X-API-KEY': apiKey,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        inputText: prompt,
-        // Optional: reference a theme ID if you have one
-        // themeId: 'your-theme-id',
-        // Optional: folder organization
-        // folderId: 'your-folder-id',
+        prompt: prompt,
+        format: 'presentation',
         // Optional: custom settings
         settings: {
-          language: 'fr',
-          format: 'presentation'
+          language: 'fr'
         }
       })
     })
