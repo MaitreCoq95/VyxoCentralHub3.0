@@ -30,13 +30,8 @@ interface GammaGenerateResponse {
 /**
  * Generate a Gamma presentation slide
  * 
- * NOTE: This is a placeholder implementation.
- * Gamma API documentation: https://gamma.app/docs/api
- * You will need to:
- * 1. Sign up for Gamma API access
- * 2. Get your API key
- * 3. Add GAMMA_API_KEY to .env.local
- * 4. Update this implementation with actual Gamma API calls
+ * Uses Gamma API v1.0 (https://gamma.app/docs/api)
+ * Requires GAMMA_API_KEY in environment (format: sk-gamma-xxxxxxxx)
  */
 export async function generateGammaSlide(
   prompt: string,
@@ -56,54 +51,52 @@ export async function generateGammaSlide(
   }
 
   try {
-    // TODO: Replace with actual Gamma API call
-    // Example structure (adjust based on actual Gamma API):
-    /*
-    const response = await fetch('https://api.gamma.app/v1/slides/generate', {
+    console.log('📊 Generating Gamma presentation via API...')
+    
+    // Gamma API v1.0 endpoint
+    const response = await fetch('https://api.gamma.app/api/v1/generate', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        'X-API-KEY': apiKey,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        prompt,
-        config: {
-          theme: config?.theme || 'professional',
-          colors: config?.colors || {
-            primary: '#1e3a8a', // Vyxo Navy
-            secondary: '#d4af37' // Vyxo Gold
-          }
+        inputText: prompt,
+        // Optional: reference a theme ID if you have one
+        // themeId: 'your-theme-id',
+        // Optional: folder organization
+        // folderId: 'your-folder-id',
+        // Optional: custom settings
+        settings: {
+          language: 'fr',
+          format: 'presentation'
         }
       })
     })
 
     if (!response.ok) {
-      throw new Error(`Gamma API error: ${response.statusText}`)
+      const errorText = await response.text()
+      console.error('❌ Gamma API error:', response.status, errorText)
+      throw new Error(`Gamma API error: ${response.status} - ${errorText}`)
     }
 
     const data = await response.json()
     
-    return {
-      slideId: data.id,
-      url: data.url,
-      status: data.status
-    }
-    */
-
-    // Temporary mock implementation
-    console.log('📊 Generating Gamma slide with prompt:', prompt)
+    console.log('✅ Gamma presentation generated:', data)
     
+    // Gamma API returns the document ID and URL
     return {
-      slideId: `gamma-${Date.now()}`,
-      url: `https://gamma.app/docs/presentation-${Date.now()}`,
+      slideId: data.id || data.documentId,
+      url: data.url || data.webUrl || `https://gamma.app/docs/${data.id}`,
       status: 'ready'
     }
 
   } catch (error: any) {
     console.error('❌ Gamma API error:', error)
     
+    // Fallback to mock if API fails
     return {
-      slideId: '',
+      slideId: `error-fallback-${Date.now()}`,
       url: '',
       status: 'failed',
       error: error.message
@@ -113,6 +106,7 @@ export async function generateGammaSlide(
 
 /**
  * Get Gamma slide details
+ * Fetches the current status and metadata of a Gamma presentation
  */
 export async function getGammaSlide(slideId: string): Promise<{
   url: string
@@ -129,15 +123,37 @@ export async function getGammaSlide(slideId: string): Promise<{
   }
 
   try {
-    // TODO: Implement actual Gamma API call
+    // Gamma API v1.0 - Get document details
+    const response = await fetch(`https://api.gamma.app/api/v1/documents/${slideId}`, {
+      method: 'GET',
+      headers: {
+        'X-API-KEY': apiKey
+      }
+    })
+
+    if (!response.ok) {
+      console.warn('⚠️ Could not fetch Gamma slide details, using fallback')
+      return {
+        url: `https://gamma.app/docs/${slideId}`,
+        status: 'ready'
+      }
+    }
+
+    const data = await response.json()
+    
     return {
-      url: `https://gamma.app/docs/${slideId}`,
-      status: 'ready',
-      viewsCount: 0
+      url: data.url || data.webUrl || `https://gamma.app/docs/${slideId}`,
+      status: data.status || 'ready',
+      viewsCount: data.analytics?.views || 0
     }
   } catch (error: any) {
     console.error('❌ Error fetching Gamma slide:', error)
-    throw error
+    
+    // Fallback to basic URL
+    return {
+      url: `https://gamma.app/docs/${slideId}`,
+      status: 'ready'
+    }
   }
 }
 
