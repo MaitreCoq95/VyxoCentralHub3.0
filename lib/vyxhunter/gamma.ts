@@ -74,13 +74,40 @@ export async function generateGammaSlide(
 
     const data = await response.json()
     
-    console.log('✅ Gamma presentation generated:', data)
+    console.log('✅ Gamma presentation generated:', JSON.stringify(data, null, 2))
     
-    // Gamma API returns the document ID and URL
+    // Handle async generation response
+    // Gamma API v1.0 usually returns { id: "generation_id" } for async requests
+    // We check for various ID fields to be robust
+    const generationId = data.id || data.generationId || data.jobId
+    const documentId = data.documentId || (data.result && data.result.id)
+    const webUrl = data.url || data.webUrl
+
+    // Case 1: Sync response with document details
+    if (documentId || webUrl) {
+      return {
+        slideId: documentId || generationId,
+        url: webUrl || `https://gamma.app/docs/${documentId}`,
+        status: 'ready'
+      }
+    }
+
+    // Case 2: Async response (Generation ID only)
+    if (generationId) {
+      return {
+        slideId: generationId,
+        url: '', // No URL yet
+        status: 'generating'
+      }
+    }
+
+    // Case 3: Unknown structure
+    console.warn('⚠️ Unexpected Gamma response structure:', data)
     return {
-      slideId: data.id || data.documentId,
-      url: data.url || data.webUrl || `https://gamma.app/docs/${data.id}`,
-      status: 'ready'
+      slideId: `unknown-${Date.now()}`,
+      url: '',
+      status: 'failed',
+      error: 'Unexpected response structure from Gamma API'
     }
 
   } catch (error: any) {
