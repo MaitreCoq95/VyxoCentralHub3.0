@@ -80,7 +80,37 @@ export default function ProspectingPage() {
     try {
       setAddingToCrm(prospect.id)
       
-      // 1. Create Client (Lead)
+      let emailToUse = prospect.email;
+
+      // 1. Reveal Email (if needed)
+      if (!emailToUse || emailToUse === 'Not available' || emailToUse.includes('email_not_unlocked')) {
+        try {
+            const revealRes = await fetch('/api/prospecting/apollo/reveal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: prospect.id })
+            });
+            
+            if (revealRes.ok) {
+                const revealData = await revealRes.json();
+                if (revealData.email) {
+                    emailToUse = revealData.email;
+                    // Update local state to reflect the revealed email immediately in the UI (optional but nice)
+                    setResults(prev => prev.map(p => p.id === prospect.id ? { ...p, email: emailToUse } : p));
+                    
+                    toast({
+                        title: "Email récupéré !",
+                        description: `L'adresse ${emailToUse} a été débloquée.`,
+                    })
+                }
+            }
+        } catch (revealError) {
+            console.error("Failed to reveal email", revealError);
+            // Continue without email if reveal fails, or maybe show a warning
+        }
+      }
+
+      // 2. Create Client (Lead)
       const clientRes = await fetch('/api/crm/clients', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -90,7 +120,7 @@ export default function ProspectingPage() {
           status: 'lead',
           city: prospect.location,
           contactName: `${prospect.first_name} ${prospect.last_name}`,
-          contact_email: prospect.email !== 'Not available' ? prospect.email : undefined,
+          contact_email: emailToUse !== 'Not available' && !emailToUse.includes('email_not_unlocked') ? emailToUse : undefined,
           notes: `Imported from Apollo. Title: ${prospect.title}. LinkedIn: ${prospect.linkedin_url}`
         })
       })
