@@ -24,6 +24,16 @@ export async function POST(
     const { id } = await params
     console.log('📊 Generating Gamma slide for company:', id)
 
+    // Parse customization options from request body
+    const body = await request.json().catch(() => ({}))
+    const customizationOptions = {
+      tone: body.tone,
+      audience: body.audience,
+      imageStyle: body.imageStyle,
+      imageInstructions: body.imageInstructions,
+      numSlides: body.numSlides
+    }
+
     // Fetch company
     const { data: company, error: companyError } = await supabase
       .from('vch_vyxhunter_companies')
@@ -56,19 +66,23 @@ export async function POST(
       )
     }
 
-    // Build Gamma prompt
+    // Build Gamma prompt with full analysis data
     const gammaPrompt = buildGammaPrompt(
       company.name,
-      company.sector || 'Entreprise',
+      company.sector || 'Business',
       {
-        mainPain: analysis.pains?.[0] || 'Optimisation des process',
-        solution: analysis.entry_angle || 'Excellence opérationnelle',
-        quickWins: analysis.quick_wins || ['Gain de temps', 'Réduction erreurs', 'Clarté process']
+        mainPain: analysis.pains?.[0] || analysis.main_pain || 'Optimisation des process',
+        solution: analysis.entry_angle || analysis.solution || 'Excellence opérationnelle',
+        quickWins: analysis.quick_wins || ['Gain de temps', 'Réduction erreurs', 'Clarté process'],
+        pains: analysis.pains,
+        opportunities: analysis.opportunities,
+        relevance_score: analysis.relevance_score,
+        business_summary: analysis.business_summary
       }
     )
 
-    // Generate Gamma slide
-    const gammaResult = await generateGammaSlide(gammaPrompt)
+    // Generate Gamma slide with customization options
+    const gammaResult = await generateGammaSlide(gammaPrompt, customizationOptions)
 
     // Save to database
     const { data: slideData, error: gammaError } = await supabase // Assign to slideData first
