@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server'
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { jobTitle, location, industry, page = 1 } = body
+    const { jobTitle, location, industry, companySize, page = 1 } = body
 
-    console.log('🕵️‍♂️ Searching Apollo for:', { jobTitle, location, industry })
+    console.log('🕵️‍♂️ Searching Apollo for:', { jobTitle, location, industry, companySize })
 
     const apiKey = process.env.APOLLO_API_KEY
 
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
         page: page,
         person_titles: jobTitle ? [jobTitle] : [],
         organization_locations: location ? [location] : [],
-        organization_num_employees_ranges: null,
+        organization_num_employees_ranges: companySize ? [companySize] : null,
         q_keywords: industry, // Using industry as a keyword for broader match
         per_page: 10
       })

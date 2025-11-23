@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Search, MapPin, Building2, Briefcase, Loader2, UserPlus, Mail, CheckCircle, AlertCircle } from "lucide-react"
+import { Search, MapPin, Building2, Briefcase, Loader2, UserPlus, Mail, CheckCircle, AlertCircle, Globe, Unlock, Users } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -29,7 +29,8 @@ export default function ProspectingPage() {
   const [searchParams, setSearchParams] = useState({
     jobTitle: "",
     location: "",
-    industry: ""
+    industry: "",
+    companySize: ""
   })
   const [results, setResults] = useState<Prospect[]>([])
   const [loading, setLoading] = useState(false)
@@ -73,6 +74,28 @@ export default function ProspectingPage() {
       })
     } finally {
       setLoading(false)
+    }
+    }
+  }
+
+  async function unlockEmail(prospect: Prospect) {
+    try {
+      const revealRes = await fetch('/api/prospecting/apollo/reveal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: prospect.id })
+      });
+
+      if (revealRes.ok) {
+        const revealData = await revealRes.json();
+        if (revealData.email) {
+           setResults(prev => prev.map(p => p.id === prospect.id ? { ...p, email: revealData.email } : p));
+           toast({ title: "Email débloqué", description: revealData.email });
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      toast({ variant: "destructive", title: "Erreur", description: "Impossible de débloquer l'email" });
     }
   }
 
@@ -183,18 +206,39 @@ export default function ProspectingPage() {
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t("prospect.industry")}</label>
-              <div className="relative">
-                <Building2 className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder={t("prospect.industryPlaceholder")} 
-                  className="pl-9"
-                  value={searchParams.industry}
-                  onChange={(e) => setSearchParams({...searchParams, industry: e.target.value})}
-                />
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("prospect.industry")}</label>
+                <div className="relative">
+                  <Building2 className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    placeholder={t("prospect.industryPlaceholder")} 
+                    className="pl-9"
+                    value={searchParams.industry}
+                    onChange={(e) => setSearchParams({...searchParams, industry: e.target.value})}
+                  />
+                </div>
               </div>
-            </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Taille Entreprise</label>
+                <div className="relative">
+                  <Users className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <select
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-9 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    value={searchParams.companySize}
+                    onChange={(e) => setSearchParams({...searchParams, companySize: e.target.value})}
+                  >
+                    <option value="">Toutes tailles</option>
+                    <option value="1,10">1-10 employés</option>
+                    <option value="11,50">11-50 employés</option>
+                    <option value="51,200">51-200 employés</option>
+                    <option value="201,500">201-500 employés</option>
+                    <option value="501,1000">501-1000 employés</option>
+                    <option value="1001,5000">1001-5000 employés</option>
+                    <option value="5001,10000">5001-10000 employés</option>
+                    <option value="10001">10000+ employés</option>
+                  </select>
+                </div>
+              </div>
             <Button type="submit" disabled={loading} className="bg-vyxo-navy hover:bg-vyxo-navy/90 text-white">
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
               {t("prospect.findProspects")}
@@ -255,6 +299,11 @@ export default function ProspectingPage() {
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Building2 className="h-3.5 w-3.5" />
                         <span className="truncate">{prospect.organization || t("prospect.unknownCompany")}</span>
+                        {prospect.organization_url && (
+                          <a href={prospect.organization_url.startsWith('http') ? prospect.organization_url : `https://${prospect.organization_url}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary ml-1">
+                            <Globe className="h-3.5 w-3.5" />
+                          </a>
+                        )}
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <MapPin className="h-3.5 w-3.5" />
@@ -262,12 +311,17 @@ export default function ProspectingPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                        {prospect.email && prospect.email !== 'Not available' ? (
+                        {prospect.email && prospect.email !== 'Not available' && !prospect.email.includes('email_not_unlocked') ? (
                           <span className="text-emerald-600 font-medium text-xs bg-emerald-50 px-2 py-0.5 rounded-full">
                             {prospect.email}
                           </span>
                         ) : (
-                          <span className="text-muted-foreground text-xs italic">{t("prospect.emailNotFound")}</span>
+                          <div className="flex items-center gap-2">
+                             <span className="text-muted-foreground text-xs italic">Email masqué</span>
+                             <Button size="sm" variant="ghost" className="h-6 px-2 text-xs hover:bg-emerald-50 hover:text-emerald-600" onClick={() => unlockEmail(prospect)}>
+                               <Unlock className="h-3 w-3 mr-1" /> Débloquer
+                             </Button>
+                          </div>
                         )}
                       </div>
                     </div>
