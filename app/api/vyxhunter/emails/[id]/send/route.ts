@@ -97,8 +97,10 @@ export async function POST(
     }
 
     // Send via Resend
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Vivien - Vyxo Consulting <contact@vyxoconsult.com>'
+    
     const { data: resendData, error: resendError } = await resend.emails.send({
-      from: 'Vivien - Vyxo Consulting <vivien@vyxo.fr>',
+      from: fromEmail,
       to: email.recipient_email,
       subject: subjectToSend,
       html: htmlToSend,
