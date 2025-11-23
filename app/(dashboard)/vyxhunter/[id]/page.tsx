@@ -1,13 +1,4 @@
-"use client"
 
-import { useEffect, useState } from "react"
-import { useRouter, useParams } from "next/navigation"
-import { 
-  ArrowLeft, Building2, Globe, Linkedin, MapPin, Users, 
-  Brain, Sparkles, Mail, Send, Loader2, ExternalLink,
-  FileText, TrendingUp, Clock, CheckCircle2, XCircle
-} from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 "use client"
 
 import { useEffect, useState } from "react"
