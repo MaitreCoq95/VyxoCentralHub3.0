@@ -45,7 +45,6 @@ export default function CompanyPage() {
   // New state for email customization
   const [contactName, setContactName] = useState('')
   const [emailStyle, setEmailStyle] = useState<'short' | 'structured'>('structured')
-  const [userId, setUserId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchCompany()
@@ -53,52 +52,28 @@ export default function CompanyPage() {
 
   async function fetchCompany() {
     try {
-      console.log('🔍 Fetching company with ID:', companyId)
+      if (!companyId) return
+
+      const res = await fetch(`/api/vyxhunter/companies/${companyId}`)
       
-      if (!companyId) {
-        console.error('❌ No company ID provided')
-        setLoading(false)
-        return
+      if (!res.ok) {
+        throw new Error('Failed to fetch company')
       }
 
-      const { data: sessionData } = await supabase.auth.getSession()
-      setUserId(sessionData.session?.user?.id || null)
-      console.log('🔐 Auth Session:', sessionData.session ? 'Authenticated' : 'No Session', sessionData.session?.user?.id)
-
-      const { data, error } = await supabase
-        .from('vch_vyxhunter_companies')
-        .select(`
-          *,
-          analyses:vch_vyxhunter_analyses(*),
-          gammaSlides:vch_vyxhunter_gamma_slides(*),
-          emails:vch_vyxhunter_emails(*),
-          interactions:vch_vyxhunter_interactions(*)
-        `)
-        .eq('id', companyId)
-        .maybeSingle()
-
-      if (error) {
-        console.error('❌ Error fetching company:', error)
-        throw error
+      const data = await res.json()
+      
+      if (!data.company) {
+        throw new Error('Company not found')
       }
 
-      if (!data) {
-        console.error('❌ Company not found (maybeSingle returned null)')
-        setCompany(null)
-        return
-      }
-
-      console.log('✅ Company data fetched:', data)
-
-      // Sort arrays
-      if (data.analyses) data.analyses.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      if (data.gammaSlides) data.gammaSlides.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      if (data.emails) data.emails.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      if (data.interactions) data.interactions.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-
-      setCompany(data)
+      setCompany(data.company)
     } catch (error) {
-      console.error('❌ Catch Error fetching company:', error)
+      console.error('Error fetching company:', error)
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de charger l'entreprise"
+      })
     } finally {
       setLoading(false)
     }
@@ -222,25 +197,11 @@ export default function CompanyPage() {
 
   if (!company) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <div className="text-center space-y-2">
-          <p className="text-xl font-semibold text-muted-foreground">Entreprise non trouvée</p>
-          <div className="p-4 bg-muted/50 rounded-lg text-xs font-mono text-left space-y-1 max-w-md mx-auto">
-            <p><strong>Debug Info:</strong></p>
-            <p>ID: {companyId || 'undefined'}</p>
-            <p>Loading: {loading ? 'true' : 'false'}</p>
-            <p>Auth Client: {supabase ? 'Yes' : 'No'}</p>
-            <p>User ID: {userId || 'None'}</p>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={() => router.push('/vyxhunter')} variant="outline">
-            Retour
-          </Button>
-          <Button onClick={fetchCompany}>
-            Réessayer
-          </Button>
-        </div>
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">Entreprise non trouvée</p>
+        <Button onClick={() => router.push('/vyxhunter')} className="mt-4">
+          Retour
+        </Button>
       </div>
     )
   }
