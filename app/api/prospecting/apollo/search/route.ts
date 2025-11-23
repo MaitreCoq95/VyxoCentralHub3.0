@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server'
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { jobTitle, location, industry, companySize, seniority, department, revenueMin, revenueMax, page = 1 } = body
+    const { jobTitle, location, industry, companySize, seniority, department, revenueMin, revenueMax, companyName, personName, page = 1 } = body
 
-    console.log('🕵️‍♂️ Searching Apollo for:', { jobTitle, location, industry, companySize, seniority, department, revenueMin, revenueMax })
+    console.log('🕵️‍♂️ Searching Apollo for:', { jobTitle, location, industry, companySize, seniority, department, revenueMin, revenueMax, companyName, personName })
 
     const apiKey = process.env.APOLLO_API_KEY
 
@@ -24,6 +24,9 @@ export async function POST(request: Request) {
       ...(jobTitle.toLowerCase().includes('director') ? ['Head of', 'Manager'] : []),
     ].filter((v, i, a) => a.indexOf(v) === i) : [] // Remove duplicates
 
+    // Parse company sizes if it's an array (multi-select)
+    const companySizeRanges = companySize ? (Array.isArray(companySize) ? companySize : [companySize]) : undefined
+
     const options = {
       method: 'POST',
       headers: {
@@ -38,12 +41,15 @@ export async function POST(request: Request) {
         person_seniorities: seniority ? [seniority] : undefined,
         person_department: department || undefined,
         organization_locations: location ? [location] : undefined,
-        organization_num_employees_ranges: companySize ? [companySize] : undefined,
+        organization_num_employees_ranges: companySizeRanges,
         revenue_range: (revenueMin || revenueMax) ? {
           min: revenueMin ? parseInt(revenueMin) : undefined,
           max: revenueMax ? parseInt(revenueMax) : undefined
         } : undefined,
         q_keywords: industry || undefined,
+        // New filters
+        organization_names: companyName ? [companyName] : undefined,
+        person_names: personName ? [personName] : undefined,
         per_page: 10
       })
     }

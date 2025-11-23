@@ -30,11 +30,13 @@ export default function ProspectingPage() {
     jobTitle: "",
     location: "",
     industry: "",
-    companySize: "",
+    companySize: [] as string[],  // Changed to array for multi-select
     seniority: "",
     department: "",
     revenueMin: "",
-    revenueMax: ""
+    revenueMax: "",
+    companyName: "",
+    personName: ""
   })
   const [results, setResults] = useState<Prospect[]>([])
   const [loading, setLoading] = useState(false)
@@ -223,30 +225,58 @@ export default function ProspectingPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Taille Entreprise</label>
-                <div className="relative">
-                  <Users className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <select
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-9 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    value={searchParams.companySize}
-                    onChange={(e) => setSearchParams({...searchParams, companySize: e.target.value})}
-                  >
-                    <option value="">Toutes tailles</option>
-                    <option value="1,10">1-10 employés</option>
-                    <option value="11,50">11-50 employés</option>
-                    <option value="51,200">51-200 employés</option>
-                    <option value="201,500">201-500 employés</option>
-                    <option value="501,1000">501-1000 employés</option>
-                    <option value="1001,5000">1001-5000 employés</option>
-                    <option value="5001,10000">5001-10000 employés</option>
-                    <option value="10001">10000+ employés</option>
-                  </select>
+                <label className="text-sm font-medium">Taille Entreprise (multi-sélection)</label>
+                <div className="border rounded-md p-3 space-y-2 max-h-48 overflow-y-auto">
+                  {[
+                    { value: "1,10", label: "1-10 employés" },
+                    { value: "11,50", label: "11-50 employés" },
+                    { value: "51,200", label: "51-200 employés" },
+                    { value: "201,500", label: "201-500 employés" },
+                    { value: "501,1000", label: "501-1000 employés" },
+                    { value: "1001,5000", label: "1001-5000 employés" },
+                    { value: "5001,10000", label: "5001-10000 employés" },
+                    { value: "10001", label: "10000+ employés" }
+                  ].map((size) => (
+                    <label key={size.value} className="flex items-center space-x-2 cursor-pointer hover:bg-accent/50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={searchParams.companySize.includes(size.value)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSearchParams({...searchParams, companySize: [...searchParams.companySize, size.value]})
+                          } else {
+                            setSearchParams({...searchParams, companySize: searchParams.companySize.filter(s => s !== size.value)})
+                          }
+                        }}
+                        className="rounded border-gray-300"
+                      />
+                      <span className="text-sm">{size.label}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
             </div>
 
             {/* NEW FILTERS ROW */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">🏢 Nom Entreprise</label>
+                <Input 
+                  placeholder="Ex: Google, Microsoft..."
+                  value={searchParams.companyName}
+                  onChange={(e) => setSearchParams({...searchParams, companyName: e.target.value})}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">👤 Nom Personne</label>
+                <Input 
+                  placeholder="Ex: John Doe..."
+                  value={searchParams.personName}
+                  onChange={(e) => setSearchParams({...searchParams, personName: e.target.value})}
+                />
+              </div>
+
               <div className="space-y-2">
                 <label className="text-sm font-medium">🎯 Niveau de Séniorité</label>
                 <select
@@ -282,7 +312,10 @@ export default function ProspectingPage() {
                   <option value="customer_success">Customer Success</option>
                 </select>
               </div>
+            </div>
 
+            {/* REVENUE ROW */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">💰 CA Min (€)</label>
                 <Input 
