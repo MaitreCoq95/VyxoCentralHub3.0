@@ -16,17 +16,21 @@ export function LanguageSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-zinc-400 hover:text-white hover:bg-white/10">
-          <Globe className="h-4 w-4" />
-          <span className="sr-only">Toggle language</span>
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="h-9 px-3 rounded-md bg-white/5 text-white hover:bg-white/10 hover:text-white border border-white/10 transition-colors"
+        >
+          <Globe className="h-4 w-4 mr-2" />
+          <span className="text-sm font-medium">{language === 'fr' ? 'FR' : 'EN'}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setLanguage("en")} className={language === "en" ? "bg-slate-100 dark:bg-slate-800" : ""}>
-          🇬🇧 English
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setLanguage("fr")} className={language === "fr" ? "bg-slate-100 dark:bg-slate-800" : ""}>
+      <DropdownMenuContent align="end" className="w-32">
+        <DropdownMenuItem onClick={() => setLanguage('fr')} className="cursor-pointer">
           🇫🇷 Français
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setLanguage('en')} className="cursor-pointer">
+          🇬🇧 English
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

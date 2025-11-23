@@ -1,18 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Loader2, Sparkles, Copy, Check, RefreshCw, Mail } from "lucide-react"
+import { Loader2, Sparkles, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
@@ -41,8 +34,6 @@ export function EmailGenerator() {
   const { t } = useLanguage()
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<AIResponse | null>(null)
-  const [copied, setCopied] = useState(false)
-  const [sendingEmail, setSendingEmail] = useState<number | null>(null)
   const [recipientEmail, setRecipientEmail] = useState("")
   const { toast } = useToast()
 
@@ -85,12 +76,13 @@ export function EmailGenerator() {
         title: t("email.campaignGenerated"),
         description: t("email.campaignGeneratedDesc"),
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       console.error("Generation error:", error)
       toast({
         variant: "destructive",
         title: t("email.generationFailed"),
-        description: error.message || t("email.generationFailedDesc"),
+        description: errorMessage || t("email.generationFailedDesc"),
       })
     } finally {
       setLoading(false)
@@ -136,65 +128,16 @@ export function EmailGenerator() {
         title: t("email.savedToCrm"),
         description: `${formData.companyName} ${t("email.savedToCrmDesc")}`,
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       console.error("CRM Save error:", error)
       toast({
         variant: "destructive",
         title: t("email.saveFailed"),
-        description: error.message,
+        description: errorMessage,
       })
     } finally {
       setLoading(false)
-    }
-  }
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-    toast({
-      title: t("email.copied"),
-      description: t("email.copiedDesc"),
-    })
-  }
-
-  const sendEmail = async (variation: EmailVariation, index: number) => {
-    if (!recipientEmail) {
-      toast({
-        variant: "destructive",
-        title: t("email.missingEmail"),
-        description: t("email.missingEmailDesc"),
-      })
-      return
-    }
-
-    try {
-      setSendingEmail(index)
-      const response = await fetch('/api/email/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: recipientEmail,
-          subject: variation.subject,
-          html: `<p>${variation.body.replace(/\n/g, '<br>')}</p>`,
-          text: variation.body
-        })
-      })
-
-      if (!response.ok) throw new Error('Failed to send email')
-
-      toast({
-        title: t("email.emailSent"),
-        description: `${t("email.emailSentDesc")} ${recipientEmail}`,
-      })
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: t("email.sendFailed"),
-        description: t("email.sendFailedDesc"),
-      })
-    } finally {
-      setSendingEmail(null)
     }
   }
 

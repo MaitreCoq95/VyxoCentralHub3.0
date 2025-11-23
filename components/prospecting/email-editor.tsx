@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
-import { Edit, Save, X, Sparkles, RotateCcw } from "lucide-react"
-import { useLanguage } from "@/components/language-provider"
+import { Edit, Save, X, Sparkles, RotateCcw, Copy } from "lucide-react"
 
 interface EmailEditorProps {
   initialSubject: string
@@ -16,7 +15,6 @@ interface EmailEditorProps {
 }
 
 export function EmailEditor({ initialSubject, initialBody, onSave, type }: EmailEditorProps) {
-  const { t } = useLanguage()
   const [isEditing, setIsEditing] = useState(false)
   const [subject, setSubject] = useState(initialSubject)
   const [body, setBody] = useState(initialBody)
@@ -100,6 +98,16 @@ export function EmailEditor({ initialSubject, initialBody, onSave, type }: Email
               >
                 <Sparkles className="h-3 w-3 mr-2" />
                 IA Améliore
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  navigator.clipboard.writeText(`Subject: ${subject}\n\n${body}`)
+                }}
+                className="px-3"
+              >
+                <Copy className="h-3 w-3" />
               </Button>
             </div>
 

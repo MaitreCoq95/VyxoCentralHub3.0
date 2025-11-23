@@ -161,17 +161,18 @@ Retourne JSON avec le corps modifié pour avoir un CTA final parfait :
     try {
       const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim()
       result = JSON.parse(cleanText)
-    } catch (e) {
+    } catch (_e) {
       console.error('Failed to parse AI response:', text)
       return Response.json({ error: 'Failed to parse AI response' }, { status: 500 })
     }
 
     return Response.json(result)
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     console.error('💥 AI Improvement Error:', error)
     return Response.json({ 
-      error: error.message || 'Failed to improve email',
-      details: error.toString()
+      error: errorMessage || 'Failed to improve email',
+      details: String(error)
     }, { status: 500 })
   }
 }
