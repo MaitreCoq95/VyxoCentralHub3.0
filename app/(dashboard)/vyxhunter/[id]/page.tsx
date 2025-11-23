@@ -139,7 +139,7 @@ export default function CompanyDetailPage() {
     setSelectedEmail({
       id: email.id,
       subject: email.subject,
-      body: email.body,
+      body: email.body_text || email.body_html || '', // Use body_text or body_html
       gammaUrl
     })
     setIsEmailPreviewOpen(true)
