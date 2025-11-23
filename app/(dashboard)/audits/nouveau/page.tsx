@@ -75,7 +75,7 @@ export default function NewAuditPage() {
         description: `L'audit ${data.reference_number} a été planifié.`,
       })
 
-      router.push(`/audits/${data.id}`)
+      router.push(`/audits/${data.id}/execution`)
     } catch (error: any) {
       console.error('Error creating audit:', error)
       toast({
