@@ -407,14 +407,14 @@ Heading: "Démarrons ensemble"
 
 Call-to-Action principal:
 "🚀 Audit Express Gratuit - 2 minutes"
-→ https://vyxo.fr/audit-express
+→ https://www.vyxoconsult.com/
 
 Proposition de valeur:
 - Sans engagement
 - Résultats immédiats
 - Plan d'action personnalisé offert
 
-Contact: vivien@vyxoconsulting.com
+Contact: contact@vyxoconsult.com
 
 VISUAL & STYLE GUIDELINES:
 - Design: Minimaliste, premium, moderne
