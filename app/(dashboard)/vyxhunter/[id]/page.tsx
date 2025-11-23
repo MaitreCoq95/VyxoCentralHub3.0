@@ -8,11 +8,23 @@ import {
   FileText, TrendingUp, Clock, CheckCircle2, XCircle
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+"use client"
+
+import { useEffect, useState } from "react"
+import { useRouter, useParams } from "next/navigation"
+import { 
+  ArrowLeft, Building2, Globe, Linkedin, MapPin, Users, 
+  Brain, Sparkles, Mail, Send, Loader2, ExternalLink,
+  FileText, TrendingUp, Clock, CheckCircle2, XCircle
+} from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/components/ui/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+
+import { EmailPreviewDialog } from "@/components/vyxhunter/email-preview-dialog"
 
 export default function CompanyDetailPage() {
   const router = useRouter()
@@ -25,6 +37,15 @@ export default function CompanyDetailPage() {
   const [analyzing, setAnalyzing] = useState(false)
   const [generatingGamma, setGeneratingGamma] = useState(false)
   const [generatingEmail, setGeneratingEmail] = useState(false)
+  
+  // New state for email preview
+  const [selectedEmail, setSelectedEmail] = useState<{
+    id: string
+    subject: string
+    body: string
+    gammaUrl?: string
+  } | null>(null)
+  const [isEmailPreviewOpen, setIsEmailPreviewOpen] = useState(false)
 
   useEffect(() => {
     fetchCompany()
@@ -117,6 +138,46 @@ export default function CompanyDetailPage() {
       toast({ variant: "destructive", title: "Erreur", description: error.message })
     } finally {
       setGeneratingEmail(false)
+    }
+  }
+
+  function openEmailPreview(email: any) {
+    // Find Gamma URL if available
+    const gammaUrl = company.gammaSlides?.[0]?.gamma_url
+
+    setSelectedEmail({
+      id: email.id,
+      subject: email.subject,
+      body: email.body,
+      gammaUrl
+    })
+    setIsEmailPreviewOpen(true)
+  }
+
+  async function handleSendEmail(id: string, subject: string, body: string) {
+    try {
+      // Send the email with updated content
+      const res = await fetch(`/api/vyxhunter/emails/${id}/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject, body })
+      })
+
+      if (!res.ok) throw new Error('Failed to send email')
+
+      toast({
+        title: "Email envoyé !",
+        description: "Le prospect a été contacté."
+      })
+      
+      fetchCompany()
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible d'envoyer l'email."
+      })
+      throw error
     }
   }
 
@@ -382,9 +443,14 @@ export default function CompanyDetailPage() {
                           {email.sent_at ? new Date(email.sent_at).toLocaleDateString('fr-FR') : 'Brouillon'}
                         </p>
                         {email.status === 'draft' && (
-                          <Button size="sm" className="w-full mt-2" variant="outline">
+                          <Button 
+                            size="sm" 
+                            className="w-full mt-2" 
+                            variant="outline"
+                            onClick={() => openEmailPreview(email)}
+                          >
                             <Send className="h-3 w-3 mr-1" />
-                            Envoyer
+                            Aperçu & Envoyer
                           </Button>
                         )}
                       </div>
@@ -429,6 +495,14 @@ export default function CompanyDetailPage() {
           </Card>
         </div>
       </div>
+
+      {/* EMAIL PREVIEW DIALOG */}
+      <EmailPreviewDialog 
+        open={isEmailPreviewOpen}
+        onOpenChange={setIsEmailPreviewOpen}
+        email={selectedEmail}
+        onSend={handleSendEmail}
+      />
     </div>
   )
 }
