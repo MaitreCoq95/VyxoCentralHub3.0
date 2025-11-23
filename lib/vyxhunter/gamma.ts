@@ -62,12 +62,7 @@ export async function generateGammaSlide(
       },
       body: JSON.stringify({
         inputText: prompt,
-        textMode: 'generate',
-        // Optional: custom settings
-        settings: {
-          language: 'fr',
-          format: 'presentation'
-        }
+        textMode: 'generate'
       })
     })
 
