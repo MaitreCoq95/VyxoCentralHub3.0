@@ -388,10 +388,17 @@ export default function CompanyPage() {
             <CardContent>
               {latestGamma ? (
                 <div className="space-y-3">
-                  <Badge variant={latestGamma.status === 'ready' ? 'default' : 'secondary'}>
-                    {latestGamma.status}
-                  </Badge>
-                  {latestGamma.gamma_url && (
+                  <div className="flex items-center gap-2">
+                    <Badge variant={latestGamma.status === 'ready' ? 'default' : latestGamma.status === 'failed' ? 'destructive' : 'secondary'}>
+                      {latestGamma.status}
+                    </Badge>
+                    {latestGamma.status === 'failed' && latestGamma.error_message && (
+                      <span className="text-xs text-red-500 font-mono bg-red-50 px-2 py-1 rounded">
+                        {latestGamma.error_message}
+                      </span>
+                    )}
+                  </div>
+                  {latestGamma.gamma_url && latestGamma.status === 'ready' && (
                     <a 
                       href={latestGamma.gamma_url} 
                       target="_blank" 
