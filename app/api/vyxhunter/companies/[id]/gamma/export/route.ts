@@ -59,16 +59,23 @@ export async function POST(
       )
     }
 
-    // Export slide
-    const result = await exportGammaSlide(
-      gammaSlide.gamma_slide_id,
-      format,
-      gammaSlide.gamma_prompt
-    )
+    // Get Gamma URL for export
+    // Gamma allows exporting via URL parameters: ?export=pdf or ?export=pptx
+    const gammaUrl = gammaSlide.gamma_url
+    
+    if (!gammaUrl) {
+      return NextResponse.json(
+        { error: 'No Gamma URL found for this slide' },
+        { status: 404 }
+      )
+    }
+
+    // Construct export URL
+    const exportUrl = `${gammaUrl}?export=${format}`
 
     return NextResponse.json({
       success: true,
-      downloadUrl: result.url,
+      downloadUrl: exportUrl,
       format
     })
 
