@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { createClient } from '@/utils/supabase/client'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -30,7 +30,7 @@ export default function CompanyPage() {
   const { id: companyId } = useParams()
   const router = useRouter()
   const { toast } = useToast()
-  const supabase = createClient()
+  const supabase = createClientComponentClient()
 
   const [company, setCompany] = useState<any>(null)
   const [loading, setLoading] = useState(true)
