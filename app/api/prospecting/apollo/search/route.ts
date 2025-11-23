@@ -17,10 +17,10 @@ export async function POST(request: Request) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache'
+        'Cache-Control': 'no-cache',
+        'X-Api-Key': apiKey
       },
       body: JSON.stringify({
-        api_key: apiKey,
         q_organization_domains: null,
         page: page,
         person_titles: jobTitle ? [jobTitle] : [],
