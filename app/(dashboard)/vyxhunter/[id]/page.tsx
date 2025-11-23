@@ -70,11 +70,17 @@ export default function CompanyPage() {
           interactions:vch_vyxhunter_interactions(*)
         `)
         .eq('id', companyId)
-        .single()
+        .maybeSingle()
 
       if (error) {
         console.error('❌ Error fetching company:', error)
         throw error
+      }
+
+      if (!data) {
+        console.error('❌ Company not found (maybeSingle returned null)')
+        setCompany(null)
+        return
       }
 
       console.log('✅ Company data fetched:', data)
