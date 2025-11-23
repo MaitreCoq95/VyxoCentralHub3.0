@@ -25,6 +25,7 @@ import {
 } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { EmailPreviewDialog } from '@/components/vyxhunter/email-preview-dialog'
+import { GammaCustomizationDialog, type GammaGenerationOptions } from '@/components/vyxhunter/gamma-customization-dialog'
 
 export default function CompanyPage() {
   const { id: companyId } = useParams()
@@ -45,6 +46,9 @@ export default function CompanyPage() {
   // New state for email customization
   const [contactName, setContactName] = useState('')
   const [emailStyle, setEmailStyle] = useState<'short' | 'structured'>('structured')
+  
+  // Gamma customization state
+  const [isGammaDialogOpen, setIsGammaDialogOpen] = useState(false)
 
   useEffect(() => {
     fetchCompany()
@@ -133,13 +137,21 @@ export default function CompanyPage() {
     return () => clearInterval(interval)
   }, [companyId, company, generatingGamma, toast, fetchCompany])
 
-  async function handleGenerateGamma() {
+  // Open customization dialog
+  function handleGenerateGamma() {
+    setIsGammaDialogOpen(true)
+  }
+
+  // Generate with custom options from dialog
+  async function handleGenerateWithOptions(options: GammaGenerationOptions) {
     try {
       setGeneratingGamma(true)
       toast({ title: "✨ Génération Gamma...", description: "Création de la slide de présentation" })
 
       const res = await fetch(`/api/vyxhunter/companies/${companyId}/gamma`, {
-        method: 'POST'
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(options)
       })
 
       if (!res.ok) throw new Error('Gamma generation failed')
@@ -576,6 +588,15 @@ export default function CompanyPage() {
         onOpenChange={setIsEmailPreviewOpen}
         email={selectedEmail}
         onSend={handleSendEmail}
+      />
+
+      {/* GAMMA CUSTOMIZATION DIALOG */}
+      <GammaCustomizationDialog
+        open={isGammaDialogOpen}
+        onOpenChange={setIsGammaDialogOpen}
+        companyId={companyId as string}
+        companyName={company?.name || ''}
+        onGenerate={handleGenerateWithOptions}
       />
     </div>
   )

@@ -35,9 +35,18 @@ interface GammaGenerateResponse {
  */
 export async function generateGammaSlide(
   prompt: string,
-  config?: Partial<GammaSlideConfig>
+  config?: Partial<GammaSlideConfig> & {
+    tone?: string
+    audience?: string
+    imageStyle?: string
+    imageInstructions?: string
+    numSlides?: number
+    ctaText?: string
+    ctaUrl?: string
+  }
 ): Promise<GammaGenerateResponse> {
   const apiKey = process.env.GAMMA_API_KEY
+  const logoUrl = process.env.VYXO_LOGO_URL || 'https://vyxoconsulting.com/logo.png'
 
   if (!apiKey) {
     console.warn('⚠️ GAMMA_API_KEY not configured - using mock response')
@@ -53,6 +62,65 @@ export async function generateGammaSlide(
   try {
     console.log('📊 Generating Gamma presentation via API...')
     
+    // Build request body with advanced options
+    const requestBody: any = {
+      inputText: prompt,
+      textMode: 'generate',
+      format: 'presentation'
+    }
+
+    // Add text options
+    requestBody.textOptions = {
+      tone: config?.tone || 'professional, inspiring',
+      audience: config?.audience || 'C-level executives, decision makers',
+      amount: 'detailed',
+      language: 'fr'
+    }
+
+    // Add image options
+    if (config?.imageStyle && config.imageStyle !== 'none') {
+      requestBody.imageOptions = {
+        source: 'aiGenerated',
+        model: 'imagen-4-pro',
+        style: config.imageStyle === 'photorealistic' 
+          ? 'professional, modern, photorealistic' 
+          : 'professional, modern, illustration'
+      }
+    } else if (config?.imageStyle === 'none') {
+      requestBody.imageOptions = {
+        source: 'noImages'
+      }
+    }
+
+    // Add custom image instructions if provided
+    if (config?.imageInstructions) {
+      if (!requestBody.additionalInstructions) {
+        requestBody.additionalInstructions = ''
+      }
+      requestBody.additionalInstructions += `\n\nImage instructions: ${config.imageInstructions}`
+    }
+
+    // Add card options with logo
+    requestBody.cardOptions = {
+      dimensions: 'fluid',
+      headerFooter: {
+        position: 'topRight',
+        type: 'image',
+        source: logoUrl,
+        size: 'sm'
+      }
+    }
+
+    // Add number of slides if specified
+    if (config?.numSlides && config.numSlides > 1) {
+      requestBody.numCards = config.numSlides
+      requestBody.cardSplit = 'auto'
+    }
+
+    // Add additional instructions for branding
+    const brandInstructions = 'Use Vyxo Consulting brand colors: Navy blue (#1e3a8a) as primary, Gold (#d4af37) for accents and CTAs. Maintain a premium, minimalist aesthetic.'
+    requestBody.additionalInstructions = (requestBody.additionalInstructions || '') + '\n\n' + brandInstructions
+
     // Gamma API v1.0 endpoint
     const response = await fetch('https://public-api.gamma.app/v1.0/generations', {
       method: 'POST',
@@ -60,10 +128,7 @@ export async function generateGammaSlide(
         'X-API-KEY': apiKey,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        inputText: prompt,
-        textMode: 'generate'
-      })
+      body: JSON.stringify(requestBody)
     })
 
     if (!response.ok) {
@@ -215,9 +280,6 @@ export async function trackGammaView(slideId: string): Promise<void> {
   console.log(`👁️ Gamma slide viewed: ${slideId}`)
 }
 
-/**
- * Build a Gamma prompt for a company based on analysis
- */
 export function buildGammaPrompt(
   companyName: string,
   sector: string,
@@ -225,29 +287,98 @@ export function buildGammaPrompt(
     mainPain: string
     solution: string
     quickWins: string[]
+    pains?: string[]
+    opportunities?: string[]
+    relevance_score?: number
+    business_summary?: string
   }
 ): string {
+  const pains = analysis.pains || [analysis.mainPain]
+  const opportunities = analysis.opportunities || []
+  const score = analysis.relevance_score || 85
+  
   return `
-Create a professional 1-slide presentation for ${companyName} (${sector}).
+Create a professional, high-impact presentation for ${companyName} in the ${sector} sector.
 
-TITLE: "${companyName} × Vyxo Consulting"
-SUBTITLE: "Clarté. Rapidité. Excellence opérationnelle."
+PRESENTATION STRUCTURE:
 
-SECTION 1: "Votre situation"
-- ${analysis.mainPain}
+=== SLIDE 1: TITLE & HOOK ===
+Title: "${companyName} × Vyxo Consulting"
+Subtitle: "Clarté. Rapidité. Excellence opérationnelle."
 
-SECTION 2: "Notre solution"
-- ${analysis.solution}
+Opening hook: "${companyName} fait face à des défis opérationnels qui freinent sa croissance. Nous avons la solution."
 
-SECTION 3: "Résultats attendus"
-${analysis.quickWins.map(win => `- ${win}`).join('\n')}
+=== SLIDE 2: VOTRE SITUATION ACTUELLE ===
+Heading: "Les défis de ${companyName}"
 
-CTA: "Audit Express 2 minutes → https://vyxo.fr/audit-express"
+Context: "${analysis.business_summary || `${companyName} est une entreprise ${sector} qui cherche à optimiser ses processus.`}"
 
-STYLE:
-- Minimaliste et premium
-- Couleurs: Bleu marine (#1e3a8a) + Or (#d4af37)
-- Police: Inter
-- Mise en page claire et aérée
+Pain Points (avec impact quantifié):
+${pains.map((pain, i) => `${i + 1}. ${pain}
+   Impact: Perte de temps, inefficacité, coûts cachés`).join('\n')}
+
+Stat visuelle: "Score de pertinence Vyxo: ${score}/100"
+
+=== SLIDE 3: NOTRE SOLUTION VYXO ===
+Heading: "Une approche éprouvée en 3 étapes"
+
+Méthodologie:
+1. **Audit Express** (2 minutes)
+   - Diagnostic rapide et précis
+   - Identification des quick wins
+   
+2. **Plan d'action personnalisé**
+   - Roadmap claire et priorisée
+   - Timeline réaliste
+   
+3. **Accompagnement opérationnel**
+   - Mise en œuvre concrète
+   - Formation des équipes
+
+Notre proposition: ${analysis.solution}
+
+=== SLIDE 4: RÉSULTATS ATTENDUS ===
+Heading: "Ce que ${companyName} va gagner"
+
+Quick Wins (résultats immédiats):
+${analysis.quickWins.map((win, i) => `✓ ${win}`).join('\n')}
+
+${opportunities.length > 0 ? `
+Opportunités de croissance:
+${opportunities.slice(0, 3).map(opp => `→ ${opp}`).join('\n')}
+` : ''}
+
+ROI estimé: "Gains mesurables dès les 3 premiers mois"
+
+=== SLIDE 5: PROCHAINES ÉTAPES ===
+Heading: "Démarrons ensemble"
+
+Call-to-Action principal:
+"🚀 Audit Express Gratuit - 2 minutes"
+→ https://vyxo.fr/audit-express
+
+Proposition de valeur:
+- Sans engagement
+- Résultats immédiats
+- Plan d'action personnalisé offert
+
+Contact: vivien@vyxoconsulting.com
+
+VISUAL & STYLE GUIDELINES:
+- Design: Minimaliste, premium, moderne
+- Couleurs: Bleu marine (#1e3a8a) comme couleur principale, Or (#d4af37) pour les accents et CTA
+- Typographie: Inter ou équivalent professionnel, hiérarchie claire
+- Layout: Aéré, beaucoup d'espace blanc, focus sur la lisibilité
+- Images: Professionnelles, modernes, éviter le stock photo générique
+- Data viz: Utiliser des graphiques simples pour les stats (score, ROI)
+- Icônes: Minimalistes, cohérentes avec la charte
+- Logo: Vyxo Consulting en haut à droite sur chaque slide
+
+TONE & MESSAGING:
+- Professionnel mais accessible
+- Orienté résultats et action
+- Empathique (comprendre les défis)
+- Confiant (expertise prouvée)
+- Concret (éviter le jargon, privilégier les exemples)
 `.trim()
 }
