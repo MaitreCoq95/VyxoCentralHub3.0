@@ -280,6 +280,64 @@ export async function trackGammaView(slideId: string): Promise<void> {
   console.log(`👁️ Gamma slide viewed: ${slideId}`)
 }
 
+/**
+ * Export Gamma slide as PDF or PPTX
+ * Uses Gamma API to generate downloadable file
+ */
+export async function exportGammaSlide(
+  slideId: string,
+  format: 'pdf' | 'pptx',
+  prompt: string
+): Promise<{ url: string; blob?: Blob }> {
+  const apiKey = process.env.GAMMA_API_KEY
+
+  if (!apiKey) {
+    throw new Error('GAMMA_API_KEY not configured')
+  }
+
+  try {
+    console.log(`📥 Exporting Gamma slide ${slideId} as ${format.toUpperCase()}...`)
+
+    // Regenerate with export format
+    // Note: Gamma API requires regeneration with exportAs parameter
+    const response = await fetch('https://public-api.gamma.app/v1.0/generations', {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': apiKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        inputText: prompt,
+        textMode: 'preserve', // Keep existing content
+        exportAs: format
+      })
+    })
+
+    if (!response.ok) {
+      const error = await response.text()
+      console.error('❌ Gamma export failed:', error)
+      throw new Error(`Gamma export failed: ${response.statusText}`)
+    }
+
+    const data = await response.json()
+    console.log('✅ Gamma export response:', data)
+
+    // The API returns a download URL for the exported file
+    const downloadUrl = data.downloadUrl || data.url || data.exportUrl
+
+    if (!downloadUrl) {
+      throw new Error('No download URL in Gamma export response')
+    }
+
+    return {
+      url: downloadUrl
+    }
+  } catch (error: any) {
+    console.error('❌ Error exporting Gamma slide:', error)
+    throw error
+  }
+}
+
 export function buildGammaPrompt(
   companyName: string,
   sector: string,

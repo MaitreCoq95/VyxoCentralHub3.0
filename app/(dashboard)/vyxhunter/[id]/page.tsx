@@ -21,11 +21,15 @@ import {
   FileText, 
   ExternalLink, 
   Mail, 
-  History 
+  History,
+  Download,
+  File,
+  Presentation
 } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { EmailPreviewDialog } from '@/components/vyxhunter/email-preview-dialog'
 import { GammaCustomizationDialog, type GammaGenerationOptions } from '@/components/vyxhunter/gamma-customization-dialog'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 export default function CompanyPage() {
   const { id: companyId } = useParams()
@@ -161,6 +165,30 @@ export default function CompanyPage() {
     } catch (error: any) {
       toast({ variant: "destructive", title: "Erreur", description: error.message })
       setGeneratingGamma(false)
+    }
+  }
+
+  // Export Gamma presentation as PDF or PPTX
+  async function handleExportGamma(format: 'pdf' | 'pptx') {
+    try {
+      toast({ title: `📥 Export ${format.toUpperCase()}...`, description: "Préparation du fichier" })
+
+      const res = await fetch(`/api/vyxhunter/companies/${companyId}/gamma/export`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ format })
+      })
+
+      if (!res.ok) throw new Error('Export failed')
+
+      const data = await res.json()
+      
+      // Open download URL in new tab
+      window.open(data.downloadUrl, '_blank')
+      
+      toast({ title: "✅ Export réussi", description: `Fichier ${format.toUpperCase()} prêt` })
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Erreur", description: error.message })
     }
   }
 
@@ -444,15 +472,35 @@ export default function CompanyPage() {
                     )}
                   </div>
                   {latestGamma.gamma_url && latestGamma.status === 'ready' && (
-                    <a 
-                      href={latestGamma.gamma_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-blue-600 hover:underline"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      Voir la présentation
-                    </a>
+                    <div className="space-y-2">
+                      <a 
+                        href={latestGamma.gamma_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-sm text-blue-600 hover:underline"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        Voir la présentation
+                      </a>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm" className="w-full">
+                            <Download className="h-4 w-4 mr-2" />
+                            Exporter
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem onClick={() => handleExportGamma('pdf')}>
+                            <File className="h-4 w-4 mr-2" />
+                            PDF
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleExportGamma('pptx')}>
+                            <Presentation className="h-4 w-4 mr-2" />
+                            PowerPoint
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   )}
                   <p className="text-xs text-muted-foreground">
                     Vues : {latestGamma.views_count || 0}
