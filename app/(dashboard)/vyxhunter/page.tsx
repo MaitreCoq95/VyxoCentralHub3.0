@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/components/ui/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { AddCompanyDialog } from "@/components/vyxhunter/add-company-dialog"
 import type { VyxHunterCompany } from "@/lib/vyxhunter/types"
 
 interface VyxHunterStats {
@@ -44,6 +45,7 @@ export default function VyxHunterPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
+  const [showAddDialog, setShowAddDialog] = useState(false)
 
   useEffect(() => {
     fetchData()
@@ -162,12 +164,22 @@ export default function VyxHunterPage() {
             <Search className="mr-2 h-4 w-4" />
             Importer depuis Apollo
           </Button>
-          <Button className="bg-vyxo-navy hover:bg-vyxo-navy/90 text-white">
+          <Button 
+            className="bg-vyxo-navy hover:bg-vyxo-navy/90 text-white"
+            onClick={() => setShowAddDialog(true)}
+          >
             <Plus className="mr-2 h-4 w-4" />
             Ajouter Manuellement
           </Button>
         </div>
       </div>
+
+      {/* ADD COMPANY DIALOG */}
+      <AddCompanyDialog 
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
+        onSuccess={fetchData}
+      />
 
       {/* STATS CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
