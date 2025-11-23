@@ -10,7 +10,9 @@ export async function generateVyxHunterEmail(
   company: VyxHunterCompany,
   analysis: VyxHunterAnalysis,
   gammaUrl?: string,
-  emailType: 'initial' | 'follow_up_1' | 'follow_up_2' | 'follow_up_3' = 'initial'
+  emailType: 'initial' | 'follow_up_1' | 'follow_up_2' | 'follow_up_3' = 'initial',
+  contactName?: string,
+  emailStyle: 'short' | 'structured' = 'structured'
 ): Promise<{ subject: string; bodyHtml: string; bodyText: string }> {
   
   const apiKey = process.env.OPENAI_API_KEY
@@ -71,13 +73,16 @@ OBLIGATOIRE :
 - Parler de gains concrets : temps, clarté, organisation, conformité, excellence opérationnelle.
 - Mentionner la possibilité d’un audit express de 2 minutes.
 - Conclure par un CTA simple : proposer un échange court (10 minutes) sans mettre de pression.
+- INCLURE UNE PHRASE SUR L'ANALYSE : "J'ai analysé [Entreprise] et j'ai noté [Point clé 1] et [Point clé 2]..." (adapter selon le contexte).
 
 CONTEXTE EMAIL :
 Type : ${emailType}
+Style demandé : ${emailStyle === 'short' ? 'COURT et PERCUTANT (max 6 lignes)' : 'STRUCTURÉ et DÉTAILLÉ (max 10 lignes)'}
 ${emailContext}
 
 PROSPECT :
 - Entreprise : ${company.name}
+- Contact : ${contactName || 'Non spécifié (adapter la salutation)'}
 - Secteur : ${company.sector || 'Non spécifié'}
 - Taille : ${company.size_range || 'Non spécifié'}
 - Localisation : ${company.location || 'Non spécifié'}
@@ -90,18 +95,19 @@ ANALYSE IA :
 
 ${gammaUrl ? `GAMMA SLIDE : ${gammaUrl}` : ''}
 
-STRUCTURE DE CHAQUE EMAIL :
+STRUCTURE DE CHAQUE EMAIL (${emailStyle === 'short' ? 'VERSION COURTE' : 'VERSION STRUCTURÉE'}) :
 1. Ligne d’ouverture :
+   - Salutation personnalisée (${contactName ? `Bonjour ${contactName}` : 'Bonjour'}).
    - Montrer que tu sais qui est l’entreprise / son contexte (1 phrase).
-2. Ligne sur la douleur principale :
+2. Ligne sur l'analyse (OBLIGATOIRE) :
+   - "J'ai analysé votre activité et j'ai noté..." (citer 1 ou 2 points pertinents de l'analyse).
+3. Ligne sur la douleur principale :
    - Exemple : traçabilité, documentation éclatée, audits lourds, désorganisation, montée en exigence (pharma, GDP, ISO…).
-3. Ligne sur la valeur Vyxo :
+4. Ligne sur la valeur Vyxo :
    - Structuration simple, clarté, excellence opérationnelle, digitalisation intelligente.
-4. Ligne sur l’approche :
-   - Tu ne vends pas du rêve, tu parles de process propres, utiles, actionnables.
 5. Lien vers un support :
    ${gammaUrl ? '- Mention d’une slide ou présentation claire (type Gamma) qui résume ce que tu peux apporter : ' + gammaUrl : '- (Pas de lien Gamma disponible pour le moment)'}
-6. Lien vers l’audit express (2 minutes) : https://vyxo.fr/audit-express
+6. Lien vers l’audit express (2 minutes) : https://www.vyxoconsult.com/
 7. CTA final :
    - Une phrase du type : "Si ça te parle, on peut faire un point de 10 minutes pour voir ce que tu peux gagner."
 

@@ -106,6 +106,12 @@ export default function CompanyDetailPage() {
     }
   }
 
+  // New state for email customization
+  const [contactName, setContactName] = useState('')
+  const [emailStyle, setEmailStyle] = useState<'short' | 'structured'>('structured')
+
+  // ... (existing code)
+
   async function handleGenerateEmail() {
     try {
       setGeneratingEmail(true)
@@ -115,9 +121,11 @@ export default function CompanyDetailPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          recipientEmail: 'contact@example.com',
-          recipientName: company?.name,
-          emailType: 'initial'
+          recipientEmail: 'contact@example.com', // Placeholder, will be editable
+          recipientName: contactName || company?.name,
+          contactName: contactName,
+          emailType: 'initial',
+          emailStyle: emailStyle
         })
       })
 
@@ -132,270 +140,7 @@ export default function CompanyDetailPage() {
     }
   }
 
-  function openEmailPreview(email: any) {
-    // Find Gamma URL if available
-    const gammaUrl = company.gammaSlides?.[0]?.gamma_url
-
-    setSelectedEmail({
-      id: email.id,
-      subject: email.subject,
-      body: email.body_text || email.body_html || '', // Use body_text or body_html
-      gammaUrl
-    })
-    setIsEmailPreviewOpen(true)
-  }
-
-  async function handleSendEmail(id: string, subject: string, body: string) {
-    try {
-      // Send the email with updated content
-      const res = await fetch(`/api/vyxhunter/emails/${id}/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject, body })
-      })
-
-      if (!res.ok) throw new Error('Failed to send email')
-
-      toast({
-        title: "Email envoyé !",
-        description: "Le prospect a été contacté."
-      })
-      
-      fetchCompany()
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible d'envoyer l'email."
-      })
-      throw error
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-12 w-12 animate-spin text-vyxo-navy" />
-      </div>
-    )
-  }
-
-  if (!company) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">Entreprise non trouvée</p>
-        <Button onClick={() => router.push('/vyxhunter')} className="mt-4">
-          Retour
-        </Button>
-      </div>
-    )
-  }
-
-  const latestAnalysis = company.analyses?.[0]
-  const latestGamma = company.gammaSlides?.[0]
-  const emails = company.emails || []
-
-  return (
-    <div className="space-y-6 pb-8">
-      {/* HEADER */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => router.push('/vyxhunter')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour
-          </Button>
-          <div>
-            <h2 className="text-3xl font-bold text-vyxo-navy dark:text-white">{company.name}</h2>
-            <p className="text-muted-foreground">{company.sector} • {company.location}</p>
-          </div>
-        </div>
-        <Badge variant={company.status === 'qualified' ? 'default' : 'outline'} className="text-lg px-4 py-2">
-          {company.status}
-        </Badge>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* LEFT COLUMN - Company Info & Analysis */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* COMPANY INFO */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="h-5 w-5" />
-                Informations Entreprise
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {company.website && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Globe className="h-4 w-4 text-muted-foreground" />
-                  <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    {company.website}
-                  </a>
-                </div>
-              )}
-              {company.linkedin_url && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Linkedin className="h-4 w-4 text-muted-foreground" />
-                  <a href={company.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    LinkedIn
-                  </a>
-                </div>
-              )}
-              <div className="flex items-center gap-2 text-sm">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <span>{company.size_range} employés</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span>{company.location}</span>
-              </div>
-              {company.description && (
-                <p className="text-sm text-muted-foreground mt-4">{company.description}</p>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* AI ANALYSIS */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Brain className="h-5 w-5 text-purple-600" />
-                  Analyse IA
-                </CardTitle>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={handleAnalyze}
-                  disabled={analyzing}
-                >
-                  {analyzing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
-                  {latestAnalysis ? 'Re-analyser' : 'Analyser'}
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {latestAnalysis ? (
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">Score de Pertinence</span>
-                      <Badge variant="secondary" className="text-lg">
-                        {latestAnalysis.relevance_score}/100
-                      </Badge>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-purple-600 h-2 rounded-full transition-all"
-                        style={{ width: `${latestAnalysis.relevance_score}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold text-sm mb-2">Résumé Business</h4>
-                    <p className="text-sm text-muted-foreground">{latestAnalysis.business_summary}</p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold text-sm mb-2">Points de Douleur</h4>
-                    <ul className="space-y-1">
-                      {latestAnalysis.pains?.map((pain: string, i: number) => (
-                        <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                          <span className="text-red-500 mt-1">•</span>
-                          <span>{pain}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold text-sm mb-2">Opportunités</h4>
-                    <ul className="space-y-1">
-                      {latestAnalysis.opportunities?.map((opp: string, i: number) => (
-                        <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                          <span className="text-green-500 mt-1">•</span>
-                          <span>{opp}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold text-sm mb-2">Angle d'Entrée</h4>
-                    <p className="text-sm text-muted-foreground italic">{latestAnalysis.entry_angle}</p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold text-sm mb-2">Quick Wins</h4>
-                    <ul className="space-y-1">
-                      {latestAnalysis.quick_wins?.map((win: string, i: number) => (
-                        <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                          <span>{win}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Brain className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Aucune analyse disponible</p>
-                  <p className="text-sm mt-1">Cliquez sur "Analyser" pour démarrer</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* RIGHT COLUMN - Gamma & Emails */}
-        <div className="space-y-6">
-          {/* GAMMA SLIDE */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <FileText className="h-4 w-4" />
-                  Gamma Slide
-                </CardTitle>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={handleGenerateGamma}
-                  disabled={generatingGamma || !latestAnalysis}
-                >
-                  {generatingGamma ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {latestGamma ? (
-                <div className="space-y-3">
-                  <Badge variant={latestGamma.status === 'ready' ? 'default' : 'secondary'}>
-                    {latestGamma.status}
-                  </Badge>
-                  {latestGamma.gamma_url && (
-                    <a 
-                      href={latestGamma.gamma_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-blue-600 hover:underline"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      Voir la présentation
-                    </a>
-                  )}
-                  <p className="text-xs text-muted-foreground">
-                    Vues : {latestGamma.views_count || 0}
-                  </p>
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">Aucune présentation générée</p>
-              )}
-            </CardContent>
-          </Card>
+  // ... (existing code)
 
           {/* EMAILS */}
           <Card>
@@ -405,13 +150,40 @@ export default function CompanyDetailPage() {
                   <Mail className="h-4 w-4" />
                   Emails ({emails.length})
                 </CardTitle>
+              </div>
+              <div className="mt-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-muted-foreground">Nom du contact</label>
+                    <input 
+                      type="text" 
+                      placeholder="Ex: Jean Dupont"
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                      value={contactName}
+                      onChange={(e) => setContactName(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-muted-foreground">Style</label>
+                    <select 
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                      value={emailStyle}
+                      onChange={(e) => setEmailStyle(e.target.value as 'short' | 'structured')}
+                    >
+                      <option value="structured">Structuré</option>
+                      <option value="short">Court</option>
+                    </select>
+                  </div>
+                </div>
                 <Button 
                   size="sm" 
+                  className="w-full"
                   variant="outline"
                   onClick={handleGenerateEmail}
                   disabled={generatingEmail || !latestAnalysis}
                 >
-                  {generatingEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
+                  {generatingEmail ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
+                  Générer un brouillon
                 </Button>
               </div>
             </CardHeader>
