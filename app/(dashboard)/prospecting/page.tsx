@@ -30,7 +30,11 @@ export default function ProspectingPage() {
     jobTitle: "",
     location: "",
     industry: "",
-    companySize: ""
+    companySize: "",
+    seniority: "",
+    department: "",
+    revenueMin: "",
+    revenueMax: ""
   })
   const [results, setResults] = useState<Prospect[]>([])
   const [loading, setLoading] = useState(false)
@@ -40,7 +44,7 @@ export default function ProspectingPage() {
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault()
-    if (!searchParams.jobTitle && !searchParams.industry) {
+    if (!searchParams.jobTitle && !searchParams.industry && !searchParams.seniority && !searchParams.department) {
       toast({
         variant: "destructive",
         title: t("prospect.missingCriteria"),
@@ -180,7 +184,8 @@ export default function ProspectingPage() {
           <CardDescription>{t("prospect.targetDecisionMakers")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+          <form onSubmit={handleSearch} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">{t("prospect.jobTitle")}</label>
               <div className="relative">
@@ -238,7 +243,68 @@ export default function ProspectingPage() {
                   </select>
                 </div>
               </div>
-            <Button type="submit" disabled={loading} className="bg-vyxo-navy hover:bg-vyxo-navy/90 text-white">
+            </div>
+
+            {/* NEW FILTERS ROW */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">🎯 Niveau de Séniorité</label>
+                <select
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={searchParams.seniority}
+                  onChange={(e) => setSearchParams({...searchParams, seniority: e.target.value})}
+                >
+                  <option value="">Tous niveaux</option>
+                  <option value="c_suite">C-Suite (CEO, CTO, CFO...)</option>
+                  <option value="vp">Vice-Président</option>
+                  <option value="director">Directeur</option>
+                  <option value="manager">Manager</option>
+                  <option value="senior">Senior</option>
+                  <option value="entry">Junior/Entry</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">🏢 Département</label>
+                <select
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={searchParams.department}
+                  onChange={(e) => setSearchParams({...searchParams, department: e.target.value})}
+                >
+                  <option value="">Tous départements</option>
+                  <option value="sales">Ventes</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="engineering">Ingénierie/Tech</option>
+                  <option value="operations">Opérations</option>
+                  <option value="finance">Finance</option>
+                  <option value="hr">Ressources Humaines</option>
+                  <option value="legal">Juridique</option>
+                  <option value="customer_success">Customer Success</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">💰 CA Min (€)</label>
+                <Input 
+                  type="number"
+                  placeholder="Ex: 1000000"
+                  value={searchParams.revenueMin}
+                  onChange={(e) => setSearchParams({...searchParams, revenueMin: e.target.value})}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">💰 CA Max (€)</label>
+                <Input 
+                  type="number"
+                  placeholder="Ex: 10000000"
+                  value={searchParams.revenueMax}
+                  onChange={(e) => setSearchParams({...searchParams, revenueMax: e.target.value})}
+                />
+              </div>
+            </div>
+
+            <Button type="submit" disabled={loading} className="bg-vyxo-navy hover:bg-vyxo-navy/90 text-white w-full md:w-auto">
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
               {t("prospect.findProspects")}
             </Button>

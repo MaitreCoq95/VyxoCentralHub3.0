@@ -3,15 +3,26 @@ import { NextResponse } from 'next/server'
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { jobTitle, location, industry, companySize, page = 1 } = body
+    const { jobTitle, location, industry, companySize, seniority, department, revenueMin, revenueMax, page = 1 } = body
 
-    console.log('🕵️‍♂️ Searching Apollo for:', { jobTitle, location, industry, companySize })
+    console.log('🕵️‍♂️ Searching Apollo for:', { jobTitle, location, industry, companySize, seniority, department, revenueMin, revenueMax })
 
     const apiKey = process.env.APOLLO_API_KEY
 
     if (!apiKey) {
       return NextResponse.json({ error: 'Apollo API key not configured' }, { status: 500 })
     }
+
+    // Expand job title to include common variations for better results
+    const expandedTitles = jobTitle ? [
+      jobTitle,
+      // Add common variations if it's a simple title
+      ...(jobTitle.toLowerCase().includes('ceo') ? ['Chief Executive Officer', 'Founder', 'Co-Founder'] : []),
+      ...(jobTitle.toLowerCase().includes('cto') ? ['Chief Technology Officer', 'VP Technology'] : []),
+      ...(jobTitle.toLowerCase().includes('cfo') ? ['Chief Financial Officer', 'VP Finance'] : []),
+      ...(jobTitle.toLowerCase().includes('cmo') ? ['Chief Marketing Officer', 'VP Marketing'] : []),
+      ...(jobTitle.toLowerCase().includes('director') ? ['Head of', 'Manager'] : []),
+    ].filter((v, i, a) => a.indexOf(v) === i) : [] // Remove duplicates
 
     const options = {
       method: 'POST',
@@ -23,10 +34,16 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         q_organization_domains: null,
         page: page,
-        person_titles: jobTitle ? [jobTitle] : [],
-        organization_locations: location ? [location] : [],
-        organization_num_employees_ranges: companySize ? [companySize] : null,
-        q_keywords: industry, // Using industry as a keyword for broader match
+        person_titles: expandedTitles.length > 0 ? expandedTitles : undefined,
+        person_seniorities: seniority ? [seniority] : undefined,
+        person_department: department || undefined,
+        organization_locations: location ? [location] : undefined,
+        organization_num_employees_ranges: companySize ? [companySize] : undefined,
+        revenue_range: (revenueMin || revenueMax) ? {
+          min: revenueMin ? parseInt(revenueMin) : undefined,
+          max: revenueMax ? parseInt(revenueMax) : undefined
+        } : undefined,
+        q_keywords: industry || undefined,
         per_page: 10
       })
     }
