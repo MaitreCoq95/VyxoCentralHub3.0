@@ -52,6 +52,14 @@ export default function CompanyPage() {
 
   async function fetchCompany() {
     try {
+      console.log('🔍 Fetching company with ID:', companyId)
+      
+      if (!companyId) {
+        console.error('❌ No company ID provided')
+        setLoading(false)
+        return
+      }
+
       const { data, error } = await supabase
         .from('vch_vyxhunter_companies')
         .select(`
@@ -64,7 +72,12 @@ export default function CompanyPage() {
         .eq('id', companyId)
         .single()
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ Error fetching company:', error)
+        throw error
+      }
+
+      console.log('✅ Company data fetched:', data)
 
       // Sort arrays
       if (data.analyses) data.analyses.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
@@ -74,7 +87,7 @@ export default function CompanyPage() {
 
       setCompany(data)
     } catch (error) {
-      console.error('Error fetching company:', error)
+      console.error('❌ Catch Error fetching company:', error)
     } finally {
       setLoading(false)
     }
