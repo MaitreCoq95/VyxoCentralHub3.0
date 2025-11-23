@@ -22,13 +22,38 @@ type FindingType = 'conformity' | 'observation' | 'improvement' | 'nc_minor' | '
 
 interface FindingEditorProps {
   itemId: string | null
+  initialData?: any
   onSave: (data: any) => void
 }
 
-export function FindingEditor({ itemId, onSave }: FindingEditorProps) {
+export function FindingEditor({ itemId, initialData, onSave }: FindingEditorProps) {
   const [type, setType] = useState<FindingType>('conformity')
   const [description, setDescription] = useState("")
   const [evidence, setEvidence] = useState("")
+
+  // Reset or load data when item changes
+  useState(() => {
+    if (initialData) {
+      setType(initialData.type)
+      setDescription(initialData.description)
+    } else {
+      setType('conformity')
+      setDescription("")
+    }
+  })
+
+  // React to prop changes (when switching items)
+  const [prevItemId, setPrevItemId] = useState(itemId)
+  if (itemId !== prevItemId) {
+    setPrevItemId(itemId)
+    if (initialData) {
+      setType(initialData.type)
+      setDescription(initialData.description)
+    } else {
+      setType('conformity')
+      setDescription("")
+    }
+  }
 
   if (!itemId) {
     return (
