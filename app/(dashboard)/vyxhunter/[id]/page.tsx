@@ -220,11 +220,24 @@ export default function CompanyPage() {
 
   if (!company) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">Entreprise non trouvée</p>
-        <Button onClick={() => router.push('/vyxhunter')} className="mt-4">
-          Retour
-        </Button>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="text-center space-y-2">
+          <p className="text-xl font-semibold text-muted-foreground">Entreprise non trouvée</p>
+          <div className="p-4 bg-muted/50 rounded-lg text-xs font-mono text-left space-y-1 max-w-md mx-auto">
+            <p><strong>Debug Info:</strong></p>
+            <p>ID: {companyId || 'undefined'}</p>
+            <p>Loading: {loading ? 'true' : 'false'}</p>
+            <p>Auth: {supabase ? 'Initialized' : 'Missing'}</p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={() => router.push('/vyxhunter')} variant="outline">
+            Retour
+          </Button>
+          <Button onClick={fetchCompany}>
+            Réessayer
+          </Button>
+        </div>
       </div>
     )
   }
