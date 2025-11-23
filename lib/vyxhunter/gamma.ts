@@ -53,8 +53,8 @@ export async function generateGammaSlide(
   try {
     console.log('📊 Generating Gamma presentation via API...')
     
-    // Gamma API v1.0 endpoint
-    const response = await fetch('https://api.gamma.app/api/v1/generate', {
+    // Gamma API v1.0 endpoint (Corrected)
+    const response = await fetch('https://public-api.gamma.app/v1.0/generate', {
       method: 'POST',
       headers: {
         'X-API-KEY': apiKey,
@@ -124,7 +124,7 @@ export async function getGammaSlide(slideId: string): Promise<{
 
   try {
     // Gamma API v1.0 - Get document details
-    const response = await fetch(`https://api.gamma.app/api/v1/documents/${slideId}`, {
+    const response = await fetch(`https://public-api.gamma.app/v1.0/documents/${slideId}`, {
       method: 'GET',
       headers: {
         'X-API-KEY': apiKey
