@@ -6,6 +6,8 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
+const DEMO_ORG_ID = '00000000-0000-0000-0000-000000000001'
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const entityId = searchParams.get('entityId')
@@ -31,23 +33,12 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const body = await request.json()
 
-  // Get the demo organization ID
-  const { data: orgs } = await supabase
-    .from('vch_organizations')
-    .select('id')
-    .limit(1)
-    .single()
-
-  if (!orgs) {
-    return NextResponse.json({ error: 'Organization not found' }, { status: 500 })
-  }
-
   const { data, error } = await supabase
     .from('vch_activities')
     .insert([
       {
         ...body,
-        organization_id: orgs.id,
+        organization_id: DEMO_ORG_ID,
       }
     ])
     .select()

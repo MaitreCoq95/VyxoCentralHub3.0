@@ -47,10 +47,16 @@ export function Sidebar({ className }: SidebarProps) {
       color: "text-amber-500",
     },
     {
+      label: "VyxHunter",
+      icon: Bot,
+      href: "/vyxhunter",
+      color: "text-purple-500",
+    },
+    {
       label: t("nav.emailgen"),
       icon: Bot,
       href: "/prospecting/email-generator",
-      color: "text-purple-500",
+      color: "text-indigo-500",
     },
     {
       label: t("nav.audits"),
