@@ -99,6 +99,37 @@ export default function CompanyPage() {
     }
   }
 
+  // Poll for Gamma status if generating
+  useEffect(() => {
+    let interval: NodeJS.Timeout
+
+    if (latestGamma?.status === 'generating' || generatingGamma) {
+      interval = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/vyxhunter/companies/${companyId}/gamma/status`)
+          if (res.ok) {
+            const data = await res.json()
+            if (data.status === 'ready') {
+              toast({ title: "✅ Slide prête !", description: "La présentation est disponible" })
+              fetchCompany() // Refresh to show the link
+              setGeneratingGamma(false)
+              clearInterval(interval)
+            } else if (data.status === 'failed') {
+              toast({ variant: "destructive", title: "Erreur", description: "La génération a échoué" })
+              fetchCompany()
+              setGeneratingGamma(false)
+              clearInterval(interval)
+            }
+          }
+        } catch (e) {
+          console.error("Polling error", e)
+        }
+      }, 3000) // Check every 3 seconds
+    }
+
+    return () => clearInterval(interval)
+  }, [companyId, latestGamma?.status, generatingGamma])
+
   async function handleGenerateGamma() {
     try {
       setGeneratingGamma(true)
@@ -110,11 +141,10 @@ export default function CompanyPage() {
 
       if (!res.ok) throw new Error('Gamma generation failed')
 
-      toast({ title: "✅ Slide générée !", description: "Disponible dans l'onglet Gamma" })
-      fetchCompany()
+      toast({ title: "⏳ Génération lancée", description: "Veuillez patienter quelques instants..." })
+      fetchCompany() // Will show "generating" status and trigger polling
     } catch (error: any) {
       toast({ variant: "destructive", title: "Erreur", description: error.message })
-    } finally {
       setGeneratingGamma(false)
     }
   }

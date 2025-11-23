@@ -143,27 +143,51 @@ export async function getGammaSlide(slideId: string): Promise<{
 
   try {
     // Gamma API v1.0 - Get document details
-    const response = await fetch(`https://public-api.gamma.app/v1.0/documents/${slideId}`, {
+    // First try to fetch as a document
+    let response = await fetch(`https://public-api.gamma.app/v1.0/documents/${slideId}`, {
       method: 'GET',
       headers: {
         'X-API-KEY': apiKey
       }
     })
 
+    // If 404, it might be a generation ID, try fetching generation status
+    if (response.status === 404) {
+       response = await fetch(`https://public-api.gamma.app/v1.0/generations/${slideId}`, {
+        method: 'GET',
+        headers: {
+          'X-API-KEY': apiKey
+        }
+      })
+    }
+
     if (!response.ok) {
-      console.warn('⚠️ Could not fetch Gamma slide details, using fallback')
+      console.warn('⚠️ Could not fetch Gamma slide/generation details, using fallback')
       return {
         url: `https://gamma.app/docs/${slideId}`,
-        status: 'ready'
+        status: 'ready' // Fallback, assuming it might be ready or we can't check
       }
     }
 
     const data = await response.json()
     
+    // Check if it's a generation response or document response
+    const status = data.status || 'ready'
+    const url = data.url || data.webUrl || (data.result && data.result.url)
+    
+    // If generation is done, we might get the document ID/URL
+    if (status === 'SUCCESS' || status === 'ready') {
+       return {
+        url: url || `https://gamma.app/docs/${data.id || slideId}`,
+        status: 'ready',
+        viewsCount: data.analytics?.views || 0
+      }
+    }
+
     return {
-      url: data.url || data.webUrl || `https://gamma.app/docs/${slideId}`,
-      status: data.status || 'ready',
-      viewsCount: data.analytics?.views || 0
+      url: '',
+      status: 'generating',
+      viewsCount: 0
     }
   } catch (error: any) {
     console.error('❌ Error fetching Gamma slide:', error)
