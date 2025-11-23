@@ -101,7 +101,10 @@ export default function CompanyPage() {
 
   // Poll for Gamma status if generating
   useEffect(() => {
+    if (!company) return
+    
     let interval: NodeJS.Timeout
+    const latestGamma = company.gammaSlides?.[0]
 
     if (latestGamma?.status === 'generating' || generatingGamma) {
       interval = setInterval(async () => {
@@ -128,7 +131,7 @@ export default function CompanyPage() {
     }
 
     return () => clearInterval(interval)
-  }, [companyId, latestGamma?.status, generatingGamma])
+  }, [companyId, company, generatingGamma, toast, fetchCompany])
 
   async function handleGenerateGamma() {
     try {
