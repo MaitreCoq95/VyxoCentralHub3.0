@@ -45,6 +45,7 @@ export default function CompanyPage() {
   // New state for email customization
   const [contactName, setContactName] = useState('')
   const [emailStyle, setEmailStyle] = useState<'short' | 'structured'>('structured')
+  const [userId, setUserId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchCompany()
@@ -61,6 +62,7 @@ export default function CompanyPage() {
       }
 
       const { data: sessionData } = await supabase.auth.getSession()
+      setUserId(sessionData.session?.user?.id || null)
       console.log('🔐 Auth Session:', sessionData.session ? 'Authenticated' : 'No Session', sessionData.session?.user?.id)
 
       const { data, error } = await supabase
@@ -227,7 +229,8 @@ export default function CompanyPage() {
             <p><strong>Debug Info:</strong></p>
             <p>ID: {companyId || 'undefined'}</p>
             <p>Loading: {loading ? 'true' : 'false'}</p>
-            <p>Auth: {supabase ? 'Initialized' : 'Missing'}</p>
+            <p>Auth Client: {supabase ? 'Yes' : 'No'}</p>
+            <p>User ID: {userId || 'None'}</p>
           </div>
         </div>
         <div className="flex gap-2">
