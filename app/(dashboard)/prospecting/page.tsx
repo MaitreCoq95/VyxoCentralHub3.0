@@ -75,7 +75,6 @@ export default function ProspectingPage() {
     } finally {
       setLoading(false)
     }
-    }
   }
 
   async function unlockEmail(prospect: Prospect) {
