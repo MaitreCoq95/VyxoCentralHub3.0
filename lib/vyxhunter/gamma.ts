@@ -115,6 +115,14 @@ export async function generateGammaSlide(
     const brandInstructions = `Use Vyxo Consulting brand colors: Navy blue (#1e3a8a) as primary, Gold (#d4af37) for accents and CTAs. Maintain a premium, minimalist aesthetic. Include Vyxo Consulting logo if possible.`
     requestBody.additionalInstructions = (requestBody.additionalInstructions || '') + '\n\n' + brandInstructions
 
+    // Add custom theme ID if configured (Gamma Pro feature)
+    const themeId = process.env.GAMMA_THEME_ID
+    if (themeId) {
+      requestBody.themeId = themeId
+      console.log('🎨 Using custom Gamma theme:', themeId)
+    }
+
+
     // Gamma API v1.0 endpoint
     const response = await fetch('https://public-api.gamma.app/v1.0/generations', {
       method: 'POST',
