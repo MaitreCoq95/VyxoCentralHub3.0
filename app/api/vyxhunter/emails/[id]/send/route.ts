@@ -24,6 +24,20 @@ export async function POST(
     const { id } = await params
     console.log('📤 Sending email:', id)
 
+    // Parse request body for overrides
+    let bodyOverrides: { subject?: string; body?: string } = {}
+    try {
+      const json = await request.json()
+      if (json && (json.subject || json.body)) {
+        bodyOverrides = {
+          subject: json.subject,
+          body: json.body
+        }
+      }
+    } catch (e) {
+      // Ignore if no body or invalid JSON
+    }
+
     // Check Resend API key
     if (!process.env.RESEND_API_KEY) {
       return NextResponse.json(
@@ -56,13 +70,39 @@ export async function POST(
       )
     }
 
+    // Update email with overrides if provided
+    let subjectToSend = email.subject
+    let bodyToSend = email.body_text // Assuming body_text is the main body for now
+    let htmlToSend = email.body_html
+
+    if (bodyOverrides.subject || bodyOverrides.body) {
+      const updates: any = {}
+      if (bodyOverrides.subject) {
+        updates.subject = bodyOverrides.subject
+        subjectToSend = bodyOverrides.subject
+      }
+      if (bodyOverrides.body) {
+        updates.body_text = bodyOverrides.body
+        // Simple HTML conversion for the override
+        updates.body_html = bodyOverrides.body.replace(/\n/g, '<br/>')
+        
+        bodyToSend = updates.body_text
+        htmlToSend = updates.body_html
+      }
+
+      await supabase
+        .from('vch_vyxhunter_emails')
+        .update(updates)
+        .eq('id', id)
+    }
+
     // Send via Resend
     const { data: resendData, error: resendError } = await resend.emails.send({
       from: 'Vivien - Vyxo Consulting <vivien@vyxo.fr>',
       to: email.recipient_email,
-      subject: email.subject,
-      html: email.body_html,
-      text: email.body_text,
+      subject: subjectToSend,
+      html: htmlToSend,
+      text: bodyToSend,
       tags: [
         { name: 'campaign', value: 'vyxhunter' },
         { name: 'company_id', value: email.company_id },
