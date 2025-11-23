@@ -300,18 +300,18 @@ export async function exportGammaSlide(
   try {
     console.log(`📥 Exporting Gamma slide ${slideId} as ${format.toUpperCase()}...`)
 
-    // Regenerate with export format
-    // Note: Gamma API requires regeneration with exportAs parameter
-    const response = await fetch('https://public-api.gamma.app/v1.0/generations', {
+    // Use Gamma's export endpoint for existing documents
+    // Format: /v1.0/documents/{documentId}/export
+    const exportEndpoint = `https://public-api.gamma.app/v1.0/documents/${slideId}/export`
+    
+    const response = await fetch(exportEndpoint, {
       method: 'POST',
       headers: {
         'X-API-KEY': apiKey,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        inputText: prompt,
-        textMode: 'preserve', // Keep existing content
-        exportAs: format
+        format: format.toUpperCase() // PDF or PPTX
       })
     })
 
@@ -325,7 +325,7 @@ export async function exportGammaSlide(
     console.log('✅ Gamma export response:', data)
 
     // The API returns a download URL for the exported file
-    const downloadUrl = data.downloadUrl || data.url || data.exportUrl
+    const downloadUrl = data.downloadUrl || data.url || data.exportUrl || data.fileUrl
 
     if (!downloadUrl) {
       throw new Error('No download URL in Gamma export response')
