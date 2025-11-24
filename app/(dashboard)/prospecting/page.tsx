@@ -268,30 +268,6 @@ export default function ProspectingPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium">{t("prospect.location")}</label>
               <div className="relative">
-                <MapPin className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder={t("prospect.locationPlaceholder")} 
-                  className="pl-9"
-                  value={searchParams.location}
-                  onChange={(e) => setSearchParams({...searchParams, location: e.target.value})}
-                />
-              </div>
-            </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">{t("prospect.industry")}</label>
-                <div className="relative">
-                  <Building2 className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    placeholder={t("prospect.industryPlaceholder")} 
-                    className="pl-9"
-                    value={searchParams.industry}
-                    onChange={(e) => setSearchParams({...searchParams, industry: e.target.value})}
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Taille Entreprise (multi-sélection)</label>
-                <div className="border rounded-md p-3 space-y-2 max-h-48 overflow-y-auto">
                   {[
                     { value: "1,10", label: "1-10 employés" },
                     { value: "11,50", label: "11-50 employés" },
@@ -443,7 +419,7 @@ export default function ProspectingPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                 )}
-                {transferring ? "Transfert..." : `Envoyer vers VyxHunter (${selectedContacts.length})`}
+                {transferring ? "Transfert & Analyse..." : `Envoyer & Analyser (IA) (${selectedContacts.length})`}
               </Button>
             )}
           </div>
