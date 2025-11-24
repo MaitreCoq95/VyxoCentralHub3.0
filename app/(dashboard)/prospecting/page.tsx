@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { Search, MapPin, Building2, Briefcase, Loader2, UserPlus, Mail, CheckCircle, AlertCircle, Globe, Unlock, Users } from "lucide-react"
@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useToast } from "@/components/ui/use-toast"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { useLanguage } from "@/components/language-provider"
 import { IndustryFilter } from "@/components/prospecting/industry-filter"
 
@@ -49,7 +48,8 @@ export default function ProspectingPage() {
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault()
-    if (!searchParams.jobTitle && !searchParams.industry && !searchParams.seniority && !searchParams.department) {
+    
+    if (!searchParams.jobTitle && searchParams.industry.length === 0) {
       toast({
         variant: "destructive",
         title: t("prospect.missingCriteria"),
@@ -126,7 +126,6 @@ export default function ProspectingPage() {
                 const revealData = await revealRes.json();
                 if (revealData.email) {
                     emailToUse = revealData.email;
-                    // Update local state to reflect the revealed email immediately in the UI (optional but nice)
                     setResults(prev => prev.map(p => p.id === prospect.id ? { ...p, email: emailToUse } : p));
                     
                     toast({
@@ -137,7 +136,6 @@ export default function ProspectingPage() {
             }
         } catch (revealError) {
             console.error("Failed to reveal email", revealError);
-            // Continue without email if reveal fails, or maybe show a warning
         }
       }
 
@@ -209,7 +207,7 @@ export default function ProspectingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contacts: selectedProspects,
-          autoEnrich: true // Active l'enrichissement automatique
+          autoEnrich: true
         })
       })
 
@@ -222,7 +220,6 @@ export default function ProspectingPage() {
         description: `${data.created} entreprise(s) ajoutée(s) à VyxHunter${data.skipped > 0 ? ` (${data.skipped} déjà existante(s))` : ''}`
       })
 
-      // Reset selection
       setSelectedContacts([])
 
     } catch (error) {
@@ -253,14 +250,50 @@ export default function ProspectingPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSearch} className="space-y-4">
+            {/* FIRST ROW: Job Title, Location, Industry, Company Size */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t("prospect.jobTitle")}</label>
-              <div className="relative">
-                <Briefcase className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder={t("prospect.jobTitlePlaceholder")} 
-                  className="pl-9"
+              {/* JOB TITLE */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("prospect.jobTitle")}</label>
+                <div className="relative">
+                  <Briefcase className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    placeholder={t("prospect.jobTitlePlaceholder")} 
+                    className="pl-9"
+                    value={searchParams.jobTitle}
+                    onChange={(e) => setSearchParams({...searchParams, jobTitle: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              {/* LOCATION */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("prospect.location")}</label>
+                <div className="relative">
+                  <MapPin className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    placeholder={t("prospect.locationPlaceholder")} 
+                    className="pl-9"
+                    value={searchParams.location}
+                    onChange={(e) => setSearchParams({...searchParams, location: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              {/* INDUSTRY FILTER */}
+              <IndustryFilter
+                selectedIndustries={searchParams.industry}
+                onChange={(industries) => setSearchParams({...searchParams, industry: industries})}
+                maxHeight="250px"
+              />
+
+              {/* COMPANY SIZE */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">👥 Taille Entreprise</label>
+                <div className="border rounded-md p-2 bg-background max-h-[250px] overflow-y-auto">
+                  {[
+                    { value: "1,10", label: "1-10 employés" },
+                    { value: "11,50", label: "11-50 employés" },
                     { value: "51,200", label: "51-200 employés" },
                     { value: "201,500", label: "201-500 employés" },
                     { value: "501,1000", label: "501-1000 employés" },
@@ -288,7 +321,7 @@ export default function ProspectingPage() {
               </div>
             </div>
 
-            {/* NEW FILTERS ROW */}
+            {/* SECOND ROW: Company Name, Person Name, Seniority, Department */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">🏢 Nom Entreprise</label>
@@ -345,7 +378,7 @@ export default function ProspectingPage() {
               </div>
             </div>
 
-            {/* REVENUE ROW */}
+            {/* THIRD ROW: Revenue */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">💰 CA Min (€)</label>
@@ -493,17 +526,17 @@ export default function ProspectingPage() {
                     </div>
 
                     <Button 
-                      className="w-full" 
-                      variant={addingToCrm === prospect.id ? "secondary" : "outline"}
-                      disabled={!!addingToCrm}
+                      size="sm" 
+                      className="w-full bg-vyxo-navy hover:bg-vyxo-navy/90 text-white"
                       onClick={() => addToCrm(prospect)}
+                      disabled={addingToCrm === prospect.id}
                     >
                       {addingToCrm === prospect.id ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : (
                         <UserPlus className="h-4 w-4 mr-2" />
                       )}
-                      {addingToCrm === prospect.id ? t("prospect.adding") : t("prospect.addToCrm")}
+                      {t("prospect.addToCrm")}
                     </Button>
                   </CardContent>
                 </Card>

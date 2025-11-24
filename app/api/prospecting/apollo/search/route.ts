@@ -45,19 +45,6 @@ export async function POST(request: Request) {
         person_titles: expandedTitles.length > 0 ? expandedTitles : undefined,
         person_seniorities: seniority ? [seniority] : undefined,
         person_department: department || undefined,
-        organization_locations: location ? [location] : undefined,
-        organization_num_employees_ranges: companySizeRanges,
-        revenue_range: (revenueMin || revenueMax) ? {
-          min: revenueMin ? parseInt(revenueMin) : undefined,
-          max: revenueMax ? parseInt(revenueMax) : undefined
-        } : undefined,
-        q_keywords: industry || undefined,
-        // New filters
-        organization_names: companyName ? [companyName] : undefined,
-        person_names: personName ? [personName] : undefined,
-        per_page: 100
-      })
-    }
 
     const response = await fetch('https://api.apollo.io/v1/mixed_people/search', options)
     
