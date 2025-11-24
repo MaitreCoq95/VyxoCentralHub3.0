@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+export const dynamic = 'force-dynamic'
 
-// Create Supabase client with service role key (bypasses RLS)
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
 
 export async function GET() {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
   try {
     console.log('👥 Fetching clients from Supabase...')
 
@@ -34,6 +36,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
   try {
     const body = await request.json()
     console.log('📝 Creating new client:', body)

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: Request) {
   try {
     const body = await request.json()
@@ -50,7 +52,7 @@ export async function POST(request: Request) {
         // New filters
         organization_names: companyName ? [companyName] : undefined,
         person_names: personName ? [personName] : undefined,
-        per_page: 10
+        per_page: 100
       })
     }
 

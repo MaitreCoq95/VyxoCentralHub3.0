@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-
-// Create Supabase client with service role key (bypasses RLS)
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
+export const dynamic = 'force-dynamic'
 
 const DEMO_ORG_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -14,6 +10,10 @@ const DEMO_ORG_ID = '00000000-0000-0000-0000-000000000001'
  * List all companies with optional filters
  */
 export async function GET(request: Request) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
   try {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
@@ -76,6 +76,10 @@ export async function GET(request: Request) {
  * Create a new company
  */
 export async function POST(request: Request) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
   try {
     const body = await request.json()
     console.log('📝 Creating new VyxHunter company:', body)
