@@ -42,6 +42,8 @@ export default function ProspectingPage() {
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
   const [addingToCrm, setAddingToCrm] = useState<string | null>(null)
+  const [selectedContacts, setSelectedContacts] = useState<string[]>([])
+  const [transferring, setTransferring] = useState(false)
   const { toast } = useToast()
 
   async function handleSearch(e: React.FormEvent) {
@@ -167,6 +169,69 @@ export default function ProspectingPage() {
       })
     } finally {
       setAddingToCrm(null)
+    }
+  }
+
+  function toggleSelectContact(prospectId: string) {
+    setSelectedContacts(prev => 
+      prev.includes(prospectId) 
+        ? prev.filter(id => id !== prospectId)
+        : [...prev, prospectId]
+    )
+  }
+
+  function toggleSelectAll() {
+    if (selectedContacts.length === results.length) {
+      setSelectedContacts([])
+    } else {
+      setSelectedContacts(results.map(p => p.id))
+    }
+  }
+
+  async function sendToVyxHunter() {
+    if (selectedContacts.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Aucun contact sélectionné",
+        description: "Sélectionnez au moins un contact à transférer"
+      })
+      return
+    }
+
+    try {
+      setTransferring(true)
+      
+      const selectedProspects = results.filter(p => selectedContacts.includes(p.id))
+      
+      const response = await fetch('/api/prospecting/send-to-vyxhunter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contacts: selectedProspects,
+          autoEnrich: true // Active l'enrichissement automatique
+        })
+      })
+
+      if (!response.ok) throw new Error('Transfer failed')
+
+      const data = await response.json()
+
+      toast({
+        title: "✅ Transfert réussi !",
+        description: `${data.created} entreprise(s) ajoutée(s) à VyxHunter${data.skipped > 0 ? ` (${data.skipped} déjà existante(s))` : ''}`
+      })
+
+      // Reset selection
+      setSelectedContacts([])
+
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur de transfert",
+        description: "Impossible de transférer les contacts vers VyxHunter"
+      })
+    } finally {
+      setTransferring(false)
     }
   }
 
@@ -349,9 +414,38 @@ export default function ProspectingPage() {
       {searched && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              {t("prospect.results")} <Badge variant="secondary">{results.length}</Badge>
-            </h3>
+            <div className="flex items-center gap-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                {t("prospect.results")} <Badge variant="secondary">{results.length}</Badge>
+              </h3>
+              {results.length > 0 && (
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedContacts.length === results.length && results.length > 0}
+                    onChange={toggleSelectAll}
+                    className="rounded border-gray-300"
+                  />
+                  <span className="text-muted-foreground">Tout sélectionner</span>
+                </label>
+              )}
+            </div>
+            {selectedContacts.length > 0 && (
+              <Button
+                onClick={sendToVyxHunter}
+                disabled={transferring}
+                className="bg-vyxo-gold hover:bg-vyxo-gold/90 text-vyxo-navy font-semibold"
+              >
+                {transferring ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                )}
+                {transferring ? "Transfert..." : `Envoyer vers VyxHunter (${selectedContacts.length})`}
+              </Button>
+            )}
           </div>
 
           {results.length === 0 && !loading ? (
@@ -369,8 +463,16 @@ export default function ProspectingPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {results.map((prospect) => (
-                <Card key={prospect.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-5">
+                <Card key={prospect.id} className="hover:shadow-md transition-shadow relative">
+                  <div className="absolute top-3 left-3 z-10">
+                    <input
+                      type="checkbox"
+                      checked={selectedContacts.includes(prospect.id)}
+                      onChange={() => toggleSelectContact(prospect.id)}
+                      className="h-5 w-5 rounded border-gray-300 cursor-pointer"
+                    />
+                  </div>
+                  <CardContent className="p-5 pl-12">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10 border">
