@@ -34,8 +34,8 @@ export async function POST(request: Request) {
     const { data: company, error: companyError } = await supabase
       .from('vch_vyxhunter_companies')
       .select('*')
-      .single()
       .eq('id', companyId)
+      .single()
 
     if (companyError) throw companyError
     if (!company) {
