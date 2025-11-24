@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,9 +22,48 @@ export async function POST(request: Request) {
       ...(jobTitle.toLowerCase().includes('cfo') ? ['Chief Financial Officer', 'VP Finance'] : []),
       ...(jobTitle.toLowerCase().includes('cmo') ? ['Chief Marketing Officer', 'VP Marketing'] : []),
       ...(jobTitle.toLowerCase().includes('director') ? ['Head of', 'Manager'] : []),
+    ].filter((v, i, a) => a.indexOf(v) === i) : [] // Remove duplicates
+
+    // Process company size - Don't send if all sizes are selected (prevents 422 error)
+    const allSizes = ['1,10', '11,50', '51,200', '201,500', '501,1000', '1001,5000', '5001,10000', '10001']
+    const companySizeRanges = companySize && companySize.length > 0 && companySize.length < allSizes.length
+      ? companySize.map((range: string) => range.replace(',', '-'))
+      : undefined
+
+    console.log('­ƒòÁ´©ÅÔÇìÔÖé´©Å Searching Apollo for:', { jobTitle, location, industry, companySize: companySizeRanges, seniority, department })
+
+    const options = {
+      method: 'POST',
+      headers: {
         'Content-Type': 'application/json',
+        'X-Api-Key': apiKey
+      },
+      body: JSON.stringify({
+        api_key: apiKey,
+        q_organization_domains: null,
+        page: page,
+        person_titles: expandedTitles.length > 0 ? expandedTitles : undefined,
+        person_seniorities: seniority ? [seniority] : undefined,
+        person_department: department || undefined,
+        organization_locations: location ? [location] : undefined,
+        organization_num_employees_ranges: companySizeRanges,
+        revenue_range: (revenueMin || revenueMax) ? {
+          min: revenueMin ? parseInt(revenueMin) : undefined,
+          max: revenueMax ? parseInt(revenueMax) : undefined
+        } : undefined,
+        q_organization_industries: (industry && Array.isArray(industry) && industry.length > 0) ? industry : undefined,
+        // New filters
+        organization_names: companyName ? [companyName] : undefined,
+        person_names: personName ? [personName] : undefined,
+        per_page: 100
+      })
+    }
+
+    const response = await fetch('https://api.apollo.io/v1/mixed_people/search', options)
+    
+    if (!response.ok) {
       const errorText = await response.text()
-      console.error('❌ Apollo API Error:', response.status, errorText)
+      console.error('ÔØî Apollo API Error:', response.status, errorText)
       return NextResponse.json(
         { error: 'Apollo API error', message: `API returned ${response.status}. Please check your API key.` },
         { status: response.status }
@@ -35,7 +74,7 @@ export async function POST(request: Request) {
     
     // Check if data structure is valid
     if (!data.people || !Array.isArray(data.people)) {
-      console.error('❌ Invalid Apollo response structure:', data)
+      console.error('ÔØî Invalid Apollo response structure:', data)
       return NextResponse.json(
         { error: 'Invalid response from Apollo', prospects: [] },
         { status: 200 }
@@ -69,7 +108,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ prospects, total: data.pagination?.total_entries })
 
   } catch (error: any) {
-    console.error('💥 Prospect search error:', error)
+    console.error('­ƒÆÑ Prospect search error:', error)
     return NextResponse.json(
       { error: 'Failed to search prospects', message: error.message || 'Unknown error' },
       { status: 500 }
