@@ -47,22 +47,23 @@ export async function POST(request: Request) {
         const { data: newCompany, error: createError } = await supabase
           .from('vch_vyxhunter_companies')
           .insert({
-            name: contact.organization_name || contact.name,
-            website: contact.website_url || contact.organization_website,
+            name: contact.organization_name || contact.organization || contact.name || 'Unknown Company',
+            website: contact.website_url || contact.organization_website || contact.organization_url,
             sector: contact.industry || contact.organization_industry,
             size_range: contact.organization_num_employees 
               ? `${contact.organization_num_employees} employés`
               : undefined,
-            location: contact.city || contact.state || contact.country,
+            location: contact.city || contact.state || contact.country || contact.location,
             employee_count: contact.organization_num_employees,
             linkedin_url: contact.linkedin_url,
             description: contact.headline || contact.organization_description,
             status: 'identified',
             source: 'apollo',
             external_id: contact.id,
+            organization_id: '00000000-0000-0000-0000-000000000000', // Default org ID - will be replaced by RLS
             metadata: {
               apollo_contact: {
-                name: contact.name,
+                name: `${contact.first_name} ${contact.last_name}`,
                 title: contact.title,
                 email: contact.email,
                 phone: contact.phone_numbers?.[0],
@@ -72,7 +73,10 @@ export async function POST(request: Request) {
           .select()
           .single()
 
-        if (createError) throw createError
+        if (createError) {
+          console.error(`❌ Supabase error for ${contact.organization_name}:`, createError)
+          throw createError
+        }
 
         console.log(`✅ Created company: ${newCompany.name}`)
         createdCompanies.push(newCompany)
