@@ -1,10 +1,67 @@
 import { generateText } from 'ai'
 import { openai } from '@ai-sdk/openai'
+import { createClient } from '@supabase/supabase-js'
 import type { VyxHunterCompany, VyxHunterAnalysis } from '@/lib/vyxhunter/types'
 
 /**
+ * Get sectoral email template from database
+ */
+async function getSectoralTemplate(sectorId: string | null, painPoint?: string) {
+  if (!sectorId) return null
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  // Try to find template matching pain point
+  let query = supabase
+    .from('vch_email_templates')
+    .select('*')
+    .eq('sector_id', sectorId)
+    .eq('active', true)
+
+  if (painPoint) {
+    query = query.eq('pain_point_focus', painPoint)
+  }
+
+  const { data: templates } = await query.limit(1)
+
+  if (templates && templates.length > 0) {
+    return templates[0]
+  }
+
+  // Fallback: get any template for this sector
+  const { data: fallbackTemplates } = await supabase
+    .from('vch_email_templates')
+    .select('*')
+    .eq('sector_id', sectorId)
+    .eq('active', true)
+    .limit(1)
+
+  return fallbackTemplates?.[0] || null
+}
+
+/**
+ * Replace template variables with actual values
+ */
+function replaceTemplateVariables(
+  template: string,
+  variables: Record<string, string>
+): string {
+  let result = template
+
+  Object.entries(variables).forEach(([key, value]) => {
+    const regex = new RegExp(`\\[${key}\\]`, 'g')
+    result = result.replace(regex, value)
+  })
+
+  return result
+}
+
+/**
  * Generate personalized email for VyxHunter prospect
- * Uses Vivien's signature style: direct, human, professional
+ * Now uses sectoral templates from database when available
  */
 export async function generateVyxHunterEmail(
   company: VyxHunterCompany,
@@ -20,112 +77,50 @@ export async function generateVyxHunterEmail(
     throw new Error('OPENAI_API_KEY not configured')
   }
 
-  // Build context based on email type
-  let emailContext = ''
-  let ctaText = ''
-
-  switch (emailType) {
-    case 'initial':
-      emailContext = 'Premier contact avec ce prospect. Email de découverte.'
-      ctaText = 'Audit Express 2 minutes'
-      break
-    case 'follow_up_1':
-      emailContext = 'Première relance (3 jours après). Rappel léger avec valeur ajoutée.'
-      ctaText = 'Échange rapide de 10 minutes'
-      break
-    case 'follow_up_2':
-      emailContext = 'Deuxième relance (7 jours après). Angle différent ou exemple concret.'
-      ctaText = 'Cas client similaire à partager'
-      break
-    case 'follow_up_3':
-      emailContext = 'Dernière relance (14 jours après). Simple et direct, dernière tentative.'
-      ctaText = 'Dernière opportunité d\'échange'
-      break
+  // Try to get sectoral template if company has ICP sector
+  let sectoralTemplate = null
+  if (company.icp_sector_id) {
+    const mainPainPoint = company.detected_pain_points?.[0]
+    sectoralTemplate = await getSectoralTemplate(company.icp_sector_id, mainPainPoint)
   }
 
-  const prompt = `
-Tu es VyxHunter, l’agent de prospection IA interne de Vyxo Consulting.
+  // If we have a sectoral template, use it with personalization
+  if (sectoralTemplate && emailType === 'initial') {
+    const variables = {
+      'PRÉNOM': contactName || 'Monsieur/Madame',
+      'ENTREPRISE': company.name,
+      'CLIENT_EXIGEANT': analysis.key_clients?.[0] || '[CLIENT]',
+      'SECTEUR': company.sector || 'votre secteur',
+      'DOULEUR_PRINCIPALE': company.detected_pain_points?.[0] || 'vos enjeux qualité'
+    }
 
-Ton rôle :
-- Rédiger des emails de prospection B2B ultra ciblés, courts, humains et pro.
-- Tu écris EXACTEMENT comme Vivien (Vyxo Consulting) parlerait à un dirigeant ou responsable.
-- Tu t’adresses à des entreprises de transport, agro, pharma, industrie, logistique, PME ou scale-up.
+    const subject = replaceTemplateVariables(sectoralTemplate.subject_template, variables)
+    const bodyText = replaceTemplateVariables(sectoralTemplate.body_template, variables)
+    
+    // Convert to HTML
+    const bodyHtml = bodyText
+      .split('\n\n')
+      .map(para => `<p>${para.replace(/\n/g, '<br>')}</p>`)
+      .join('\n')
 
-STYLE GÉNÉRAL :
-- Direct, clair, posé.
-- Humain, jamais robotique.
-- Confiance tranquille, pas d’arrogance.
-- Tu vas droit au but.
-- Tu utilises des phrases courtes.
-- Tu expliques les choses simplement, sans jargon.
+    return { subject, bodyText, bodyHtml }
+  }
 
-INTERDIT :
-- "Je me permets"
-- "N’hésitez pas"
-- "Dans le cadre de"
-- "Cordialement"
-- Les tournures très corporate ou académiques.
-- Les phrases longues et compliquées.
-- Les promesses exagérées.
+  // Fallback to AI generation if no template or follow-up email
+  const emailContext = getEmailContext(emailType)
+  const ctaText = getCtaText(emailType)
 
-OBLIGATOIRE :
-- Montrer que tu as compris la réalité du prospect (activité, enjeux).
-- Parler de gains concrets : temps, clarté, organisation, conformité, excellence opérationnelle.
-- Mentionner la possibilité d’un audit express de 2 minutes.
-- Conclure par un CTA simple : proposer un échange court (10 minutes) sans mettre de pression.
-- INCLURE UNE PHRASE SUR L'ANALYSE : "J'ai analysé [Entreprise] et j'ai noté [Point clé 1] et [Point clé 2]..." (adapter selon le contexte).
-
-CONTEXTE EMAIL :
-Type : ${emailType}
-Style demandé : ${emailStyle === 'short' ? 'COURT et PERCUTANT (max 6 lignes)' : 'STRUCTURÉ et DÉTAILLÉ (max 10 lignes)'}
-${emailContext}
-
-PROSPECT :
-- Entreprise : ${company.name}
-- Contact : ${contactName || 'Non spécifié (adapter la salutation)'}
-- Secteur : ${company.sector || 'Non spécifié'}
-- Taille : ${company.size_range || 'Non spécifié'}
-- Localisation : ${company.location || 'Non spécifié'}
-
-ANALYSE IA :
-- Résumé : ${analysis.business_summary}
-- Points de douleur : ${analysis.pains?.join(', ')}
-- Angle d'entrée : ${analysis.entry_angle}
-- Gains rapides : ${analysis.quick_wins?.join(', ')}
-
-${gammaUrl ? `GAMMA SLIDE : ${gammaUrl}` : ''}
-
-STRUCTURE DE CHAQUE EMAIL (${emailStyle === 'short' ? 'VERSION COURTE' : 'VERSION STRUCTURÉE'}) :
-1. Ligne d’ouverture :
-   - Salutation personnalisée (${contactName ? `Bonjour ${contactName}` : 'Bonjour'}).
-   - Montrer que tu sais qui est l’entreprise / son contexte (1 phrase).
-2. Ligne sur l'analyse (OBLIGATOIRE) :
-   - "J'ai analysé votre activité et j'ai noté..." (citer 1 ou 2 points pertinents de l'analyse).
-3. Ligne sur la douleur principale :
-   - Exemple : traçabilité, documentation éclatée, audits lourds, désorganisation, montée en exigence (pharma, GDP, ISO…).
-4. Ligne sur la valeur Vyxo :
-   - Structuration simple, clarté, excellence opérationnelle, digitalisation intelligente.
-5. Lien vers un support :
-   ${gammaUrl ? '- Mention d’une slide ou présentation claire (type Gamma) qui résume ce que tu peux apporter : ' + gammaUrl : '- (Pas de lien Gamma disponible pour le moment)'}
-6. Lien vers l’audit express (2 minutes) : https://www.vyxoconsult.com/
-7. CTA final :
-   - Une phrase du type : "Si ça te parle, on peut faire un point de 10 minutes pour voir ce que tu peux gagner."
-
-TON :
-- Respectueux mais pas soumis.
-- Sérieux mais pas rigide.
-- Cash mais jamais agressif.
-- Tu écris comme un consultant qui sait ce qu’il fait et qui respecte le temps du prospect.
-
-FORMAT DE SORTIE JSON :
-{
-  "subject": "...",
-  "bodyText": "...",
-  "bodyHtml": "..."
-}
-
-Pour bodyHtml, utilise des <p> pour les paragraphes et <a> pour les liens. Style simple et professionnel.
-`.trim()
+  const prompt = buildEmailPrompt(
+    company,
+    analysis,
+    emailType,
+    emailStyle,
+    emailContext,
+    ctaText,
+    contactName,
+    gammaUrl,
+    sectoralTemplate
+  )
 
   try {
     const { text } = await generateText({
@@ -133,11 +128,9 @@ Pour bodyHtml, utilise des <p> pour les paragraphes et <a> pour les liens. Style
       prompt: prompt,
     })
 
-    // Parse JSON response
     const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim()
     const emailData = JSON.parse(cleanText)
 
-    // Validate required fields
     if (!emailData.subject || !emailData.bodyText || !emailData.bodyHtml) {
       throw new Error('Invalid email response: missing required fields')
     }
@@ -153,6 +146,117 @@ Pour bodyHtml, utilise des <p> pour les paragraphes et <a> pour les liens. Style
   }
 }
 
+function getEmailContext(emailType: string): string {
+  switch (emailType) {
+    case 'initial':
+      return 'Premier contact avec ce prospect. Email de découverte.'
+    case 'follow_up_1':
+      return 'Première relance (3 jours après). Rappel léger avec valeur ajoutée.'
+    case 'follow_up_2':
+      return 'Deuxième relance (7 jours après). Angle différent ou exemple concret.'
+    case 'follow_up_3':
+      return 'Dernière relance (14 jours après). Simple et direct, dernière tentative.'
+    default:
+      return ''
+  }
+}
+
+function getCtaText(emailType: string): string {
+  switch (emailType) {
+    case 'initial':
+      return 'Audit Express 2 minutes'
+    case 'follow_up_1':
+      return 'Échange rapide de 10 minutes'
+    case 'follow_up_2':
+      return 'Cas client similaire à partager'
+    case 'follow_up_3':
+      return 'Dernière opportunité d\'échange'
+    default:
+      return 'Échange rapide'
+  }
+}
+
+function buildEmailPrompt(
+  company: VyxHunterCompany,
+  analysis: VyxHunterAnalysis,
+  emailType: string,
+  emailStyle: string,
+  emailContext: string,
+  ctaText: string,
+  contactName?: string,
+  gammaUrl?: string,
+  sectoralTemplate?: any
+): string {
+  const sectorContext = sectoralTemplate 
+    ? `\nTEMPLATE SECTORIEL DISPONIBLE (à adapter, pas copier) :
+Secteur: ${sectoralTemplate.sector_name}
+Ton: ${sectoralTemplate.tone}
+Focus douleur: ${sectoralTemplate.pain_point_focus}
+Exemple de structure: ${sectoralTemplate.body_template.substring(0, 200)}...`
+    : ''
+
+  return `
+Tu es VyxHunter, l'agent de prospection IA de Vyxo Consulting.
+
+COMPÉTENCES VYXO (Vivien Closse) :
+- Qualité: ISO 9001, AS9120B, EFQM, ISO 13485, ISO 22716, PPAP, AMDEC, 8D
+- Pharma: GDP, BPF, BPD, GAMP5, 21 CFR Part 11, chaîne du froid, validation
+- IT/Cybersécurité: ISO 27001, RGPD, SMSI, audit trail, dev sécurisé
+- Lean Six Sigma: DMAIC, Kaizen, 5S, SMED, Kanban, Jidoka
+- Logistique: GDP, traçabilité, chaîne du froid
+- Sûreté aérienne: DGAC, CE 300/2008, AS9120B
+- HSE: ISO 45001, ISO 14001, REACH
+- Transformation digitale: Power BI, Supabase, QMS digitaux
+
+STYLE VYXO :
+- Direct, clair, humain
+- Confiance tranquille, pas d'arrogance
+- Phrases courtes, pas de jargon
+- INTERDIT: "Je me permets", "N'hésitez pas", "Cordialement"
+- OBLIGATOIRE: Gains concrets, audit express 2 min, CTA simple
+
+CONTEXTE EMAIL :
+Type: ${emailType}
+Style: ${emailStyle === 'short' ? 'COURT (max 6 lignes)' : 'STRUCTURÉ (max 10 lignes)'}
+${emailContext}
+${sectorContext}
+
+PROSPECT :
+- Entreprise: ${company.name}
+- Contact: ${contactName || 'Non spécifié'}
+- Secteur ICP: ${company.icp_sector_id ? 'Détecté' : 'Non détecté'}
+- Pain points détectés: ${company.detected_pain_points?.join(', ') || 'Non détectés'}
+- Maturité: ${company.maturity_level || 'Inconnue'}
+- Réglementations: ${company.applicable_regulations?.join(', ') || 'Non détectées'}
+
+ANALYSE IA :
+- Résumé: ${analysis.business_summary}
+- Points de douleur: ${analysis.pains?.join(', ')}
+- Angle d'entrée: ${analysis.entry_angle}
+- Gains rapides: ${analysis.quick_wins?.join(', ')}
+
+${gammaUrl ? `GAMMA SLIDE: ${gammaUrl}` : ''}
+
+STRUCTURE EMAIL :
+1. Salutation personnalisée
+2. Montrer que tu connais l'entreprise (1 phrase)
+3. Citer 1-2 pain points détectés
+4. Valeur Vyxo adaptée au secteur
+${gammaUrl ? '5. Lien Gamma' : ''}
+${emailType === 'initial' ? '6. Lien audit express: https://www.vyxoconsult.com/' : ''}
+7. CTA: ${ctaText}
+
+FORMAT JSON :
+{
+  "subject": "...",
+  "bodyText": "...",
+  "bodyHtml": "..."
+}
+
+Pour bodyHtml: <p> pour paragraphes, <a> pour liens. Style simple et pro.
+`.trim()
+}
+
 /**
  * Generate email subject line only (for quick preview)
  */
@@ -163,21 +267,21 @@ export async function generateEmailSubject(
 ): Promise<string> {
   const prompt = `
 Génère un objet d'email de prospection B2B pour ${companyName} (${sector}).
-Angle : ${entryAngle}
+Angle: ${entryAngle}
 
-Style : Direct, intrigant, personnalisé. Max 50 caractères.
-Exemples : "Question rapide ${companyName}", "${sector} : gain de temps ?", "Optimisation process chez vous ?"
+Style: Direct, intrigant, personnalisé. Max 50 caractères.
+Exemples: "Question rapide ${companyName}", "${sector}: gain de temps?", "Optimisation process chez vous?"
 
 Retourne UNIQUEMENT l'objet, sans guillemets ni formatage.
 `.trim()
 
   try {
     const { text } = await generateText({
-      model: openai('gpt-4o-mini'), // Use mini for simple tasks
+      model: openai('gpt-4o-mini'),
       prompt: prompt,
     })
 
-    return text.trim().replace(/^["']|["']$/g, '') // Remove quotes if present
+    return text.trim().replace(/^["']|["']$/g, '')
   } catch (error: any) {
     console.error('❌ Subject generation error:', error)
     return `Optimisation opérationnelle ${companyName}`
