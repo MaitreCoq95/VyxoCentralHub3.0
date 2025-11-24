@@ -23,6 +23,11 @@ export interface VyxHunterCompany {
   external_id?: string
   metadata?: Record<string, any>
   organization_id: string
+  // Prospecting Intelligence fields
+  icp_sector_id?: string | null
+  detected_pain_points?: string[]
+  maturity_level?: 'none' | 'low' | 'medium' | 'high'
+  applicable_regulations?: string[]
 }
 
 export interface VyxHunterAnalysis {
@@ -40,6 +45,13 @@ export interface VyxHunterAnalysis {
   prompt_version?: string
   tokens_used?: number
   organization_id: string
+  // Prospecting Intelligence fields
+  detected_sector?: string
+  applicable_regulations?: string[]
+  sector_specific_insights?: Record<string, any>
+  recommended_solutions?: string[]
+  talking_points?: string[]
+  key_clients?: string[]
 }
 
 export interface VyxHunterGammaSlide {
