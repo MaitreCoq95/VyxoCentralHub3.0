@@ -20,29 +20,6 @@ export async function POST(request: Request) {
       jobTitle,
       // Add common variations if it's a simple title
       ...(jobTitle.toLowerCase().includes('ceo') ? ['Chief Executive Officer', 'Founder', 'Co-Founder'] : []),
-      ...(jobTitle.toLowerCase().includes('cto') ? ['Chief Technology Officer', 'VP Technology'] : []),
-      ...(jobTitle.toLowerCase().includes('cfo') ? ['Chief Financial Officer', 'VP Finance'] : []),
-      ...(jobTitle.toLowerCase().includes('cmo') ? ['Chief Marketing Officer', 'VP Marketing'] : []),
-      ...(jobTitle.toLowerCase().includes('director') ? ['Head of', 'Manager'] : []),
-    ].filter((v, i, a) => a.indexOf(v) === i) : [] // Remove duplicates
-
-    // Parse company sizes if it's an array (multi-select)
-    const companySizeRanges = companySize ? (Array.isArray(companySize) ? companySize : [companySize]) : undefined
-
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache',
-        'X-Api-Key': apiKey
-      },
-      body: JSON.stringify({
-        q_organization_domains: null,
-        page: page,
-        person_titles: expandedTitles.length > 0 ? expandedTitles : undefined,
-        person_seniorities: seniority ? [seniority] : undefined,
-        person_department: department || undefined,
-        organization_locations: location ? [location] : undefined,
         organization_num_employees_ranges: companySizeRanges,
         revenue_range: (revenueMin || revenueMax) ? {
           min: revenueMin ? parseInt(revenueMin) : undefined,
