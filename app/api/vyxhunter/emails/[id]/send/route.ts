@@ -4,9 +4,6 @@ import { Resend } from 'resend'
 
 const DEMO_ORG_ID = '00000000-0000-0000-0000-000000000001'
 
-// Initialize Resend
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 /**
  * POST /api/vyxhunter/emails/[id]/send
  * Send email via Resend
@@ -15,6 +12,10 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
   try {
     const { id } = await params
     console.log('📤 Sending email:', id)
@@ -92,6 +93,7 @@ export async function POST(
     }
 
     // Send via Resend
+    const resend = new Resend(process.env.RESEND_API_KEY)
     const fromEmail = process.env.RESEND_FROM_EMAIL || 'Vivien - Vyxo Consulting <contact@vyxoconsult.com>'
     
     const { data: resendData, error: resendError } = await resend.emails.send({

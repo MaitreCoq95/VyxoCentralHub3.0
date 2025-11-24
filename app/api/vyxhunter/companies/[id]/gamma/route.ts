@@ -17,6 +17,10 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   let newGammaSlide: any = null; // Declare newGammaSlide outside try block
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
   try {
     const { id } = await params
     console.log('📊 Generating Gamma slide for company:', id)
