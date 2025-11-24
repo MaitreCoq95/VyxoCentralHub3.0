@@ -38,8 +38,45 @@ export async function POST(
       )
     }
 
-    // Generate AI analysis
-    const analysisData = await analyzeCompany(company)
+    // 1. Check for Quality Manager presence via Apollo
+    let qualityManagerDetected = false
+    try {
+      const apolloKey = process.env.APOLLO_API_KEY
+      if (apolloKey && (company.website || company.name)) {
+        const response = await fetch('https://api.apollo.io/v1/mixed_people/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Api-Key': apolloKey },
+          body: JSON.stringify({
+            api_key: apolloKey,
+            q_organization_domains: company.website ? [company.website] : undefined,
+            q_organization_names: !company.website && company.name ? [company.name] : undefined,
+            person_titles: ['quality manager', 'responsable qualité', 'directeur qualité', 'qhse', 'assurance qualité', 'quality director', 'head of quality'],
+            per_page: 1
+          })
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          qualityManagerDetected = (data.pagination?.total_entries || 0) > 0
+          console.log(`🕵️‍♂️ Quality Manager check for ${company.name}: ${qualityManagerDetected ? 'DETECTED ✅' : 'NOT FOUND ❌'}`)
+        }
+      }
+    } catch (err) {
+      console.warn('⚠️ Failed to check for Quality Manager:', err)
+    }
+
+    // 2. Generate AI analysis
+    const analysisData = await analyzeCompany(company, qualityManagerDetected)
+
+    // Prepare data for insertion (map new fields to JSONB to avoid schema changes)
+    const { recommended_hat, skill_match_reasoning, quality_manager_detected, ...restAnalysis } = analysisData
+    
+    const sectorSpecificInsights = {
+      ...(analysisData.sector_specific_insights || {}),
+      recommended_hat,
+      skill_match_reasoning,
+      quality_manager_detected
+    }
 
     // Save analysis to database
     const { data: newAnalysis, error: analysisError } = await supabase
@@ -47,7 +84,8 @@ export async function POST(
       .insert([{
         organization_id: DEMO_ORG_ID,
         company_id: id,
-        ...analysisData
+        ...restAnalysis,
+        sector_specific_insights: sectorSpecificInsights
       }])
       .select()
       .single()

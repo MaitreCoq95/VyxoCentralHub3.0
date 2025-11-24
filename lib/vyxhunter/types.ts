@@ -52,6 +52,9 @@ export interface VyxHunterAnalysis {
   recommended_solutions?: string[]
   talking_points?: string[]
   key_clients?: string[]
+  recommended_hat?: string
+  skill_match_reasoning?: string
+  quality_manager_detected?: boolean
 }
 
 export interface VyxHunterGammaSlide {

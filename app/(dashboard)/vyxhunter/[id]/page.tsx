@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/components/ui/use-toast'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { 
   ArrowLeft, 
   Building2, 
@@ -24,7 +25,9 @@ import {
   History,
   Download,
   File,
-  Presentation
+  Presentation,
+  UserPlus,
+  Unlock
 } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { EmailPreviewDialog } from '@/components/vyxhunter/email-preview-dialog'
@@ -54,9 +57,20 @@ export default function CompanyPage() {
   // Gamma customization state
   const [isGammaDialogOpen, setIsGammaDialogOpen] = useState(false)
 
+  // Decision Makers State
+  const [decisionMakers, setDecisionMakers] = useState<any[]>([])
+  const [loadingPeople, setLoadingPeople] = useState(false)
+  const [unlockingContact, setUnlockingContact] = useState<string | null>(null)
+
   useEffect(() => {
     fetchCompany()
   }, [companyId])
+
+  useEffect(() => {
+    if (company?.website || company?.name) {
+      fetchDecisionMakers()
+    }
+  }, [company])
 
   async function fetchCompany() {
     try {
@@ -84,6 +98,81 @@ export default function CompanyPage() {
       })
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function fetchDecisionMakers() {
+    try {
+      setLoadingPeople(true)
+      const res = await fetch('/api/prospecting/apollo/people', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          domain: company.website,
+          name: company.name 
+        })
+      })
+      
+      if (res.ok) {
+        const data = await res.json()
+        setDecisionMakers(data.people || [])
+      }
+    } catch (error) {
+      console.error("Failed to fetch people", error)
+    } finally {
+      setLoadingPeople(false)
+    }
+  }
+
+  async function handleUnlockContact(person: any) {
+    try {
+      setUnlockingContact(person.id)
+      
+      let emailToUse = person.email
+
+      // 1. Reveal Email if needed
+      if (!person.is_email_unlocked) {
+        const revealRes = await fetch('/api/prospecting/apollo/reveal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: person.id })
+        })
+
+        if (revealRes.ok) {
+          const revealData = await revealRes.json()
+          if (revealData.email) {
+            emailToUse = revealData.email
+            // Update local state
+            setDecisionMakers(prev => prev.map(p => p.id === person.id ? { ...p, email: emailToUse, is_email_unlocked: true } : p))
+            toast({ title: "Email débloqué !", description: emailToUse })
+          }
+        }
+      }
+
+      // 2. Add to CRM/Contacts associated with this company
+      const clientRes = await fetch('/api/crm/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: `${person.first_name} ${person.last_name}`,
+          sector: company.sector || 'Unknown',
+          status: 'lead',
+          city: person.city || company.location,
+          contactName: `${person.first_name} ${person.last_name}`,
+          contact_email: emailToUse !== 'Not available' ? emailToUse : undefined,
+          company_id: companyId, 
+          notes: `Imported from VyxHunter Company Page. Title: ${person.title}. LinkedIn: ${person.linkedin_url}`
+        })
+      })
+
+      if (clientRes.ok) {
+        toast({ title: "Contact ajouté !", description: `${person.first_name} a été ajouté au CRM.` })
+      }
+
+    } catch (error) {
+      toast({ variant: "destructive", title: "Erreur", description: "Impossible de débloquer/ajouter le contact" })
+    } finally {
+      setUnlockingContact(null)
     }
   }
 
@@ -344,6 +433,72 @@ export default function CompanyPage() {
             </CardContent>
           </Card>
 
+          {/* DECISION MAKERS */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Users className="h-4 w-4" />
+                Décideurs & Contacts ({decisionMakers.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[400px] pr-4">
+                {loadingPeople ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : decisionMakers.length > 0 ? (
+                  <div className="space-y-4">
+                    {decisionMakers.map((person) => (
+                      <div key={person.id} className="flex items-start justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-10 w-10 border">
+                             <AvatarImage src={person.photo_url} />
+                             <AvatarFallback className="bg-vyxo-navy text-white text-xs">
+                               {person.first_name[0]}{person.last_name[0]}
+                             </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <h4 className="font-medium text-sm">{person.first_name} {person.last_name}</h4>
+                            <p className="text-xs text-muted-foreground line-clamp-1" title={person.title}>{person.title}</p>
+                            {person.linkedin_url && (
+                              <a href={person.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline flex items-center gap-1 mt-1">
+                                <Linkedin className="h-3 w-3" /> LinkedIn
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                        <Button 
+                          size="sm" 
+                          variant={person.is_email_unlocked ? "secondary" : "default"}
+                          className={person.is_email_unlocked ? "" : "bg-vyxo-gold text-vyxo-navy hover:bg-vyxo-gold/90"}
+                          onClick={() => handleUnlockContact(person)}
+                          disabled={unlockingContact === person.id}
+                        >
+                          {unlockingContact === person.id ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : person.is_email_unlocked ? (
+                            <UserPlus className="h-3 w-3" />
+                          ) : (
+                            <>
+                              <Unlock className="h-3 w-3 mr-1" />
+                              <span className="text-xs">Débloquer</span>
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">Aucun décideur trouvé</p>
+                  </div>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
+
           {/* AI ANALYSIS */}
           <Card>
             <CardHeader>
@@ -379,6 +534,37 @@ export default function CompanyPage() {
                         style={{ width: `${latestAnalysis.relevance_score}%` }}
                       />
                     </div>
+                  </div>
+
+                  {/* CASQUETTE RECOMMANDÉE */}
+                  {(latestAnalysis.sector_specific_insights?.recommended_hat || latestAnalysis.recommended_hat) && (
+                    <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-md border border-purple-100 dark:border-purple-800">
+                      <h4 className="font-semibold text-sm mb-1 text-purple-700 dark:text-purple-300 flex items-center gap-2">
+                        <span>🧢 Casquette Recommandée</span>
+                      </h4>
+                      <p className="text-sm font-medium text-vyxo-navy dark:text-white">
+                        {latestAnalysis.sector_specific_insights?.recommended_hat || latestAnalysis.recommended_hat}
+                      </p>
+                      {(latestAnalysis.sector_specific_insights?.skill_match_reasoning || latestAnalysis.skill_match_reasoning) && (
+                        <p className="text-xs text-muted-foreground mt-1 italic">
+                          "{latestAnalysis.sector_specific_insights?.skill_match_reasoning || latestAnalysis.skill_match_reasoning}"
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* RESPONSABLE QUALITÉ DÉTECTÉ */}
+                  <div className="flex items-center justify-between p-3 rounded-md border bg-gray-50 dark:bg-gray-900/50">
+                    <span className="text-sm font-medium flex items-center gap-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      Responsable Qualité détecté
+                    </span>
+                    <Badge 
+                      variant={latestAnalysis.sector_specific_insights?.quality_manager_detected ? "default" : "secondary"}
+                      className={latestAnalysis.sector_specific_insights?.quality_manager_detected ? "bg-green-600 hover:bg-green-700" : ""}
+                    >
+                      {latestAnalysis.sector_specific_insights?.quality_manager_detected ? "OUI ✅" : "NON ❌"}
+                    </Badge>
                   </div>
 
                   <div>

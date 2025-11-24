@@ -4,15 +4,15 @@ import { OpenAI } from 'openai'
 
 export const dynamic = 'force-dynamic'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-})
-
 /**
  * POST /api/vyxhunter/enrich
  * Enrich company with sector detection, pain points, and recommendations
  */
 export async function POST(request: Request) {
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+  })
+
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
