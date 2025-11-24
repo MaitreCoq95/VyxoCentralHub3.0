@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 import { 
   Target, TrendingUp, Mail, MessageSquare, Zap, Plus, 
   Search, Filter, ArrowUpRight, Loader2, Brain, Sparkles,
-  ExternalLink, BarChart3
+  ExternalLink, BarChart3, Trash2
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -106,6 +106,38 @@ export default function VyxHunterPage() {
         variant: "destructive",
         title: "Erreur",
         description: "Échec de l'analyse"
+      })
+    }
+  }
+
+  async function handleDelete(companyId: string, companyName: string) {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer "${companyName}" ?\n\nCette action est irréversible.`)) {
+      return
+    }
+
+    try {
+      toast({
+        title: "🗑️ Suppression en cours...",
+        description: "Suppression de l'entreprise"
+      })
+
+      const res = await fetch(`/api/vyxhunter/companies/${companyId}`, {
+        method: 'DELETE'
+      })
+
+      if (!res.ok) throw new Error('Delete failed')
+
+      toast({
+        title: "✅ Entreprise supprimée !",
+        description: `${companyName} a été supprimée`
+      })
+
+      fetchData() // Refresh data
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Échec de la suppression"
       })
     }
   }
@@ -321,8 +353,16 @@ export default function VyxHunterPage() {
                               Analyser
                             </Button>
                           )}
-                          <Button size="sm" variant="ghost">
-                            <ExternalLink className="h-4 w-4" />
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDelete(company.id, company.name)
+                            }}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>

@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useToast } from "@/components/ui/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useLanguage } from "@/components/language-provider"
+import { IndustryFilter } from "@/components/prospecting/industry-filter"
 
 interface Prospect {
   id: string
@@ -29,8 +30,8 @@ export default function ProspectingPage() {
   const [searchParams, setSearchParams] = useState({
     jobTitle: "",
     location: "",
-    industry: "",
-    companySize: [] as string[],  // Changed to array for multi-select
+    industry: [] as string[],  // Changed to array for multi-select
+    companySize: [] as string[],
     seniority: "",
     department: "",
     revenueMin: "",
@@ -146,7 +147,7 @@ export default function ProspectingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: prospect.organization || `${prospect.first_name} ${prospect.last_name}`,
-          sector: searchParams.industry || 'Unknown',
+          sector: searchParams.industry.length > 0 ? searchParams.industry.join(', ') : 'Unknown',
           status: 'lead',
           city: prospect.location,
           contactName: `${prospect.first_name} ${prospect.last_name}`,
@@ -260,17 +261,6 @@ export default function ProspectingPage() {
                 <Input 
                   placeholder={t("prospect.jobTitlePlaceholder")} 
                   className="pl-9"
-                  value={searchParams.jobTitle}
-                  onChange={(e) => setSearchParams({...searchParams, jobTitle: e.target.value})}
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t("prospect.location")}</label>
-              <div className="relative">
-                  {[
-                    { value: "1,10", label: "1-10 employés" },
-                    { value: "11,50", label: "11-50 employés" },
                     { value: "51,200", label: "51-200 employés" },
                     { value: "201,500", label: "201-500 employés" },
                     { value: "501,1000", label: "501-1000 employés" },
