@@ -25,6 +25,25 @@ export async function POST(request: Request) {
 
     console.log(`📤 Transferring ${contacts.length} contacts to VyxHunter...`)
 
+    // Get a valid organization ID (fallback to first available if not provided)
+    // In a real multi-tenant app, we should get this from the user's session or request
+    const { data: orgs } = await supabase
+      .from('vch_organizations')
+      .select('id')
+      .limit(1)
+    
+    const organizationId = orgs?.[0]?.id
+
+    if (!organizationId) {
+      console.error('❌ No organization found in vch_organizations table')
+      return NextResponse.json(
+        { error: 'Configuration error: No organization found' },
+        { status: 500 }
+      )
+    }
+
+    console.log(`Using Organization ID: ${organizationId}`)
+
     const createdCompanies = []
     const errors = []
 
@@ -60,7 +79,7 @@ export async function POST(request: Request) {
             status: 'identified',
             source: 'apollo',
             external_id: contact.id,
-            organization_id: '00000000-0000-0000-0000-000000000000', // Default org ID - will be replaced by RLS
+            organization_id: organizationId,
             metadata: {
               apollo_contact: {
                 name: `${contact.first_name} ${contact.last_name}`,
@@ -84,7 +103,7 @@ export async function POST(request: Request) {
         // Auto-enrich if requested
         if (autoEnrich && newCompany.id) {
           try {
-            const enrichResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/vyxhunter/enrich`, {
+            const enrichResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/vyxhunter/enrich`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ companyId: newCompany.id })
