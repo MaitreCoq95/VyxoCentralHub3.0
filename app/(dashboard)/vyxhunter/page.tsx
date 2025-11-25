@@ -8,7 +8,7 @@ import {
   Search, Filter, ArrowUpRight, Loader2, Brain, Sparkles,
   ExternalLink, BarChart3, Trash2
   Search, Filter, ArrowUpRight, Loader2, Brain, Sparkles,
-  ExternalLink, BarChart3, Trash2, Clock, AlertCircle
+  ExternalLink, BarChart3, Trash2, Clock, AlertCircle, CheckCircle2
 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -158,6 +158,33 @@ export default function VyxHunterPage() {
         title: "Erreur",
         description: "Échec de la suppression"
       })
+    }
+    }
+  }
+
+  async function handleLogManualEmail(companyId: string, companyName: string) {
+    if (!confirm(`Confirmez-vous avoir envoyé un email manuellement à "${companyName}" ?\n\nCela mettra à jour le statut en 'Contacté' et programmera la relance dans 7 jours.`)) {
+      return
+    }
+
+    try {
+      toast({ title: "Enregistrement...", description: "Mise à jour du statut" })
+
+      const res = await fetch(`/api/vyxhunter/companies/${companyId}/log-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipientName: companyName,
+          emailType: 'initial'
+        })
+      })
+
+      if (!res.ok) throw new Error('Failed to log email')
+
+      toast({ title: "✅ Email enregistré !", description: "Statut mis à jour : Contacté" })
+      fetchData()
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Erreur", description: error.message })
     }
   }
 
@@ -387,6 +414,20 @@ export default function VyxHunterPage() {
                                 >
                                   <Brain className="h-4 w-4 mr-1" />
                                   Analyser
+                                </Button>
+                              )}
+                              {company.status === 'analyzed' && (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  className="text-green-600 border-green-200 hover:bg-green-50"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleLogManualEmail(company.id, company.name)
+                                  }}
+                                  title="J'ai envoyé un email"
+                                >
+                                  <CheckCircle2 className="h-4 w-4" />
                                 </Button>
                               )}
                               <Button 
