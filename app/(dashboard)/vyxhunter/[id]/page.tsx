@@ -332,6 +332,7 @@ export default function CompanyPage() {
     } finally {
       setGeneratingEmail(false)
     }
+  }
 
 
   async function handleLogManualEmail() {

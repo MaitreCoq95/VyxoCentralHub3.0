@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
+import { 
   Target, TrendingUp, Mail, MessageSquare, Zap, Plus, 
   Search, Filter, ArrowUpRight, Loader2, Brain, Sparkles,
   ExternalLink, BarChart3, Trash2, Clock, AlertCircle, CheckCircle2
