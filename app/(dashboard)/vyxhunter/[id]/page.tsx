@@ -27,7 +27,9 @@ import {
   File,
   Presentation,
   UserPlus,
-  Unlock
+  UserPlus,
+  Unlock,
+  Lock
 } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { EmailPreviewDialog } from '@/components/vyxhunter/email-preview-dialog'
@@ -171,6 +173,29 @@ export default function CompanyPage() {
 
     } catch (error) {
       toast({ variant: "destructive", title: "Erreur", description: "Impossible de débloquer/ajouter le contact" })
+    } finally {
+      setUnlockingContact(null)
+    }
+  }
+
+  async function unlockEmailOnly(person: any) {
+    try {
+      setUnlockingContact(person.id)
+      const revealRes = await fetch('/api/prospecting/apollo/reveal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: person.id })
+      })
+
+      if (revealRes.ok) {
+          const revealData = await revealRes.json()
+          if (revealData.email) {
+            setDecisionMakers(prev => prev.map(p => p.id === person.id ? { ...p, email: revealData.email, is_email_unlocked: true } : p))
+            toast({ title: "Email débloqué !", description: revealData.email })
+          }
+      }
+    } catch (e) {
+      toast({ variant: "destructive", title: "Erreur", description: "Impossible de débloquer l'email" })
     } finally {
       setUnlockingContact(null)
     }
@@ -461,6 +486,32 @@ export default function CompanyPage() {
                           <div>
                             <h4 className="font-medium text-sm">{person.first_name} {person.last_name}</h4>
                             <p className="text-xs text-muted-foreground line-clamp-1" title={person.title}>{person.title}</p>
+                            
+                            {/* Email Section */}
+                            <div className="flex items-center gap-2 mt-1">
+                                {person.email && person.email !== 'email_not_unlocked' && person.email !== 'Not available' ? (
+                                    <span className="text-xs text-emerald-600 flex items-center gap-1 bg-emerald-50 px-1.5 py-0.5 rounded font-medium">
+                                        <Mail className="h-3 w-3" /> {person.email}
+                                    </span>
+                                ) : (
+                                    <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        className="h-5 px-1.5 text-[10px] text-muted-foreground hover:text-primary hover:bg-gray-100"
+                                        onClick={() => unlockEmailOnly(person)}
+                                        disabled={unlockingContact === person.id}
+                                    >
+                                        {unlockingContact === person.id ? (
+                                            <Loader2 className="h-3 w-3 animate-spin" />
+                                        ) : (
+                                            <>
+                                                <Lock className="h-3 w-3 mr-1" /> Déverouiller l'email
+                                            </>
+                                        )}
+                                    </Button>
+                                )}
+                            </div>
+
                             {person.linkedin_url && (
                               <a href={person.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline flex items-center gap-1 mt-1">
                                 <Linkedin className="h-3 w-3" /> LinkedIn
