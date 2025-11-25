@@ -157,7 +157,6 @@ export default function VyxHunterPage() {
         description: "Échec de la suppression"
       })
     }
-    }
   }
 
   async function handleLogManualEmail(companyId: string, companyName: string) {
