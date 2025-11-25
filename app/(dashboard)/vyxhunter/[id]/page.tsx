@@ -332,6 +332,32 @@ export default function CompanyPage() {
     } finally {
       setGeneratingEmail(false)
     }
+    }
+  }
+  }
+
+  async function handleLogManualEmail() {
+    try {
+      if (!confirm("Confirmez-vous avoir envoyé un email manuellement à cette entreprise ?\n\nCela mettra à jour le statut en 'Contacté' et programmera la relance dans 7 jours.")) return
+
+      toast({ title: "Enregistrement...", description: "Mise à jour du statut" })
+
+      const res = await fetch(`/api/vyxhunter/companies/${companyId}/log-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipientName: contactName || company?.name,
+          emailType: 'initial'
+        })
+      })
+
+      if (!res.ok) throw new Error('Failed to log email')
+
+      toast({ title: "✅ Email enregistré !", description: "Statut mis à jour : Contacté" })
+      fetchCompany()
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Erreur", description: error.message })
+    }
   }
 
   function openEmailPreview(email: any) {
@@ -791,6 +817,15 @@ export default function CompanyPage() {
                 >
                   {generatingEmail ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
                   Générer un brouillon
+                </Button>
+                <Button 
+                  size="sm" 
+                  className="w-full mt-2"
+                  variant="secondary"
+                  onClick={handleLogManualEmail}
+                >
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  J'ai envoyé un email manuellement
                 </Button>
               </div>
             </CardHeader>

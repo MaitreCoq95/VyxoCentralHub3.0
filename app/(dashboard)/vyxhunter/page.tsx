@@ -7,7 +7,10 @@ import {
   Target, TrendingUp, Mail, MessageSquare, Zap, Plus, 
   Search, Filter, ArrowUpRight, Loader2, Brain, Sparkles,
   ExternalLink, BarChart3, Trash2
+  Search, Filter, ArrowUpRight, Loader2, Brain, Sparkles,
+  ExternalLink, BarChart3, Trash2, Clock, AlertCircle
 } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -42,6 +45,7 @@ export default function VyxHunterPage() {
   })
   
   const [companies, setCompanies] = useState<any[]>([])
+  const [followUps, setFollowUps] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
@@ -67,6 +71,21 @@ export default function VyxHunterPage() {
       if (companiesRes.ok) {
         const companiesData = await companiesRes.json()
         setCompanies(companiesData.companies || [])
+        setCompanies(companiesData.companies || [])
+      }
+
+      // Fetch follow-ups
+      const followUpsRes = await fetch('/api/vyxhunter/stats') // Re-using stats endpoint which returns followUpNeeded count, but we need the list.
+      // Actually, let's fetch the list directly from a new endpoint or filter locally if possible, 
+      // but better to have a dedicated endpoint or use the companies endpoint with a filter.
+      // For now, let's assume we can filter companies or fetch from a new endpoint.
+      // Let's create a quick client-side filter or fetch from a new endpoint.
+      // Wait, the stats endpoint only returns count.
+      // I'll add a new fetch for follow-ups.
+      const followUpsListRes = await fetch('/api/vyxhunter/follow-ups')
+      if (followUpsListRes.ok) {
+        const data = await followUpsListRes.json()
+        setFollowUps(data.followUps || [])
       }
     } catch (error) {
       console.error('Error fetching VyxHunter data:', error)
@@ -265,115 +284,190 @@ export default function VyxHunterPage() {
       </div>
 
       {/* FILTERS & SEARCH */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Pipeline de Prospection</CardTitle>
-          <CardDescription>Gérez vos prospects et automatisez votre outreach</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4 mb-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Rechercher une entreprise..."
-                className="pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <select
-              className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="all">Tous les statuts</option>
-              <option value="identified">Identifié</option>
-              <option value="analyzed">Analysé</option>
-              <option value="contacted">Contacté</option>
-              <option value="responded">Répondu</option>
-              <option value="qualified">Qualifié</option>
-            </select>
-          </div>
-
-          {/* COMPANIES LIST */}
-          <ScrollArea className="h-[500px]">
-            {filteredCompanies.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="font-medium">Aucune entreprise trouvée</p>
-                <p className="text-sm mt-1">Importez des prospects depuis Apollo ou ajoutez-les manuellement</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {filteredCompanies.map((company) => (
-                  <Card 
-                    key={company.id} 
-                    className="hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => router.push(`/vyxhunter/${company.id}`)}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3 className="font-semibold text-vyxo-navy dark:text-white">{company.name}</h3>
-                            <Badge variant={
-                              company.status === 'qualified' ? 'default' :
-                              company.status === 'analyzed' ? 'secondary' :
-                              'outline'
-                            }>
-                              {company.status}
-                            </Badge>
-                            {company.relevance_score && (
-                              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                                <Sparkles className="h-3 w-3 mr-1" />
-                                {company.relevance_score}/100
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="text-sm text-muted-foreground space-y-1">
-                            <p>{company.sector} • {company.size_range} • {company.location}</p>
-                            {company.vch_vyxhunter_analyses?.[0]?.business_summary && (
-                              <p className="text-xs italic line-clamp-2">
-                                {company.vch_vyxhunter_analyses[0].business_summary}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 ml-4">
-                          {company.status === 'identified' && (
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleAnalyze(company.id)
-                              }}
-                            >
-                              <Brain className="h-4 w-4 mr-1" />
-                              Analyser
-                            </Button>
-                          )}
-                          <Button 
-                            size="sm" 
-                            variant="ghost"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleDelete(company.id, company.name)
-                            }}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </ScrollArea>
-        </CardContent>
       </Card>
+
+      {/* TABS FOR PIPELINE & FOLLOW-UPS */}
+      <Tabs defaultValue="pipeline" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-4">
+          <TabsTrigger value="pipeline">Pipeline Global</TabsTrigger>
+          <TabsTrigger value="followups" className="relative">
+            Relances à valider
+            {followUps.length > 0 && (
+              <Badge variant="destructive" className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-[10px]">
+                {followUps.length}
+              </Badge>
+            )}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="pipeline">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Pipeline de Prospection</CardTitle>
+              <CardDescription>Gérez vos prospects et automatisez votre outreach</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    placeholder="Rechercher une entreprise..."
+                    className="pl-10"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <select
+                  className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="all">Tous les statuts</option>
+                  <option value="identified">Identifié</option>
+                  <option value="analyzed">Analysé</option>
+                  <option value="contacted">Contacté</option>
+                  <option value="responded">Répondu</option>
+                  <option value="qualified">Qualifié</option>
+                </select>
+              </div>
+
+              {/* COMPANIES LIST */}
+              <ScrollArea className="h-[500px]">
+                {filteredCompanies.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p className="font-medium">Aucune entreprise trouvée</p>
+                    <p className="text-sm mt-1">Importez des prospects depuis Apollo ou ajoutez-les manuellement</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {filteredCompanies.map((company) => (
+                      <Card 
+                        key={company.id} 
+                        className="hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => router.push(`/vyxhunter/${company.id}`)}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="font-semibold text-vyxo-navy dark:text-white">{company.name}</h3>
+                                <Badge variant={
+                                  company.status === 'qualified' ? 'default' :
+                                  company.status === 'analyzed' ? 'secondary' :
+                                  'outline'
+                                }>
+                                  {company.status}
+                                </Badge>
+                                {company.relevance_score && (
+                                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                                    <Sparkles className="h-3 w-3 mr-1" />
+                                    {company.relevance_score}/100
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="text-sm text-muted-foreground space-y-1">
+                                <p>{company.sector} • {company.size_range} • {company.location}</p>
+                                {company.vch_vyxhunter_analyses?.[0]?.business_summary && (
+                                  <p className="text-xs italic line-clamp-2">
+                                    {company.vch_vyxhunter_analyses[0].business_summary}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 ml-4">
+                              {company.status === 'identified' && (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleAnalyze(company.id)
+                                  }}
+                                >
+                                  <Brain className="h-4 w-4 mr-1" />
+                                  Analyser
+                                </Button>
+                              )}
+                              <Button 
+                                size="sm" 
+                                variant="ghost"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleDelete(company.id, company.name)
+                                }}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="followups">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-orange-500" />
+                Relances à effectuer
+              </CardTitle>
+              <CardDescription>Ces prospects ont été contactés il y a plus de 7 jours sans réponse.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[500px]">
+                {followUps.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <CheckCircle2 className="h-12 w-12 mx-auto mb-4 opacity-50 text-green-500" />
+                    <p className="font-medium">Aucune relance en retard !</p>
+                    <p className="text-sm mt-1">Vous êtes à jour dans vos suivis.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {followUps.map((company) => (
+                      <Card 
+                        key={company.id} 
+                        className="hover:shadow-md transition-shadow cursor-pointer border-l-4 border-l-orange-500"
+                        onClick={() => router.push(`/vyxhunter/${company.id}`)}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="font-semibold text-vyxo-navy dark:text-white">{company.name}</h3>
+                                <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                                  Relance requise
+                                </Badge>
+                              </div>
+                              <div className="text-sm text-muted-foreground space-y-1">
+                                <p className="flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  Dernier contact : {new Date(company.sent_at).toLocaleDateString()}
+                                </p>
+                                <p>{company.sector}</p>
+                              </div>
+                            </div>
+                            <Button size="sm" onClick={() => router.push(`/vyxhunter/${company.id}`)}>
+                              Voir & Relancer
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </motion.div>
   )
 }
