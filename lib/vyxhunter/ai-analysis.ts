@@ -9,7 +9,8 @@ import { VYX_SKILLS } from '@/lib/constants/skills'
  */
 export async function analyzeCompany(
   company: VyxHunterCompany,
-  qualityManagerDetected: boolean = false
+  qualityManagerDetected: boolean = false,
+  websiteContent: string = ''
 ): Promise<Omit<VyxHunterAnalysis, 'id' | 'created_at' | 'company_id' | 'organization_id'>> {
   
   const apiKey = process.env.OPENAI_API_KEY
@@ -37,6 +38,10 @@ ENTREPRISE À ANALYSER :
 - RESPONSABLE QUALITÉ DÉTECTÉ : ${qualityManagerDetected ? 'OUI ✅' : 'NON ❌'}
 - DÉTAILS SUPPLÉMENTAIRES (Technologies, News, Funding, etc.) :
 ${JSON.stringify(company.metadata || {}, null, 2)}
+
+CONTENU DU SITE WEB (Extrait) :
+"${websiteContent || 'Non disponible'}"
+
 
 MISSION :
 Analyse cette entreprise pour déterminer si elle est un bon prospect et comment l'aborder.

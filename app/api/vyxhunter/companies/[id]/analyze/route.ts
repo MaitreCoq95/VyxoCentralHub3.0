@@ -65,8 +65,44 @@ export async function POST(
       console.warn('⚠️ Failed to check for Quality Manager:', err)
     }
 
-    // 2. Generate AI analysis
-    const analysisData = await analyzeCompany(company, qualityManagerDetected)
+    // 2. Scrape website content (if available)
+    let websiteContent = ''
+    if (company.website) {
+      try {
+        const websiteUrl = company.website.startsWith('http') ? company.website : `https://${company.website}`
+        console.log(`🌐 Scraping website: ${websiteUrl}`)
+        
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 5000) // 5s timeout
+        
+        const webRes = await fetch(websiteUrl, { 
+          signal: controller.signal,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; VyxHunterBot/1.0; +https://vyxo.com)'
+          }
+        })
+        clearTimeout(timeoutId)
+        
+        if (webRes.ok) {
+          const html = await webRes.text()
+          // Basic cleanup: remove scripts, styles, and tags, keep text
+          websiteContent = html
+            .replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gm, "")
+            .replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gm, "")
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .slice(0, 5000) // Limit to 5000 chars to save tokens
+          
+          console.log(`✅ Website scraped (${websiteContent.length} chars)`)
+        }
+      } catch (err) {
+        console.warn('⚠️ Failed to scrape website:', err)
+      }
+    }
+
+    // 3. Generate AI analysis
+    const analysisData = await analyzeCompany(company, qualityManagerDetected, websiteContent)
 
     // Prepare data for insertion (map new fields to JSONB to avoid schema changes)
     const { recommended_hat, skill_match_reasoning, quality_manager_detected, ...restAnalysis } = analysisData
