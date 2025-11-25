@@ -308,7 +308,7 @@ export default function VyxHunterPage() {
       </div>
 
       {/* FILTERS & SEARCH */}
-      </Card>
+
 
       {/* TABS FOR PIPELINE & FOLLOW-UPS */}
       <Tabs defaultValue="pipeline" className="w-full">
