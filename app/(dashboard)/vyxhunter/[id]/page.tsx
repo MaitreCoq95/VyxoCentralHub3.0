@@ -514,7 +514,7 @@ export default function CompanyPage() {
                             
                             {/* Email Section */}
                             <div className="flex items-center gap-2 mt-1">
-                                {person.email && person.email !== 'email_not_unlocked' && person.email !== 'Not available' ? (
+                                {person.email && !person.email.includes('email_not_unlocked') && person.email !== 'Not available' ? (
                                     <span className="text-xs text-emerald-600 flex items-center gap-1 bg-emerald-50 px-1.5 py-0.5 rounded font-medium">
                                         <Mail className="h-3 w-3" /> {person.email}
                                     </span>
