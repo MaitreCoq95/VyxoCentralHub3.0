@@ -27,7 +27,7 @@ import {
   File,
   Presentation,
   UserPlus,
-  UserPlus,
+
   Unlock,
   Lock
 } from 'lucide-react'
