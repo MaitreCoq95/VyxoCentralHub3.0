@@ -132,6 +132,13 @@ export const knowledgeModules: KnowledgeModule[] = [
 ];
 
 /**
+ * Helper pour récupérer tous les modules
+ */
+export function getAllModules(): KnowledgeModule[] {
+  return knowledgeModules;
+}
+
+/**
  * Helper pour récupérer un module par son ID
  */
 export function getModuleById(id: string): KnowledgeModule | undefined {

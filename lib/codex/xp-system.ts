@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/client";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { UserXP, UserLearningProgress, XP_REWARDS } from "@/types/codex";
 
 /**
@@ -15,7 +15,7 @@ import { UserXP, UserLearningProgress, XP_REWARDS } from "@/types/codex";
  */
 export async function getUserXP(): Promise<UserXP | null> {
   try {
-    const supabase = createClient();
+    const supabase = createClientComponentClient();
 
     const {
       data: { user },
@@ -54,7 +54,7 @@ export async function getUserXP(): Promise<UserXP | null> {
  * Initialise l'XP pour un nouvel utilisateur
  */
 export async function initializeUserXP(): Promise<UserXP> {
-  const supabase = createClient();
+  const supabase = createClientComponentClient();
 
   const {
     data: { user },
@@ -98,7 +98,7 @@ export async function addXP(
   entityType?: string
 ): Promise<{ success: boolean; newXp?: UserXP; levelUp?: boolean }> {
   try {
-    const supabase = createClient();
+    const supabase = createClientComponentClient();
 
     const {
       data: { user },
@@ -192,7 +192,7 @@ export function calculateLevelProgress(totalXp: number): number {
  */
 export async function awardBadge(badgeId: string): Promise<boolean> {
   try {
-    const supabase = createClient();
+    const supabase = createClientComponentClient();
 
     const {
       data: { user },
@@ -234,7 +234,7 @@ export async function awardBadge(badgeId: string): Promise<boolean> {
  */
 export async function getAllUserProgress(): Promise<UserLearningProgress[]> {
   try {
-    const supabase = createClient();
+    const supabase = createClientComponentClient();
 
     const {
       data: { user },
@@ -273,7 +273,7 @@ export async function getPathProgress(
   pathId: string
 ): Promise<UserLearningProgress | null> {
   try {
-    const supabase = createClient();
+    const supabase = createClientComponentClient();
 
     const {
       data: { user },
@@ -313,7 +313,7 @@ export async function getPathProgress(
  */
 export async function startLearningPath(pathId: string): Promise<boolean> {
   try {
-    const supabase = createClient();
+    const supabase = createClientComponentClient();
 
     const {
       data: { user },
@@ -352,7 +352,7 @@ export async function completeStep(
   xpReward: number
 ): Promise<boolean> {
   try {
-    const supabase = createClient();
+    const supabase = createClientComponentClient();
 
     const {
       data: { user },
@@ -406,7 +406,7 @@ export async function completeLearningPath(
   badgeId: string
 ): Promise<boolean> {
   try {
-    const supabase = createClient();
+    const supabase = createClientComponentClient();
 
     const {
       data: { user },

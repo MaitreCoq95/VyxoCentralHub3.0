@@ -213,6 +213,13 @@ export const knowledgeItems: KnowledgeItem[] = [
 ];
 
 /**
+ * Helper pour récupérer tous les items
+ */
+export function getAllItems(): KnowledgeItem[] {
+  return knowledgeItems;
+}
+
+/**
  * Helper pour récupérer les items d'un module
  */
 export function getItemsByModule(moduleId: string): KnowledgeItem[] {
