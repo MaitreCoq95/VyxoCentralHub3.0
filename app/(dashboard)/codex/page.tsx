@@ -3,10 +3,12 @@
 import { useState, useMemo } from "react";
 import { knowledgeModules, searchModules } from "@/lib/codex/modules";
 import { ModuleCard } from "@/components/codex/module-card";
+import { AIAssistant } from "@/components/codex/ai-assistant";
+import { XPBar } from "@/components/codex/xp-bar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Dices, BookOpen, Sparkles } from "lucide-react";
+import { Search, Dices, BookOpen, Sparkles, GraduationCap, ClipboardCheck } from "lucide-react";
 import Link from "next/link";
 import {
   Select,
@@ -59,21 +61,36 @@ export default function CodexDashboardPage() {
             Votre base de connaissances pour maîtriser les normes ISO, GDP, GMP, CEIV et l'excellence opérationnelle.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Link href="/codex/learning">
+            <Button variant="outline" className="border-cyan-500 text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-950">
+              <GraduationCap className="mr-2 h-4 w-4" />
+              Parcours
+            </Button>
+          </Link>
+          <Link href="/codex/audit-sim">
+            <Button variant="outline" className="border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-950">
+              <ClipboardCheck className="mr-2 h-4 w-4" />
+              Audit
+            </Button>
+          </Link>
           <Link href="/codex/admin">
             <Button variant="outline" className="border-purple-500 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950">
               <Sparkles className="mr-2 h-4 w-4" />
-              Générateur IA
+              Admin IA
             </Button>
           </Link>
           <Link href="/codex/quiz">
             <Button className="bg-vyxo-gold text-vyxo-navy hover:bg-vyxo-gold/90 font-medium">
               <Dices className="mr-2 h-4 w-4" />
-              Quiz Aléatoire
+              Quiz
             </Button>
           </Link>
         </div>
       </div>
+
+      {/* XP Bar */}
+      <XPBar />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -104,23 +121,10 @@ export default function CodexDashboardPage() {
             </div>
           </CardContent>
         </Card>
-
-        <Card className="sm:col-span-2">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                <Sparkles className="h-6 w-6 text-purple-600 dark:text-purple-300" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Assistant IA (bientôt)</p>
-                <p className="text-xs text-muted-foreground">
-                  Posez vos questions et générez automatiquement des quiz personnalisés
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
+
+      {/* AI Assistant */}
+      <AIAssistant />
 
       {/* Search and Filter */}
       <Card>

@@ -152,27 +152,24 @@ ${generatedQuestions.map(q => `  ${JSON.stringify(q, null, 2)},`).join('\n')}
 
   const [isSaving, setIsSaving] = useState(false);
 
-  const saveToFile = async () => {
+  const saveToDatabase = async () => {
     setIsSaving(true);
-    addLog('info', '💾 Sauvegarde dans lib/codex/questions.ts...');
+    addLog('info', '💾 Sauvegarde dans Supabase...');
 
     try {
-      const response = await fetch('/api/codex/save-questions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ questions: generatedQuestions }),
-      });
+      const { saveQuestionsToSupabase } = await import('@/lib/codex/supabase-questions');
+      const result = await saveQuestionsToSupabase(generatedQuestions);
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Erreur de sauvegarde');
+      if (!result.success) {
+        throw new Error(result.error || 'Erreur de sauvegarde');
       }
 
-      const data = await response.json();
-      addLog('success', `✅ ${data.count} questions sauvegardées avec succès !`);
-      addLog('info', '🔄 Rechargez la page pour voir les nouvelles questions dans les quiz.');
+      addLog('success', `✅ ${result.count} questions sauvegardées avec succès dans la base de données !`);
+      addLog('info', '✨ Les questions sont maintenant disponibles instantanément dans tous les quiz.');
+      addLog('info', '🔄 Astuce : Rechargez la page /codex pour voir les stats mises à jour.');
     } catch (error: any) {
       addLog('error', `❌ Erreur: ${error.message}`);
+      addLog('info', '💡 Vérifiez que la table Supabase est bien créée (voir CODEX_SUPABASE_SETUP.md)');
     } finally {
       setIsSaving(false);
     }
@@ -351,7 +348,7 @@ ${generatedQuestions.map(q => `  ${JSON.stringify(q, null, 2)},`).join('\n')}
             <div className="flex flex-col gap-3">
               {/* Bouton principal */}
               <Button
-                onClick={saveToFile}
+                onClick={saveToDatabase}
                 disabled={isSaving}
                 className="w-full bg-green-600 hover:bg-green-700 text-white"
                 size="lg"
@@ -363,7 +360,7 @@ ${generatedQuestions.map(q => `  ${JSON.stringify(q, null, 2)},`).join('\n')}
                   </>
                 ) : (
                   <>
-                    💾 Sauvegarder directement dans le fichier
+                    💾 Sauvegarder dans la base de données
                   </>
                 )}
               </Button>
@@ -413,13 +410,13 @@ ${generatedQuestions.map(q => `  ${JSON.stringify(q, null, 2)},`).join('\n')}
             {/* Instructions */}
             <Alert className="bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
               <AlertDescription>
-                <strong>✨ Méthode simple (recommandée) :</strong><br />
-                1. Cliquez sur le bouton vert <strong>"💾 Sauvegarder directement dans le fichier"</strong><br />
-                2. Les questions sont ajoutées automatiquement dans <code className="bg-slate-200 dark:bg-slate-800 px-1 rounded">lib/codex/questions.ts</code><br />
-                3. Rechargez l'application et testez !<br />
+                <strong>✨ Sauvegarde automatique (recommandée) :</strong><br />
+                1. Cliquez sur le bouton vert <strong>"💾 Sauvegarder dans la base de données"</strong><br />
+                2. Les questions sont sauvegardées dans Supabase<br />
+                3. <strong>Instantanément disponibles</strong> dans tous les quiz (aucun redéploiement nécessaire) !<br />
                 <br />
                 <span className="text-xs text-muted-foreground">
-                  Alternative : Utilisez "📋 Copier le code" ou "Télécharger JSON" pour une édition manuelle
+                  Alternative : Utilisez "📋 Copier le code" ou "Télécharger JSON" si Supabase n'est pas configuré
                 </span>
               </AlertDescription>
             </Alert>

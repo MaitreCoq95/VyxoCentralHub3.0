@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { getRandomQuestions, getQuestionsByModule } from "@/lib/codex/questions";
+import { getAllRandomQuestions, getAllQuestionsByModule } from "@/lib/codex/all-questions";
 import { getModuleById } from "@/lib/codex/modules";
 import { QuizRunner } from "@/components/codex/quiz-runner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { QuizQuestion, QuizResult } from "@/types/codex";
-import { ArrowLeft, Dices, Settings, BookOpen } from "lucide-react";
+import { ArrowLeft, Dices, Settings, BookOpen, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 function QuizPageContent() {
@@ -29,6 +29,8 @@ function QuizPageContent() {
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [questionCount, setQuestionCount] = useState("10");
   const [selectedModuleId, setSelectedModuleId] = useState<string | undefined>(moduleIdParam || undefined);
+  const [availableCount, setAvailableCount] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const module = selectedModuleId ? getModuleById(selectedModuleId) : undefined;
 
@@ -38,17 +40,34 @@ function QuizPageContent() {
     }
   }, [moduleIdParam]);
 
-  const handleStartQuiz = () => {
-    const count = parseInt(questionCount) || 10;
-    const quizQuestions = getRandomQuestions(count, selectedModuleId);
+  // Charger le nombre de questions disponibles
+  useEffect(() => {
+    const loadAvailableCount = async () => {
+      const questions = await getAllRandomQuestions(1000, selectedModuleId);
+      setAvailableCount(questions.length);
+    };
+    loadAvailableCount();
+  }, [selectedModuleId]);
 
-    if (quizQuestions.length === 0) {
-      alert("Aucune question disponible pour ce quiz.");
-      return;
+  const handleStartQuiz = async () => {
+    setIsLoading(true);
+    try {
+      const count = parseInt(questionCount) || 10;
+      const quizQuestions = await getAllRandomQuestions(count, selectedModuleId);
+
+      if (quizQuestions.length === 0) {
+        alert("Aucune question disponible pour ce quiz.");
+        return;
+      }
+
+      setQuestions(quizQuestions);
+      setQuizStarted(true);
+    } catch (error) {
+      console.error("Erreur lors du chargement des questions:", error);
+      alert("Erreur lors du chargement des questions. Veuillez réessayer.");
+    } finally {
+      setIsLoading(false);
     }
-
-    setQuestions(quizQuestions);
-    setQuizStarted(true);
   };
 
   const handleQuizComplete = (results: QuizResult[], score: number) => {
@@ -159,22 +178,35 @@ function QuizPageContent() {
             <p className="text-slate-700 dark:text-slate-300">
               <strong>Mode :</strong>{' '}
               {selectedModuleId
-                ? `Quiz spécifique à un module (${getQuestionsByModule(selectedModuleId).length} questions disponibles)`
-                : `Quiz global (${getRandomQuestions(1000).length} questions disponibles)`}
+                ? `Quiz spécifique à un module (${availableCount} questions disponibles)`
+                : `Quiz global (${availableCount} questions disponibles)`}
             </p>
             <p className="text-slate-600 dark:text-slate-400 mt-2">
               Les questions sont sélectionnées aléatoirement. Vous verrez votre score à la fin.
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-500 mt-2">
+              ✨ Inclut les questions générées par l'IA et les questions de base
             </p>
           </div>
 
           {/* Start Button */}
           <Button
             onClick={handleStartQuiz}
+            disabled={isLoading || availableCount === 0}
             className="w-full bg-vyxo-gold text-vyxo-navy hover:bg-vyxo-gold/90 font-medium"
             size="lg"
           >
-            <Dices className="mr-2 h-5 w-5" />
-            Démarrer le Quiz
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Chargement...
+              </>
+            ) : (
+              <>
+                <Dices className="mr-2 h-5 w-5" />
+                Démarrer le Quiz
+              </>
+            )}
           </Button>
         </CardContent>
       </Card>
