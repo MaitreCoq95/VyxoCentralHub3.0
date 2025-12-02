@@ -1,16 +1,17 @@
 /**
  * Helper IA pour le module Vyxo Codex
- * Intégration future avec l'API ChatGPT pour générer des questions, enrichir les connaissances, etc.
+ * Intégration avec l'API ChatGPT pour générer des questions, enrichir les connaissances, etc.
+ * Utilise la même clé API OPENAI_API_KEY configurée sur Vercel pour les autres modules.
  */
+
+import { QuizQuestion } from '@/types/codex';
 
 /**
  * Configuration de l'API ChatGPT
- * TODO: Ajouter la clé API dans les variables d'environnement (.env.local)
- * OPENAI_API_KEY=votre_clé_ici
+ * Utilise la clé API OpenAI déjà configurée sur Vercel (même que pour les emails, audits, etc.)
  */
 export const CODEX_AI_CONFIG = {
-  // La clé sera récupérée depuis process.env.OPENAI_API_KEY
-  model: 'gpt-4-turbo-preview', // ou 'gpt-3.5-turbo' selon vos besoins
+  model: 'gpt-4o', // Même modèle que les autres modules
   temperature: 0.7,
   maxTokens: 2000,
 };
@@ -21,6 +22,7 @@ export const CODEX_AI_CONFIG = {
 export interface CodexAIRequest {
   prompt: string;
   moduleId?: string;
+  moduleName?: string;
   context?: string;
   type?: 'question-generation' | 'knowledge-enrichment' | 'general-query';
 }
@@ -36,125 +38,137 @@ export interface CodexAIResponse {
 }
 
 /**
- * Placeholder pour l'assistant IA Codex
- * Cette fonction sera implémentée pour communiquer avec l'API ChatGPT
- *
- * @param request - Les paramètres de la requête
- * @returns Une promesse avec la réponse de l'IA
- */
-export async function askCodexAssistant(request: CodexAIRequest): Promise<CodexAIResponse> {
-  // TODO: Implémenter l'appel à l'API OpenAI
-  // Pour l'instant, retourne un placeholder
-
-  console.log('[Codex AI] Request received:', request);
-
-  // Simuler un délai
-  await new Promise(resolve => setTimeout(resolve, 500));
-
-  return {
-    success: false,
-    message: 'L\'assistant IA sera bientôt disponible. Veuillez configurer votre clé API OpenAI.',
-    error: 'NOT_IMPLEMENTED'
-  };
-}
-
-/**
  * Générer des questions de quiz via IA
+ * Utilise l'API route /api/codex/generate-questions
  *
  * @param moduleId - ID du module pour lequel générer des questions
+ * @param moduleName - Nom du module (pour le contexte IA)
  * @param count - Nombre de questions à générer
  * @param difficulty - Niveau de difficulté
  */
 export async function generateQuizQuestions(
   moduleId: string,
+  moduleName: string,
   count: number = 5,
   difficulty: 'easy' | 'medium' | 'hard' = 'medium'
-): Promise<CodexAIResponse> {
-  return askCodexAssistant({
-    prompt: `Génère ${count} questions de quiz de niveau ${difficulty} sur le module ${moduleId}`,
-    moduleId,
-    type: 'question-generation'
+): Promise<QuizQuestion[]> {
+  try {
+    const response = await fetch('/api/codex/generate-questions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        moduleId,
+        moduleName,
+        count,
+        difficulty,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to generate questions');
+    }
+
+    const data = await response.json();
+    return data.questions || [];
+  } catch (error: any) {
+    console.error('[Codex AI] Error generating questions:', error);
+    throw error;
+  }
+}
+
+/**
+ * Poser une question à l'assistant (streaming)
+ * Utilise l'API route /api/codex/ask-assistant
+ *
+ * @param question - La question à poser
+ * @param moduleId - (Optionnel) Contexte du module
+ * @param moduleName - (Optionnel) Nom du module
+ * @param context - (Optionnel) Contexte additionnel
+ * @returns ReadableStream pour la réponse en streaming
+ */
+export async function askAssistant(
+  question: string,
+  moduleId?: string,
+  moduleName?: string,
+  context?: any
+): Promise<ReadableStream> {
+  const response = await fetch('/api/codex/ask-assistant', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      question,
+      moduleId,
+      moduleName,
+      context,
+    }),
   });
+
+  if (!response.ok) {
+    throw new Error('Failed to get assistant response');
+  }
+
+  return response.body!;
 }
 
 /**
  * Enrichir les connaissances d'un module via IA
+ * Utilise l'assistant pour générer du contenu éducatif
  *
  * @param moduleId - ID du module à enrichir
+ * @param moduleName - Nom du module
  * @param topic - Sujet spécifique à développer
  */
 export async function enrichKnowledge(
   moduleId: string,
+  moduleName: string,
   topic: string
-): Promise<CodexAIResponse> {
-  return askCodexAssistant({
-    prompt: `Développe des connaissances sur le sujet "${topic}" pour le module ${moduleId}`,
-    moduleId,
-    type: 'knowledge-enrichment'
-  });
+): Promise<ReadableStream> {
+  const question = `Développe en détail le sujet "${topic}" dans le contexte de ${moduleName}.
+Fournis des explications claires, des exemples concrets, et des points d'attention importants.`;
+
+  return askAssistant(question, moduleId, moduleName);
 }
 
 /**
- * Poser une question générale à l'assistant
- *
- * @param question - La question à poser
- * @param moduleId - (Optionnel) Contexte du module
+ * Utilitaire pour convertir un ReadableStream en texte
+ * Utile pour consommer les réponses streaming
  */
-export async function askQuestion(
-  question: string,
-  moduleId?: string
-): Promise<CodexAIResponse> {
-  return askCodexAssistant({
-    prompt: question,
-    moduleId,
-    type: 'general-query'
-  });
+export async function streamToText(stream: ReadableStream): Promise<string> {
+  const reader = stream.getReader();
+  const decoder = new TextDecoder();
+  let text = '';
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      text += decoder.decode(value, { stream: true });
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  return text;
 }
 
 /**
- * Note d'implémentation future :
+ * Hook React personnalisé pour utiliser l'assistant en streaming
+ * Exemple d'utilisation dans un composant :
  *
- * Pour implémenter l'intégration avec ChatGPT :
+ * ```tsx
+ * const { askQuestion, response, isLoading, error } = useCodexAssistant();
  *
- * 1. Installer le SDK OpenAI (déjà présent dans package.json)
- * 2. Ajouter OPENAI_API_KEY dans .env.local
- * 3. Remplacer la fonction askCodexAssistant par :
- *
- * ```typescript
- * import OpenAI from 'openai';
- *
- * const openai = new OpenAI({
- *   apiKey: process.env.OPENAI_API_KEY,
- * });
- *
- * export async function askCodexAssistant(request: CodexAIRequest): Promise<CodexAIResponse> {
- *   try {
- *     const completion = await openai.chat.completions.create({
- *       model: CODEX_AI_CONFIG.model,
- *       messages: [
- *         {
- *           role: 'system',
- *           content: 'Tu es un expert en systèmes de management, normes ISO, GDP, GMP, et excellence opérationnelle.'
- *         },
- *         {
- *           role: 'user',
- *           content: request.prompt
- *         }
- *       ],
- *       temperature: CODEX_AI_CONFIG.temperature,
- *       max_tokens: CODEX_AI_CONFIG.maxTokens,
- *     });
- *
- *     return {
- *       success: true,
- *       data: completion.choices[0].message.content,
- *     };
- *   } catch (error) {
- *     return {
- *       success: false,
- *       error: error.message,
- *     };
- *   }
- * }
+ * const handleSubmit = () => {
+ *   askQuestion("Explique-moi ISO 9001", "iso-9001", "ISO 9001");
+ * };
  * ```
  */
+export function useCodexAssistant() {
+  // Cette fonction sera implémentée côté composant si nécessaire
+  // Pour l'instant, c'est juste une référence pour montrer comment l'utiliser
+}
