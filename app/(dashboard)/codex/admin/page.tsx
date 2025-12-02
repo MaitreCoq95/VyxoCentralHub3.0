@@ -150,6 +150,34 @@ ${generatedQuestions.map(q => `  ${JSON.stringify(q, null, 2)},`).join('\n')}
     addLog('success', '📋 Code TypeScript copié dans le presse-papiers !');
   };
 
+  const [isSaving, setIsSaving] = useState(false);
+
+  const saveToFile = async () => {
+    setIsSaving(true);
+    addLog('info', '💾 Sauvegarde dans lib/codex/questions.ts...');
+
+    try {
+      const response = await fetch('/api/codex/save-questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ questions: generatedQuestions }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Erreur de sauvegarde');
+      }
+
+      const data = await response.json();
+      addLog('success', `✅ ${data.count} questions sauvegardées avec succès !`);
+      addLog('info', '🔄 Rechargez la page pour voir les nouvelles questions dans les quiz.');
+    } catch (error: any) {
+      addLog('error', `❌ Erreur: ${error.message}`);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6 p-6 max-w-5xl mx-auto">
       {/* Header */}
@@ -320,14 +348,36 @@ ${generatedQuestions.map(q => `  ${JSON.stringify(q, null, 2)},`).join('\n')}
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Actions */}
-            <div className="flex gap-3">
-              <Button onClick={copyToClipboard} variant="outline" className="flex-1">
-                📋 Copier le code TypeScript
+            <div className="flex flex-col gap-3">
+              {/* Bouton principal */}
+              <Button
+                onClick={saveToFile}
+                disabled={isSaving}
+                className="w-full bg-green-600 hover:bg-green-700 text-white"
+                size="lg"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Sauvegarde en cours...
+                  </>
+                ) : (
+                  <>
+                    💾 Sauvegarder directement dans le fichier
+                  </>
+                )}
               </Button>
-              <Button onClick={downloadQuestions} variant="outline" className="flex-1">
-                <Download className="mr-2 h-4 w-4" />
-                Télécharger JSON
-              </Button>
+
+              {/* Boutons secondaires */}
+              <div className="flex gap-3">
+                <Button onClick={copyToClipboard} variant="outline" className="flex-1">
+                  📋 Copier le code
+                </Button>
+                <Button onClick={downloadQuestions} variant="outline" className="flex-1">
+                  <Download className="mr-2 h-4 w-4" />
+                  Télécharger JSON
+                </Button>
+              </div>
             </div>
 
             {/* Aperçu */}
@@ -361,13 +411,16 @@ ${generatedQuestions.map(q => `  ${JSON.stringify(q, null, 2)},`).join('\n')}
             </div>
 
             {/* Instructions */}
-            <Alert>
+            <Alert className="bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
               <AlertDescription>
-                <strong>Prochaine étape :</strong><br />
-                1. Cliquez sur "Copier le code TypeScript"<br />
-                2. Ouvrez le fichier <code className="bg-slate-200 dark:bg-slate-800 px-1 rounded">lib/codex/questions.ts</code><br />
-                3. Collez les nouvelles questions dans le tableau <code className="bg-slate-200 dark:bg-slate-800 px-1 rounded">quizQuestions</code><br />
-                4. Sauvegardez et testez !
+                <strong>✨ Méthode simple (recommandée) :</strong><br />
+                1. Cliquez sur le bouton vert <strong>"💾 Sauvegarder directement dans le fichier"</strong><br />
+                2. Les questions sont ajoutées automatiquement dans <code className="bg-slate-200 dark:bg-slate-800 px-1 rounded">lib/codex/questions.ts</code><br />
+                3. Rechargez l'application et testez !<br />
+                <br />
+                <span className="text-xs text-muted-foreground">
+                  Alternative : Utilisez "📋 Copier le code" ou "Télécharger JSON" pour une édition manuelle
+                </span>
               </AlertDescription>
             </Alert>
           </CardContent>
