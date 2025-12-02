@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getModuleById } from "@/lib/codex/modules";
 import { getItemsByModule, groupItemsByType, searchItems } from "@/lib/codex/items";
-import { getQuestionsByModule } from "@/lib/codex/questions";
+import { getAllQuestionsByModule } from "@/lib/codex/all-questions";
 import { KnowledgeItemCard } from "@/components/codex/knowledge-item-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ import {
   Sparkles
 } from "lucide-react";
 import Link from "next/link";
-import { KnowledgeItemType } from "@/types/codex";
+import { KnowledgeItemType, QuizQuestion } from "@/types/codex";
 
 const typeIcons: Record<KnowledgeItemType, any> = {
   concept: Lightbulb,
@@ -50,12 +50,29 @@ export default function ModuleDetailPage() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("knowledge");
+  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [questionsLoading, setQuestionsLoading] = useState(true);
 
   // Récupération des données
   const module = getModuleById(moduleId);
   const allItems = useMemo(() => getItemsByModule(moduleId), [moduleId]);
   const groupedItems = useMemo(() => groupItemsByType(moduleId), [moduleId]);
-  const questions = useMemo(() => getQuestionsByModule(moduleId), [moduleId]);
+
+  // Charger les questions depuis Supabase + hardcodées
+  useEffect(() => {
+    const loadQuestions = async () => {
+      setQuestionsLoading(true);
+      try {
+        const allQuestions = await getAllQuestionsByModule(moduleId);
+        setQuestions(allQuestions);
+      } catch (error) {
+        console.error("Erreur lors du chargement des questions:", error);
+      } finally {
+        setQuestionsLoading(false);
+      }
+    };
+    loadQuestions();
+  }, [moduleId]);
 
   // Recherche
   const filteredItems = useMemo(() => {
@@ -150,7 +167,7 @@ export default function ModuleDetailPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Questions Quiz</p>
                 <p className="text-2xl font-bold text-vyxo-navy dark:text-white">
-                  {questions.length}
+                  {questionsLoading ? "..." : questions.length}
                 </p>
               </div>
               <Dices className="h-8 w-8 text-amber-500 opacity-50" />
