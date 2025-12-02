@@ -118,6 +118,16 @@ export const knowledgeModules: KnowledgeModule[] = [
     sectors: ["Tous secteurs"],
     level: "intermediate",
     tags: ["audit", "conformité", "iso-19011"]
+  },
+  {
+    id: "haccp",
+    code: "HACCP",
+    title: "HACCP – Analyse des dangers et points critiques",
+    category: "Pharma",
+    shortDescription: "Système préventif de maîtrise de la sécurité sanitaire des aliments basé sur l'identification, l'évaluation et la maîtrise des dangers.",
+    sectors: ["Agroalimentaire", "Restauration", "Industrie alimentaire", "Distribution alimentaire"],
+    level: "advanced",
+    tags: ["haccp", "sécurité-alimentaire", "7-principes", "pcc", "codex-alimentarius"]
   }
 ];
 

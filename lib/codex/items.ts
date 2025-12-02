@@ -143,6 +143,72 @@ export const knowledgeItems: KnowledgeItem[] = [
     topic: "Emballages actifs",
     body: "Les emballages actifs utilisent une source d'énergie (batterie, compresseur) pour réguler automatiquement la température. Ils sont adaptés aux trajets longs et aux conditions extrêmes, mais nécessitent une gestion rigoureuse (batteries, paramétrage, pré-refroidissement).",
     tags: ["emballage-actif", "envirotainer", "regulation"]
+  },
+
+  // HACCP
+  {
+    id: "haccp-7-principes",
+    moduleId: "haccp",
+    type: "concept",
+    topic: "Les 7 principes de l'HACCP",
+    body: "L'HACCP repose sur 7 principes fondamentaux : 1) Identifier les dangers et analyser les risques, 2) Déterminer les Points Critiques de Contrôle (CCP), 3) Établir les limites critiques, 4) Mettre en place un système de surveillance, 5) Définir les actions correctives, 6) Établir des procédures de vérification, 7) Constituer un système documentaire.",
+    tags: ["7-principes", "ccp", "codex-alimentarius"]
+  },
+  {
+    id: "haccp-pcc",
+    moduleId: "haccp",
+    type: "concept",
+    topic: "Point Critique de Contrôle (CCP)",
+    body: "Un CCP est une étape du processus où une mesure de maîtrise peut être appliquée et est essentielle pour prévenir, éliminer ou réduire un danger pour la sécurité des aliments à un niveau acceptable. Exemples : température de cuisson, pH, détection de métaux.",
+    tags: ["ccp", "point-critique", "maitrise"]
+  },
+  {
+    id: "haccp-arbre-decision",
+    moduleId: "haccp",
+    type: "tool",
+    topic: "Arbre de décision CCP",
+    body: "L'arbre de décision du Codex Alimentarius est un outil systématique pour déterminer si une étape est un CCP. Il pose une série de questions : Q1) Existe-t-il une mesure préventive ? Q2) L'étape élimine-t-elle ou réduit-elle le danger ? Q3) Une contamination peut-elle survenir ? Q4) Une étape ultérieure éliminera-t-elle le danger ?",
+    tags: ["arbre-decision", "ccp", "methodologie"]
+  },
+  {
+    id: "haccp-limites-critiques",
+    moduleId: "haccp",
+    type: "requirement",
+    topic: "Limites critiques",
+    body: "Les limites critiques sont les valeurs qui séparent l'acceptabilité de la non-acceptabilité pour chaque CCP. Elles doivent être mesurables (température ≥75°C, pH ≤4.6, aw ≤0.85) et basées sur des références scientifiques ou réglementaires. Elles permettent de déterminer si un CCP est maîtrisé.",
+    tags: ["limites-critiques", "ccp", "mesures"]
+  },
+  {
+    id: "haccp-surveillance",
+    moduleId: "haccp",
+    type: "checklist",
+    topic: "Surveillance des CCP",
+    body: "Vérifier : méthodes de surveillance définies (continue ou discontinue), fréquence adaptée au risque, responsabilités assignées, équipements calibrés, enregistrements des mesures, système d'alerte en cas de dérive, traçabilité des lots.",
+    tags: ["surveillance", "monitoring", "ccp"]
+  },
+  {
+    id: "haccp-actions-correctives",
+    moduleId: "haccp",
+    type: "requirement",
+    topic: "Actions correctives",
+    body: "Des actions correctives doivent être définies pour chaque CCP en cas de dépassement des limites critiques. Elles incluent : correction immédiate du processus, identification et maîtrise des produits non conformes, analyse des causes, mesures pour éviter la récurrence, enregistrement documenté.",
+    tags: ["actions-correctives", "non-conformite", "ccp"]
+  },
+  {
+    id: "haccp-verification",
+    moduleId: "haccp",
+    type: "checklist",
+    topic: "Vérification du système HACCP",
+    body: "Vérifier : audits HACCP réguliers, validation des limites critiques, calibration des équipements de mesure, analyses microbiologiques/chimiques, revue des enregistrements, tests challenge, formation du personnel, mise à jour du plan HACCP lors de modifications.",
+    tags: ["verification", "audit", "validation"]
+  },
+  {
+    id: "haccp-prerequis",
+    moduleId: "haccp",
+    type: "concept",
+    topic: "Programmes Pré-Requis (PRP)",
+    body: "Les PRP sont les conditions de base et les activités nécessaires pour maintenir un environnement hygiénique. Ils incluent : conception des locaux, nettoyage et désinfection, lutte contre les nuisibles, hygiène du personnel, maintenance des équipements, gestion des déchets, approvisionnement en eau, maîtrise des fournisseurs.",
+    tags: ["prp", "prerequis", "hygiene"]
   }
 ];
 
