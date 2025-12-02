@@ -14,7 +14,8 @@ import {
   Settings,
   LogOut,
   Menu,
-  Target
+  Target,
+  BookOpen
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -69,6 +70,12 @@ export function Sidebar({ className }: SidebarProps) {
       icon: FolderOpen,
       href: "/documents",
       color: "text-emerald-500",
+    },
+    {
+      label: t("nav.codex"),
+      icon: BookOpen,
+      href: "/codex",
+      color: "text-cyan-500",
     },
     {
       label: t("nav.settings"),
