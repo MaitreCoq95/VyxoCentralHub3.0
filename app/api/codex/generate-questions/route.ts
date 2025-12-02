@@ -13,39 +13,77 @@ export async function POST(req: Request) {
     }
 
     const prompt = `
-Tu es un expert en systèmes de management, normes ISO, GDP, GMP, CEIV, et excellence opérationnelle.
-Ton rôle est de générer des questions de quiz éducatives et pertinentes.
+Tu es un expert certifié en systèmes de management, normes ISO, GDP, GMP, CEIV, et excellence opérationnelle.
+Tu as une connaissance approfondie du contenu exact des normes et référentiels.
 
 MODULE : ${moduleName} (ID: ${moduleId})
 NOMBRE DE QUESTIONS : ${count}
 DIFFICULTÉ : ${difficulty}
 
-INSTRUCTIONS :
-- Génère ${count} questions de quiz sur le module "${moduleName}"
-- Niveau de difficulté : ${difficulty} (easy = facile, medium = intermédiaire, hard = avancé)
-- Chaque question doit avoir 4 choix de réponse
-- Une seule réponse correcte par question
-- Fournis une explication claire et pédagogique pour chaque réponse
+MISSION :
+Génère ${count} questions de quiz basées EXCLUSIVEMENT sur le contenu réel et les exigences officielles du référentiel ${moduleName}.
 
-CRITÈRES DE QUALITÉ :
-- Questions claires et sans ambiguïté
-- Réponses plausibles mais une seule correcte
-- Explications qui ajoutent de la valeur pédagogique
-- Variété dans les types de questions (définitions, applications pratiques, cas d'usage)
+SOURCES À UTILISER (selon le module) :
+- ISO 9001:2015 : Clauses 4-10, exigences documentées, approche processus, contexte, risques
+- ISO 14001:2015 : Aspects/impacts environnementaux, conformité réglementaire, ACV
+- ISO 45001:2018 : Dangers, évaluation des risques SST, DUERP, participation des travailleurs
+- ISO 27001:2022 : Annexe A (93 mesures), SMSI, analyse de risques, gestion des incidents
+- GDP (EU 2013/C 343/01) : Chaîne du froid, qualification véhicules, traçabilité, excursions
+- GMP (EU GMP Part I & II) : Batch records, validation, personnel qualifié, contrôles qualité
+- CEIV Pharma (IATA) : 3 piliers (Formation, Processus, Infrastructure), TCR, handling pharma
+- GAMP 5 : Catégories de systèmes, validation basée sur les risques, 4Q (IQ/OQ/PQ)
+- Lean Six Sigma : 5S, DMAIC, VSM, Kaizen, réduction variabilité, Muda/Mura/Muri
+- Cold Chain : Emballages passifs/actifs, PCM, qualification, études de stabilité
+
+RÈGLES STRICTES :
+1. Base-toi UNIQUEMENT sur le contenu réel des normes/référentiels
+2. Cite les clauses, articles ou sections précis quand pertinent
+3. Utilise la terminologie exacte du référentiel
+4. Questions sur des exigences concrètes, pas de généralités
+5. Explications avec références (ex: "Selon la clause 8.5.1 d'ISO 9001...")
+
+DIFFICULTÉ :
+- EASY : Définitions, acronymes, structure de la norme, concepts de base
+- MEDIUM : Exigences spécifiques, application pratique, interprétation
+- HARD : Cas complexes, arbitrage entre exigences, audit avancé, exceptions
+
+TYPES DE QUESTIONS À VARIER :
+- Définitions et concepts clés
+- Clauses et exigences spécifiques
+- Applications terrain / cas pratiques
+- Différences entre versions ou normes
+- Pièges d'interprétation courants
+- Méthodologies et outils
+
+EXEMPLES DE BONNES QUESTIONS :
+
+ISO 9001 (MEDIUM):
+"Quelle clause de l'ISO 9001:2015 exige l'identification des enjeux internes et externes ?"
+Choix: [Clause 3, Clause 4, Clause 5, Clause 6]
+Correcte: Clause 4
+Explication: "La clause 4.1 de l'ISO 9001:2015 exige que l'organisme détermine les enjeux externes et internes pertinents pour sa finalité et son orientation stratégique..."
+
+GDP (HARD):
+"Selon les GDP EU 2013/C 343/01, quelle est la température maximale de stockage pour les médicaments thermosensibles 2-8°C lors d'une excursion temporaire ?"
+Choix: [Aucune excursion autorisée, Dépend de l'étude de stabilité du produit, 15°C maximum, 25°C maximum 24h]
+Correcte: Dépend de l'étude de stabilité du produit
+Explication: "Les GDP ne fixent pas de limite universelle. Chaque excursion doit être évaluée selon les données de stabilité du fabricant (Chapitre 9.3)..."
 
 RETOURNE UN JSON EXACTEMENT DANS CE FORMAT :
 {
   "questions": [
     {
-      "question": "Question ici ?",
+      "question": "Question basée sur le contenu réel de la norme ?",
       "difficulty": "${difficulty}",
-      "choices": ["Choix A", "Choix B", "Choix C", "Choix D"],
+      "choices": ["Choix A plausible", "Choix B plausible", "Bonne réponse C", "Choix D plausible"],
       "correctIndex": 2,
-      "explanation": "Explication détaillée de la réponse correcte...",
-      "tags": ["tag1", "tag2"]
+      "explanation": "Explication avec référence à la clause/section + contexte pédagogique détaillé (min 100 caractères)...",
+      "tags": ["tag-pertinent-1", "tag-pertinent-2", "clause-ou-concept"]
     }
   ]
 }
+
+IMPORTANT : Les questions doivent refléter le contenu RÉEL des normes, pas des généralités.
 `;
 
     const { text } = await generateText({

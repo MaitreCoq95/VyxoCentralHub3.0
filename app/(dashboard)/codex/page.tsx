@@ -59,12 +59,20 @@ export default function CodexDashboardPage() {
             Votre base de connaissances pour maîtriser les normes ISO, GDP, GMP, CEIV et l'excellence opérationnelle.
           </p>
         </div>
-        <Link href="/codex/quiz">
-          <Button className="bg-vyxo-gold text-vyxo-navy hover:bg-vyxo-gold/90 font-medium">
-            <Dices className="mr-2 h-4 w-4" />
-            Quiz Aléatoire
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/codex/admin">
+            <Button variant="outline" className="border-purple-500 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950">
+              <Sparkles className="mr-2 h-4 w-4" />
+              Générateur IA
+            </Button>
+          </Link>
+          <Link href="/codex/quiz">
+            <Button className="bg-vyxo-gold text-vyxo-navy hover:bg-vyxo-gold/90 font-medium">
+              <Dices className="mr-2 h-4 w-4" />
+              Quiz Aléatoire
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Stats Cards */}
