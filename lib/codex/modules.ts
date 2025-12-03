@@ -146,7 +146,7 @@ export const knowledgeModules: KnowledgeModule[] = [
     category: "ExOp",
     shortDescription: "Techniques d'audit avancées : entretien, audit orienté risques, échantillonnage, scoring, audit comportemental et multi-sites.",
     sectors: ["Conseil", "Audit", "Certification", "Qualité"],
-    level: "expert",
+    level: "advanced",
     tags: ["audit-avancé", "techniques-entretien", "risk-based-audit", "échantillonnage", "audit-comportemental", "multi-sites"]
   }
 ];
