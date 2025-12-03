@@ -76,16 +76,18 @@ function QuizPageContent() {
     console.log('Quiz completed:', { results, score });
 
     // Sauvegarder les résultats dans Supabase pour le scoring
-    const quizSubmissions = questions.map((question, index) => {
-      const result = results.find(r => r.questionId === question.id);
+    const quizSubmissions = results.map((result) => {
+      const question = questions.find(q => q.id === result.questionId);
       return {
-        moduleId: question.moduleId,
-        questionId: question.id,
-        isCorrect: result?.isCorrect || false,
+        moduleId: question?.moduleId || 'unknown',
+        questionId: result.questionId,
+        isCorrect: result.isCorrect,
       };
     });
 
-    await saveQuizResults(quizSubmissions);
+    console.log('Saving quiz submissions:', quizSubmissions);
+    const saveResult = await saveQuizResults(quizSubmissions);
+    console.log('Save result:', saveResult);
 
     // Enregistrer l'XP pour le quiz
     const quizId = `quiz-${Date.now()}`;
