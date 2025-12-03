@@ -128,6 +128,26 @@ export const knowledgeModules: KnowledgeModule[] = [
     sectors: ["Agroalimentaire", "Restauration", "Industrie alimentaire", "Distribution alimentaire"],
     level: "advanced",
     tags: ["haccp", "sécurité-alimentaire", "7-principes", "pcc", "codex-alimentarius"]
+  },
+  {
+    id: "iso-13485",
+    code: "ISO 13485",
+    title: "ISO 13485 – Dispositifs médicaux",
+    category: "Pharma",
+    shortDescription: "Système de management de la qualité spécifique aux organismes impliqués dans la conception, production et fourniture de dispositifs médicaux.",
+    sectors: ["Dispositifs médicaux", "Pharma", "Santé", "Biotechnologie"],
+    level: "advanced",
+    tags: ["dispositifs-médicaux", "réglementation-santé", "marquage-ce", "fda", "vigilance"]
+  },
+  {
+    id: "maitrise-audit",
+    code: "Audit Mastery",
+    title: "Maîtrise d'Audit – Techniques avancées",
+    category: "ExOp",
+    shortDescription: "Techniques d'audit avancées : entretien, audit orienté risques, échantillonnage, scoring, audit comportemental et multi-sites.",
+    sectors: ["Conseil", "Audit", "Certification", "Qualité"],
+    level: "expert",
+    tags: ["audit-avancé", "techniques-entretien", "risk-based-audit", "échantillonnage", "audit-comportemental", "multi-sites"]
   }
 ];
 

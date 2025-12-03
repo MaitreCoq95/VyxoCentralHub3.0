@@ -59,15 +59,29 @@ export function QuizRunner({ questions, onComplete, onExit }: QuizRunnerProps) {
       setSelectedAnswer(null);
       setShowExplanation(false);
     } else {
-      // Quiz terminé
+      // Quiz terminé - Construire les résultats finaux avec la dernière réponse
+      const allResults = [...results];
+
+      // Ajouter la dernière réponse si elle n'est pas déjà dans results
+      const lastQuestionResult = results.find(r => r.questionId === currentQuestion.id);
+      if (!lastQuestionResult && selectedAnswer !== null) {
+        const isCorrect = selectedAnswer === currentQuestion.correctIndex;
+        allResults.push({
+          questionId: currentQuestion.id,
+          userAnswer: selectedAnswer,
+          isCorrect,
+        });
+      }
+
       const finalScore = Math.round(
-        ((results.filter(r => r.isCorrect).length + (selectedAnswer === currentQuestion.correctIndex ? 1 : 0)) /
-          questions.length) *
-          100
+        (allResults.filter(r => r.isCorrect).length / questions.length) * 100
       );
+
+      setResults(allResults);
       setIsComplete(true);
+
       if (onComplete) {
-        onComplete([...results], finalScore);
+        onComplete(allResults, finalScore);
       }
     }
   };

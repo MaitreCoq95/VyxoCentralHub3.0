@@ -209,6 +209,118 @@ export const knowledgeItems: KnowledgeItem[] = [
     topic: "Programmes Pré-Requis (PRP)",
     body: "Les PRP sont les conditions de base et les activités nécessaires pour maintenir un environnement hygiénique. Ils incluent : conception des locaux, nettoyage et désinfection, lutte contre les nuisibles, hygiène du personnel, maintenance des équipements, gestion des déchets, approvisionnement en eau, maîtrise des fournisseurs.",
     tags: ["prp", "prerequis", "hygiene"]
+  },
+
+  // ─────────────────────────────────────────────────────────────────
+  // ISO 13485 - Dispositifs médicaux
+  // ─────────────────────────────────────────────────────────────────
+  {
+    id: "iso13485-intro",
+    moduleId: "iso-13485",
+    type: "concept",
+    topic: "ISO 13485 : Spécificités par rapport à ISO 9001",
+    body: "ISO 13485 est une norme spécialisée pour les dispositifs médicaux, basée sur ISO 9001 mais avec des exigences supplémentaires : gestion des risques (ISO 14971), traçabilité renforcée, vigilance réglementaire, validation des processus, propreté/contamination, conception et développement obligatoires, dossier technique de dispositif.",
+    tags: ["iso-13485", "dispositifs-médicaux", "réglementation"]
+  },
+  {
+    id: "iso13485-reglementation",
+    moduleId: "iso-13485",
+    type: "requirement",
+    topic: "Exigences réglementaires et marquage CE",
+    body: "Les dispositifs médicaux doivent respecter le règlement UE 2017/745 (MDR) ou 2017/746 (IVDR). Exigences : classification du dispositif (I, IIa, IIb, III), évaluation de conformité, dossier technique, marquage CE, déclaration de conformité UE, vigilance et traçabilité, organisme notifié si nécessaire.",
+    tags: ["marquage-ce", "mdr", "ivdr", "réglementation"]
+  },
+  {
+    id: "iso13485-gestion-risques",
+    moduleId: "iso-13485",
+    type: "concept",
+    topic: "Gestion des risques selon ISO 14971",
+    body: "La norme ISO 14971 définit le processus de management des risques pour les dispositifs médicaux : identification des dangers, estimation des risques, évaluation des risques, maîtrise des risques (réduction, transfert, acceptation), réévaluation continue, rapport de management des risques.",
+    tags: ["gestion-risques", "iso-14971", "sécurité"]
+  },
+  {
+    id: "iso13485-tracabilite",
+    moduleId: "iso-13485",
+    type: "requirement",
+    topic: "Traçabilité renforcée des dispositifs",
+    body: "Exigences de traçabilité : UDI (Unique Device Identification), numéro de série/lot pour chaque dispositif, enregistrement des distributions, capacité de rappel en 24h, registre des utilisateurs finaux pour dispositifs implantables, conservation des enregistrements (min. durée de vie + 5 ans).",
+    tags: ["traçabilité", "udi", "rappel", "vigilance"]
+  },
+  {
+    id: "iso13485-biovigilance",
+    moduleId: "iso-13485",
+    type: "requirement",
+    topic: "Système de vigilance et rappel",
+    body: "Le fabricant doit établir un système de vigilance : déclaration des incidents graves aux autorités, analyse des réclamations et retours, évaluation des risques post-commercialisation (PMS), procédure de rappel et actions de sécurité, notification aux utilisateurs, rapport périodique de sécurité (PSUR).",
+    tags: ["vigilance", "rappel", "sécurité", "pms"]
+  },
+  {
+    id: "iso13485-conception",
+    moduleId: "iso-13485",
+    type: "checklist",
+    topic: "Conception et développement (obligatoire)",
+    body: "Étapes obligatoires : planification de la conception, revue des exigences, conception détaillée, vérification de la conception, validation clinique, transfert en production, gestion des modifications de conception, dossier de conception (DHF - Design History File).",
+    tags: ["conception", "développement", "dhf", "validation"]
+  },
+
+  // ─────────────────────────────────────────────────────────────────
+  // Maîtrise d'Audit - Techniques avancées
+  // ─────────────────────────────────────────────────────────────────
+  {
+    id: "audit-techniques-entretien",
+    moduleId: "maitrise-audit",
+    type: "tool",
+    topic: "Techniques d'entretien d'audit",
+    body: "Techniques clés : questions ouvertes (Qui/Quoi/Où/Quand/Comment/Pourquoi), écoute active, reformulation, questionnement en entonnoir (large → précis), technique du silence, observation non-verbale, approche STAR (Situation-Tâche-Action-Résultat), prise de notes structurée, triangulation (croiser les sources).",
+    tags: ["entretien", "questions", "écoute-active", "observation"]
+  },
+  {
+    id: "audit-risk-based",
+    moduleId: "maitrise-audit",
+    type: "concept",
+    topic: "Audit orienté risques (Risk-Based Audit)",
+    body: "Approche d'audit basée sur les risques : identifier les processus critiques via analyse de risques, concentrer les efforts d'audit sur les zones à haut risque, adapter le niveau de détail selon la criticité, utiliser la matrice de criticité (fréquence × gravité), auditer les points de contrôle clés, réduire l'échantillonnage sur les processus à faible risque.",
+    tags: ["risk-based", "analyse-risques", "criticité", "ciblage"]
+  },
+  {
+    id: "audit-echantillonnage",
+    moduleId: "maitrise-audit",
+    type: "tool",
+    topic: "Méthodes d'échantillonnage avancées",
+    body: "Techniques d'échantillonnage : échantillonnage statistique (taille calculée selon niveau de confiance), échantillonnage par attributs (conformité oui/non), échantillonnage stratifié (par catégorie), échantillonnage en grappes, échantillonnage par jugement (ciblé), formule : n = (Z² × p × (1-p)) / E² où Z=1,96 (95%), E=marge d'erreur.",
+    tags: ["échantillonnage", "statistiques", "taille-échantillon", "représentativité"]
+  },
+  {
+    id: "audit-scoring-priorisation",
+    moduleId: "maitrise-audit",
+    type: "tool",
+    topic: "Scoring et priorisation des constats",
+    body: "Méthode de scoring des écarts : Gravité (1-5) × Fréquence (1-5) × Détectabilité (1-5) = Score RPN. Classification : Critique (RPN > 100), Majeure (50-100), Mineure (< 50). Critères de gravité : impact sécurité, impact réglementaire, impact client, impact business. Priorisation des actions correctives selon le score.",
+    tags: ["scoring", "rpn", "priorisation", "gravité"]
+  },
+  {
+    id: "audit-comportemental",
+    moduleId: "maitrise-audit",
+    type: "concept",
+    topic: "Audit comportemental et culture sécurité",
+    body: "Audit comportemental : observer les comportements réels vs procédures, identifier les écarts de pratique, analyser la culture de sécurité, évaluer l'appropriation des règles, détecter les contournements, mesurer l'engagement du management, audit sur le terrain (gemba walk), biais de confirmation à éviter.",
+    tags: ["comportemental", "culture-sécurité", "observation", "gemba"]
+  },
+  {
+    id: "audit-multi-sites",
+    moduleId: "maitrise-audit",
+    type: "tool",
+    topic: "Audit multi-sites structuré",
+    body: "Méthodologie multi-sites : harmonisation du référentiel d'audit, équipes d'auditeurs calibrées, grille de cotation commune, audit pilote sur site référent, audits simultanés ou séquentiels, consolidation des constats, benchmark inter-sites, identification des meilleures pratiques, plan d'action global + local.",
+    tags: ["multi-sites", "harmonisation", "benchmark", "coordination"]
+  },
+  {
+    id: "audit-gdp-integre",
+    moduleId: "maitrise-audit",
+    type: "checklist",
+    topic: "Audit GDP intégré transport-pharma",
+    body: "Points d'audit intégrés : autorisation GDP (transport + entrepôt), qualification thermique véhicules et entrepôt, procédures intégrées de gestion des excursions, traçabilité bout-en-bout, interface transport-pharmacien responsable, audits des sous-traitants, gestion des retours et rappels, CAPA partagées, système qualité commun, contrats de qualité.",
+    tags: ["gdp", "transport", "pharma", "intégration", "bout-en-bout"]
   }
 ];
 
