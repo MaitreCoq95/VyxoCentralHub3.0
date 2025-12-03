@@ -5,6 +5,7 @@ import { knowledgeModules, searchModules } from "@/lib/codex/modules";
 import { ModuleCard } from "@/components/codex/module-card";
 import { AIAssistant } from "@/components/codex/ai-assistant";
 import { XPBar } from "@/components/codex/xp-bar";
+import { ScoreDashboard } from "@/components/codex/score-dashboard";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -123,8 +124,15 @@ export default function CodexDashboardPage() {
         </Card>
       </div>
 
-      {/* AI Assistant */}
-      <AIAssistant />
+      {/* AI Assistant & Scores */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <AIAssistant />
+        </div>
+        <div>
+          <ScoreDashboard />
+        </div>
+      </div>
 
       {/* Search and Filter */}
       <Card>
