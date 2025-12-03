@@ -6,6 +6,7 @@ import { getModuleById } from "@/lib/codex/modules";
 import { getItemsByModule, groupItemsByType, searchItems } from "@/lib/codex/items";
 import { getAllQuestionsByModule } from "@/lib/codex/all-questions";
 import { KnowledgeItemCard } from "@/components/codex/knowledge-item-card";
+import { ModuleScoreCard } from "@/components/codex/module-score-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -175,19 +176,8 @@ export default function ModuleDetailPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                <Sparkles className="h-6 w-6 text-purple-600 dark:text-purple-300" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">Assistant IA</p>
-                <p className="text-xs text-muted-foreground">Bientôt disponible</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Score du module */}
+        <ModuleScoreCard moduleId={moduleId} />
       </div>
 
       {/* Tabs */}

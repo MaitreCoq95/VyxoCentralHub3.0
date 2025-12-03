@@ -5,6 +5,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { getAllRandomQuestions, getAllQuestionsByModule } from "@/lib/codex/all-questions";
 import { getModuleById } from "@/lib/codex/modules";
 import { QuizRunner } from "@/components/codex/quiz-runner";
+import { saveQuizResults } from "@/lib/codex/scoring-system";
+import { recordQuizCompleted } from "@/lib/codex/xp-system";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -70,9 +72,24 @@ function QuizPageContent() {
     }
   };
 
-  const handleQuizComplete = (results: QuizResult[], score: number) => {
+  const handleQuizComplete = async (results: QuizResult[], score: number) => {
     console.log('Quiz completed:', { results, score });
-    // Ici, vous pouvez sauvegarder les résultats dans Supabase ou localStorage
+
+    // Sauvegarder les résultats dans Supabase pour le scoring
+    const quizSubmissions = questions.map((question, index) => {
+      const result = results.find(r => r.questionId === question.id);
+      return {
+        moduleId: question.moduleId,
+        questionId: question.id,
+        isCorrect: result?.isCorrect || false,
+      };
+    });
+
+    await saveQuizResults(quizSubmissions);
+
+    // Enregistrer l'XP pour le quiz
+    const quizId = `quiz-${Date.now()}`;
+    await recordQuizCompleted(quizId, score);
   };
 
   const handleQuizExit = () => {
