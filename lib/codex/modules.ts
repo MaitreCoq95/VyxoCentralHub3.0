@@ -45,6 +45,16 @@ export const knowledgeModules: KnowledgeModule[] = [
     tags: ["cybersécurité", "risques", "annexe-a"]
   },
   {
+    id: "iso-42001",
+    code: "ISO 42001",
+    title: "ISO 42001 – Système de management de l'intelligence artificielle",
+    category: "ITSec",
+    shortDescription: "Cadre de gouvernance pour développer, déployer et utiliser des systèmes d'IA de manière responsable et éthique.",
+    sectors: ["IT", "SaaS", "Services", "Industrie"],
+    level: "advanced",
+    tags: ["ia", "ai", "gouvernance", "éthique", "risques-ia"]
+  },
+  {
     id: "gamp-5",
     code: "GAMP 5",
     title: "GAMP 5 – Validation des systèmes informatisés",

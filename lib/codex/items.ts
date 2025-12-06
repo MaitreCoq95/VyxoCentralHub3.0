@@ -61,6 +61,96 @@ export const knowledgeItems: KnowledgeItem[] = [
     tags: ["annexe-a", "controle", "ssi"]
   },
 
+  // ISO 42001
+  {
+    id: "iso42001-objectifs",
+    moduleId: "iso-42001",
+    type: "concept",
+    topic: "Objectifs de l'ISO 42001",
+    body: "ISO 42001 fournit un cadre pour établir, mettre en œuvre, maintenir et améliorer en continu un système de management de l'IA (AIMS). Elle vise à garantir une utilisation responsable de l'IA, gérer les risques associés et assurer la conformité réglementaire tout en maximisant les bénéfices.",
+    tags: ["aims", "objectifs", "gouvernance"]
+  },
+  {
+    id: "iso42001-risques-ia",
+    moduleId: "iso-42001",
+    type: "concept",
+    topic: "Gestion des risques IA",
+    body: "L'ISO 42001 exige une approche systématique pour identifier, évaluer et traiter les risques spécifiques à l'IA : biais algorithmiques, manque de transparence, erreurs de prédiction, impacts sociétaux, dérives éthiques, sécurité et confidentialité des données, dépendance excessive à l'IA.",
+    tags: ["risques", "analyse-risques", "biais"]
+  },
+  {
+    id: "iso42001-transparence",
+    moduleId: "iso-42001",
+    type: "requirement",
+    topic: "Transparence et explicabilité",
+    body: "Les systèmes d'IA doivent être transparents et explicables. L'organisation doit documenter la logique de décision, les données d'entraînement utilisées, les limites du système et fournir des explications compréhensibles sur les résultats générés par l'IA, notamment pour les décisions critiques.",
+    tags: ["transparence", "explicabilité", "xai"]
+  },
+  {
+    id: "iso42001-biais",
+    moduleId: "iso-42001",
+    type: "concept",
+    topic: "Biais et équité algorithmique",
+    body: "Les biais algorithmiques peuvent provenir des données d'entraînement, de la conception du modèle ou du contexte d'utilisation. L'ISO 42001 exige d'identifier, mesurer et atténuer les biais pour garantir l'équité et éviter la discrimination envers certains groupes de personnes.",
+    tags: ["biais", "équité", "fairness", "discrimination"]
+  },
+  {
+    id: "iso42001-checklist",
+    moduleId: "iso-42001",
+    type: "checklist",
+    topic: "Checklist d'évaluation d'un système IA",
+    body: "Vérifier : objectif et cas d'usage définis, analyse des risques IA documentée, données d'entraînement qualifiées et représentatives, tests de performance et de biais effectués, transparence et explicabilité assurées, plan de surveillance continue, responsabilités assignées, conformité réglementaire (RGPD, AI Act), documentation complète du cycle de vie.",
+    tags: ["checklist", "évaluation", "conformité"]
+  },
+  {
+    id: "iso42001-documentation",
+    moduleId: "iso-42001",
+    type: "requirement",
+    topic: "Documentation et traçabilité",
+    body: "L'ISO 42001 exige une documentation complète tout au long du cycle de vie de l'IA : spécifications initiales, données utilisées, architecture du modèle, résultats des tests, décisions de validation, modifications apportées, incidents survenus et actions correctives. Cette traçabilité est essentielle pour les audits et la conformité.",
+    tags: ["documentation", "traçabilité", "cycle-de-vie"]
+  },
+  {
+    id: "iso42001-registre",
+    moduleId: "iso-42001",
+    type: "tool",
+    topic: "Registre des systèmes IA",
+    body: "Un registre centralisé doit répertorier tous les systèmes d'IA de l'organisation avec : identifiant unique, description et objectif, niveau de criticité, données utilisées, propriétaire et responsable, date de mise en production, statut (développement/production/retiré), résultats des évaluations de risques et conformité.",
+    tags: ["registre", "inventaire", "gouvernance"]
+  },
+  {
+    id: "iso42001-cycle-vie",
+    moduleId: "iso-42001",
+    type: "concept",
+    topic: "Cycle de vie des systèmes IA",
+    body: "Le cycle de vie IA comprend : conception et planification, collecte et préparation des données, développement et entraînement du modèle, validation et tests, déploiement, surveillance continue, maintenance et mise à jour, retrait éventuel. Chaque phase doit intégrer des contrôles de qualité, sécurité et éthique.",
+    tags: ["cycle-de-vie", "mlops", "développement"]
+  },
+  {
+    id: "iso42001-gouvernance",
+    moduleId: "iso-42001",
+    type: "requirement",
+    topic: "Gouvernance et responsabilités",
+    body: "L'ISO 42001 exige la désignation claire des rôles et responsabilités : comité de gouvernance IA, responsable IA (AI Officer), data scientists, experts métier, responsables éthique et conformité. La direction doit démontrer son engagement et allouer les ressources nécessaires.",
+    tags: ["gouvernance", "rôles", "responsabilités", "leadership"]
+  },
+  {
+    id: "iso42001-risques-specifiques",
+    moduleId: "iso-42001",
+    type: "risk",
+    topic: "Risques spécifiques à l'IA",
+    body: "Risques à surveiller : hallucinations (génération de fausses informations), adversarial attacks (manipulation malveillante), data poisoning (corruption des données d'entraînement), model drift (dégradation des performances), surconfiance dans les prédictions, impacts environnementaux (consommation énergétique), dépendance à des fournisseurs tiers.",
+    tags: ["risques", "hallucinations", "attacks", "drift"]
+  },
+  {
+    id: "iso42001-surveillance",
+    moduleId: "iso-42001",
+    type: "requirement",
+    topic: "Surveillance et monitoring continu",
+    body: "Les systèmes IA en production doivent être surveillés en continu pour détecter : dégradation des performances, apparition de biais, dérives du modèle (drift), anomalies dans les données d'entrée, incidents de sécurité. Des métriques de performance, d'équité et de fiabilité doivent être définies et suivies régulièrement.",
+    tags: ["surveillance", "monitoring", "drift", "performance"]
+  },
+
   // GAMP 5
   {
     id: "gamp5-categories",

@@ -169,6 +169,158 @@ export const quizQuestions: QuizQuestion[] = [
     tags: ["gamp5", "validation", "risque"]
   },
 
+  // ISO 42001
+  {
+    id: "q-iso42001-definition",
+    moduleId: "iso-42001",
+    difficulty: "easy",
+    question: "Qu'est-ce que l'ISO 42001 ?",
+    choices: [
+      "Une norme sur la cybersécurité",
+      "Une norme sur les systèmes de management de l'intelligence artificielle",
+      "Une norme sur la gestion de la qualité",
+      "Une norme sur la protection des données personnelles"
+    ],
+    correctIndex: 1,
+    explanation: "L'ISO 42001 est la première norme internationale sur les systèmes de management de l'intelligence artificielle (AIMS), publiée en décembre 2023.",
+    tags: ["definition", "aims", "base"]
+  },
+  {
+    id: "q-iso42001-objectif",
+    moduleId: "iso-42001",
+    difficulty: "easy",
+    question: "Quel est l'objectif principal de l'ISO 42001 ?",
+    choices: [
+      "Développer des algorithmes plus performants",
+      "Garantir une utilisation responsable et éthique de l'IA",
+      "Réduire les coûts de développement IA",
+      "Accélérer le déploiement des systèmes IA"
+    ],
+    correctIndex: 1,
+    explanation: "L'ISO 42001 vise à établir un cadre de gouvernance pour une utilisation responsable de l'IA, gérer les risques associés et assurer la conformité réglementaire.",
+    tags: ["objectif", "éthique", "gouvernance"]
+  },
+  {
+    id: "q-iso42001-biais",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Que sont les biais algorithmiques dans le contexte de l'ISO 42001 ?",
+    choices: [
+      "Des erreurs de programmation dans le code",
+      "Des distorsions systématiques qui peuvent mener à des discriminations injustes",
+      "Des bugs dans les algorithmes",
+      "Des ralentissements de performance"
+    ],
+    correctIndex: 1,
+    explanation: "Les biais algorithmiques sont des distorsions systématiques qui peuvent provenir des données d'entraînement ou de la conception du modèle, et peuvent conduire à des discriminations injustes envers certains groupes.",
+    tags: ["biais", "discrimination", "équité"]
+  },
+  {
+    id: "q-iso42001-transparence",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Pourquoi l'explicabilité des systèmes IA est-elle importante selon l'ISO 42001 ?",
+    choices: [
+      "Pour accélérer les calculs",
+      "Pour permettre de comprendre et justifier les décisions prises par l'IA, notamment pour les décisions critiques",
+      "Pour réduire la consommation énergétique",
+      "Pour faciliter la programmation"
+    ],
+    correctIndex: 1,
+    explanation: "L'explicabilité (XAI - Explainable AI) permet de comprendre comment l'IA arrive à ses décisions, ce qui est essentiel pour la confiance, la responsabilité et la conformité, particulièrement pour les décisions à fort impact.",
+    tags: ["explicabilité", "transparence", "xai"]
+  },
+  {
+    id: "q-iso42001-registre",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Que doit contenir un registre des systèmes IA selon l'ISO 42001 ?",
+    choices: [
+      "Uniquement le code source des algorithmes",
+      "Uniquement les performances des modèles",
+      "L'inventaire complet des systèmes avec description, criticité, données, responsables et évaluations",
+      "Uniquement les coûts de développement"
+    ],
+    correctIndex: 2,
+    explanation: "Le registre des systèmes IA doit répertorier tous les systèmes avec leurs caractéristiques, niveau de criticité, données utilisées, responsables, statut et résultats des évaluations de risques.",
+    tags: ["registre", "inventaire", "documentation"]
+  },
+  {
+    id: "q-iso42001-risques",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Parmi les risques suivants, lequel est spécifique aux systèmes d'IA ?",
+    choices: [
+      "Les cyberattaques",
+      "Les hallucinations (génération de fausses informations plausibles)",
+      "Les pannes matérielles",
+      "Les erreurs de saisie utilisateur"
+    ],
+    correctIndex: 1,
+    explanation: "Les hallucinations sont un risque spécifique aux systèmes d'IA, particulièrement les LLM (Large Language Models), où le modèle génère des informations qui semblent plausibles mais qui sont factuellement incorrectes.",
+    tags: ["risques", "hallucinations", "llm"]
+  },
+  {
+    id: "q-iso42001-cycle-vie",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Quelle phase du cycle de vie IA est critique pour détecter le 'model drift' ?",
+    choices: [
+      "La conception initiale",
+      "L'entraînement du modèle",
+      "La surveillance continue en production",
+      "La collecte des données"
+    ],
+    correctIndex: 2,
+    explanation: "Le model drift (dérive du modèle) se produit lorsque les performances d'un modèle IA se dégradent au fil du temps en production, souvent parce que les données réelles évoluent. La surveillance continue est essentielle pour le détecter et y remédier.",
+    tags: ["cycle-de-vie", "drift", "surveillance", "production"]
+  },
+  {
+    id: "q-iso42001-gouvernance",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Qui doit être impliqué dans la gouvernance des systèmes IA selon l'ISO 42001 ?",
+    choices: [
+      "Uniquement les data scientists",
+      "Uniquement la direction",
+      "Un comité pluridisciplinaire incluant direction, experts IA, experts métier, responsables éthique et conformité",
+      "Uniquement les développeurs"
+    ],
+    correctIndex: 2,
+    explanation: "L'ISO 42001 exige une gouvernance pluridisciplinaire avec des rôles clairs : comité de gouvernance IA, responsable IA, data scientists, experts métier, responsables éthique et conformité, avec l'engagement de la direction.",
+    tags: ["gouvernance", "rôles", "multidisciplinaire"]
+  },
+  {
+    id: "q-iso42001-data-quality",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Un modèle d'IA de recrutement a été entraîné sur 10 ans d'historique de CV acceptés. Quel risque principal doit être évalué selon l'ISO 42001 ?",
+    choices: [
+      "Le modèle sera trop lent",
+      "Le modèle pourrait reproduire des biais historiques de discrimination présents dans les données d'entraînement",
+      "Le modèle nécessitera trop de mémoire",
+      "Le modèle sera trop complexe à programmer"
+    ],
+    correctIndex: 1,
+    explanation: "Si les données historiques contiennent des biais (par exemple, discrimination de genre ou d'origine dans les recrutements passés), le modèle IA apprendra et reproduira ces biais. L'ISO 42001 exige d'identifier et d'atténuer ces risques de discrimination algorithmique.",
+    tags: ["biais", "données", "discrimination", "cas-pratique"]
+  },
+  {
+    id: "q-iso42001-monitoring",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Quelles métriques doivent être surveillées en production pour un système IA selon l'ISO 42001 ?",
+    choices: [
+      "Uniquement la précision (accuracy) du modèle",
+      "Uniquement le temps de réponse",
+      "Performance, équité (fairness), fiabilité, détection de drift, anomalies de sécurité",
+      "Uniquement les coûts d'infrastructure"
+    ],
+    correctIndex: 2,
+    explanation: "L'ISO 42001 exige une surveillance multidimensionnelle : performance technique (précision, rappel), équité (absence de biais), fiabilité, détection de drift, anomalies dans les entrées et incidents de sécurité.",
+    tags: ["monitoring", "métriques", "performance", "équité"]
+  },
+
   // Excellence Opérationnelle
   {
     id: "q-exop-5s",
