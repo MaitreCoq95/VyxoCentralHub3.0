@@ -817,6 +817,488 @@ export const quizQuestions: QuizQuestion[] = [
     tags: ["annexe-a", "a10", "clients", "documentation", "saas"]
   },
 
+  // Questions avancées et cas pratiques ISO 42001
+  {
+    id: "q-iso42001-bias-detection",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Votre système IA de notation de crédit montre un taux d'approbation de 75% pour le groupe A et 45% pour le groupe B à profils équivalents. Quelle action l'ISO 42001 exige-t-elle ?",
+    choices: [
+      "Continuer si les deux groupes sont rentables",
+      "Analyser les causes du biais, évaluer l'impact sur l'équité, documenter les risques de discrimination, et mettre en œuvre des mesures correctives",
+      "Uniquement ajuster les seuils de notation",
+      "Ignorer car c'est un résultat statistique"
+    ],
+    correctIndex: 1,
+    explanation: "L'ISO 42001 exige d'identifier et traiter les biais discriminatoires. L'organisation doit : analyser les causes (données d'entraînement biaisées, features corrélées), évaluer l'impact sur l'équité et les droits fondamentaux, documenter les risques, et mettre en œuvre des mesures (rééquilibrage des données, fairness constraints, surveillance continue).",
+    tags: ["biais", "équité", "discrimination", "fairness", "cas-pratique"]
+  },
+  {
+    id: "q-iso42001-explainability",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Selon l'ISO 42001, quand l'explicabilité (explainability) d'un système IA est-elle particulièrement critique ?",
+    choices: [
+      "Uniquement pour les modèles de machine learning",
+      "Jamais, seule la performance compte",
+      "Pour les décisions à fort impact (crédit, recrutement, santé, justice) et quand exigé par les régulations (RGPD, AI Act)",
+      "Uniquement pour les systèmes publics"
+    ],
+    correctIndex: 2,
+    explanation: "L'explicabilité est critique pour : les décisions à fort impact sur les individus (crédit, emploi, santé, justice), la conformité réglementaire (RGPD droit à l'explication, AI Act pour systèmes à haut risque), la détection et correction de biais, et la confiance des parties intéressées. L'organisation doit déterminer le niveau d'explicabilité nécessaire.",
+    tags: ["explicabilité", "explainability", "transparence", "haut-risque"]
+  },
+  {
+    id: "q-iso42001-human-oversight",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Qu'est-ce que la surveillance humaine (human oversight) selon l'ISO 42001 ?",
+    choices: [
+      "Avoir un humain qui observe l'écran",
+      "Des mesures pour s'assurer qu'une personne compétente peut comprendre, surveiller et intervenir sur les décisions du système IA",
+      "Uniquement former les utilisateurs",
+      "Uniquement lire les logs système"
+    ],
+    correctIndex: 1,
+    explanation: "La surveillance humaine (human oversight) inclut : la capacité pour des personnes compétentes de comprendre le fonctionnement du système IA, surveiller ses performances et comportements, intervenir sur les décisions ou arrêter le système si nécessaire, et maintenir un contrôle humain approprié selon les risques.",
+    tags: ["surveillance-humaine", "human-oversight", "contrôle-humain"]
+  },
+  {
+    id: "q-iso42001-ai-incident",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Votre chatbot IA client génère des réponses inappropriées et offensantes en production. Quelle est la procédure ISO 42001 ?",
+    choices: [
+      "Attendre les retours clients pour évaluer l'ampleur",
+      "Désactiver immédiatement le système, documenter l'incident, analyser les causes racines, notifier les parties intéressées, mettre en œuvre des actions correctives et préventives",
+      "Uniquement modifier les prompts",
+      "Continuer et corriger progressivement"
+    ],
+    correctIndex: 1,
+    explanation: "La gestion d'incident IA selon ISO 42001 exige : action immédiate pour limiter l'impact (désactivation, mode dégradé), documentation complète de l'incident, analyse des causes racines (données, modèle, prompts), notification des parties intéressées affectées, actions correctives (retraining, filtres), actions préventives pour éviter récurrence, et revue de l'évaluation des risques.",
+    tags: ["incident", "gestion-crise", "actions-correctives", "cas-pratique"]
+  },
+  {
+    id: "q-iso42001-data-minimization",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Selon les principes ISO 42001 et RGPD, que signifie la minimisation des données pour l'IA ?",
+    choices: [
+      "Collecter le minimum de données possible",
+      "Ne collecter que les données adéquates, pertinentes et limitées à ce qui est nécessaire pour les objectifs IA",
+      "Uniquement supprimer les doublons",
+      "Compresser les fichiers de données"
+    ],
+    correctIndex: 1,
+    explanation: "La minimisation des données exige de : collecter uniquement les données adéquates, pertinentes et strictement nécessaires aux objectifs IA définis, éviter la sur-collecte de données 'au cas où', justifier la nécessité de chaque attribut collecté, et réviser régulièrement les besoins en données.",
+    tags: ["données", "minimisation", "rgpd", "privacy"]
+  },
+  {
+    id: "q-iso42001-model-versioning",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Pourquoi le versioning des modèles IA est-il important selon l'ISO 42001 ?",
+    choices: [
+      "Uniquement pour gagner de l'espace disque",
+      "Pour la traçabilité, la reproductibilité, le rollback en cas de problème, et la conformité aux audits",
+      "Uniquement pour l'organisation des fichiers",
+      "Ce n'est pas important"
+    ],
+    correctIndex: 1,
+    explanation: "Le versioning des modèles IA permet : la traçabilité complète (quel modèle, quelles données, quels hyperparamètres), la reproductibilité des résultats, le rollback rapide en cas de dégradation de performance, la comparaison de performances entre versions, et la conformité lors des audits (preuves documentées).",
+    tags: ["versioning", "traçabilité", "mlops", "documentation"]
+  },
+  {
+    id: "q-iso42001-ai-act-alignment",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Comment l'ISO 42001 s'aligne-t-elle avec l'AI Act européen ?",
+    choices: [
+      "Elles sont contradictoires",
+      "L'ISO 42001 fournit un cadre de management qui aide à démontrer la conformité aux exigences de l'AI Act (gouvernance, risques, documentation, surveillance)",
+      "L'AI Act remplace l'ISO 42001",
+      "Elles ne sont pas liées"
+    ],
+    correctIndex: 1,
+    explanation: "L'ISO 42001 et l'AI Act sont complémentaires : l'AI Act établit des exigences légales obligatoires (notamment pour les systèmes à haut risque), tandis que l'ISO 42001 fournit un cadre de management systématique pour y répondre via : gouvernance structurée, gestion des risques, documentation technique, surveillance continue, et amélioration. L'ISO 42001 facilite la démonstration de conformité à l'AI Act.",
+    tags: ["ai-act", "réglementation", "conformité", "gouvernance"]
+  },
+  {
+    id: "q-iso42001-environmental-impact",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Pourquoi l'ISO 42001 exige-t-elle de considérer l'impact environnemental des systèmes IA ?",
+    choices: [
+      "Ce n'est pas exigé",
+      "Uniquement pour l'image de marque",
+      "Les systèmes IA peuvent avoir une empreinte carbone significative (entraînement, inférence), et cela fait partie de l'évaluation d'impact et de la responsabilité sociétale",
+      "Uniquement pour les datacenters physiques"
+    ],
+    correctIndex: 2,
+    explanation: "L'ISO 42001 exige de considérer l'impact environnemental car : l'entraînement de grands modèles consomme beaucoup d'énergie et génère du CO2, l'inférence à large échelle a aussi un impact, cela fait partie de l'AI System Impact Assessment, et la responsabilité sociétale inclut la durabilité environnementale. L'organisation doit évaluer et, si pertinent, atténuer cet impact.",
+    tags: ["environnement", "durabilité", "empreinte-carbone", "impact"]
+  },
+  {
+    id: "q-iso42001-third-party-model",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Votre organisation utilise GPT-4 via API OpenAI pour une application critique. Quelles responsabilités ISO 42001 conservez-vous ?",
+    choices: [
+      "Aucune, c'est la responsabilité d'OpenAI",
+      "Uniquement payer la facture",
+      "Évaluer les risques de l'utilisation, définir les cas d'usage appropriés, surveiller les performances et biais, assurer la qualité des prompts/données, et documenter la chaîne de responsabilité",
+      "Uniquement lire la documentation OpenAI"
+    ],
+    correctIndex: 2,
+    explanation: "Même avec un modèle tiers, l'organisation reste responsable de : l'évaluation des risques spécifiques à son cas d'usage, la définition des cas d'usage appropriés et inappropriés, la surveillance des performances et détection de biais dans le contexte d'utilisation, la qualité des prompts et données d'entrée, la surveillance humaine appropriée, la documentation de la chaîne de responsabilité, et la conformité aux exigences applicables (RGPD, etc.).",
+    tags: ["tiers", "api", "responsabilité", "modèles-externes", "cas-pratique"]
+  },
+  {
+    id: "q-iso42001-data-poisoning",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Qu'est-ce que le data poisoning et comment l'ISO 42001 exige-t-elle de s'en protéger ?",
+    choices: [
+      "C'est une attaque où des données malveillantes sont injectées pour corrompre le modèle; l'ISO 42001 exige des contrôles sur la provenance, validation et intégrité des données",
+      "C'est simplement des données de mauvaise qualité",
+      "Cela n'existe pas pour l'IA",
+      "Uniquement un problème de base de données"
+    ],
+    correctIndex: 0,
+    explanation: "Le data poisoning est une attaque où des données malveillantes sont injectées dans les données d'entraînement ou de fine-tuning pour corrompre le comportement du modèle. L'ISO 42001 exige : traçabilité de la provenance des données (Annexe A.7.3), validation et vérification de l'intégrité des données, contrôles d'accès stricts, détection d'anomalies dans les données, et surveillance du comportement du modèle.",
+    tags: ["sécurité", "data-poisoning", "attaque", "intégrité-données"]
+  },
+  {
+    id: "q-iso42001-adversarial-attacks",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Un système de reconnaissance d'images est vulnérable aux adversarial attacks (images modifiées imperceptiblement pour tromper le modèle). Que doit faire l'organisation ?",
+    choices: [
+      "Ignorer car les attaques sont théoriques",
+      "Uniquement améliorer la précision",
+      "Évaluer le risque de ces attaques dans le contexte d'utilisation, implémenter des défenses (détection d'anomalies, adversarial training), surveiller les comportements suspects, et documenter les limitations",
+      "Changer de technologie"
+    ],
+    correctIndex: 2,
+    explanation: "Face aux adversarial attacks, l'ISO 42001 exige : évaluer le risque dans le contexte (criticité du système, exposition aux attaquants), implémenter des défenses appropriées (détection d'anomalies dans les inputs, adversarial training, input sanitization), surveiller les comportements suspects, documenter les limitations connues du système, et informer les parties intéressées des risques résiduels.",
+    tags: ["sécurité", "adversarial-attacks", "robustesse", "cas-pratique"]
+  },
+  {
+    id: "q-iso42001-continuous-learning",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Votre système IA apprend continuellement des interactions utilisateurs (online learning). Quels risques ISO 42001 faut-il particulièrement surveiller ?",
+    choices: [
+      "Aucun risque spécifique",
+      "Uniquement les coûts de calcul",
+      "Dérive du modèle, apprentissage de biais via feedback malveillant, dégradation de performance, et perte de contrôle sur le comportement",
+      "Uniquement la vitesse d'apprentissage"
+    ],
+    correctIndex: 2,
+    explanation: "Le continuous learning introduit des risques spécifiques : dérive non contrôlée du comportement du modèle, apprentissage de biais ou comportements malveillants via feedback utilisateurs (manipulation), dégradation progressive de performance, difficulté de traçabilité et reproductibilité. L'ISO 42001 exige une surveillance renforcée, des mécanismes de validation continue, et des capacités de rollback.",
+    tags: ["continuous-learning", "online-learning", "risques", "surveillance"]
+  },
+  {
+    id: "q-iso42001-synthetic-data",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "L'utilisation de données synthétiques pour entraîner des modèles IA présente quels avantages et risques selon l'ISO 42001 ?",
+    choices: [
+      "Uniquement des avantages",
+      "Avantages: respect de la vie privée, augmentation de données. Risques: biais du générateur, manque de réalisme, sur-ajustement aux données synthétiques",
+      "Uniquement des risques",
+      "Aucune différence avec des données réelles"
+    ],
+    correctIndex: 1,
+    explanation: "Données synthétiques - Avantages : protection de la vie privée (pas de données personnelles réelles), augmentation de données rares, contournement de restrictions d'accès. Risques : reproduction des biais du modèle générateur, manque de réalisme et edge cases, sur-ajustement aux artefacts synthétiques, validation difficile. L'ISO 42001 exige de documenter l'utilisation, valider la qualité, et surveiller les performances.",
+    tags: ["données-synthétiques", "privacy", "qualité-données"]
+  },
+  {
+    id: "q-iso42001-federated-learning",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Le federated learning (apprentissage fédéré) où les modèles s'entraînent sur des données décentralisées présente quels défis de gouvernance ISO 42001 ?",
+    choices: [
+      "Aucun défi particulier",
+      "Contrôle de la qualité des données distribuées, traçabilité de la provenance, gestion des droits d'accès multi-parties, et vérification de l'intégrité des contributions",
+      "Uniquement des problèmes techniques",
+      "Uniquement la latence réseau"
+    ],
+    correctIndex: 1,
+    explanation: "Le federated learning pose des défis : contrôle de la qualité des données distribuées (sans accès direct), traçabilité de la provenance des données et contributions, gestion complexe des droits et responsabilités multi-parties, détection de contributions malveillantes (data poisoning distribué), vérification de l'intégrité, et documentation de la chaîne de responsabilité. L'ISO 42001 exige des contrôles adaptés.",
+    tags: ["federated-learning", "distribué", "gouvernance", "multi-parties"]
+  },
+  {
+    id: "q-iso42001-transfer-learning",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Vous utilisez un modèle pré-entraîné et le fine-tunez pour votre usage. Quelles informations ISO 42001 devez-vous documenter ?",
+    choices: [
+      "Uniquement le nom du modèle",
+      "Uniquement vos données de fine-tuning",
+      "Le modèle source (provenance, entraînement initial, limitations connues), les données de fine-tuning, les modifications, les tests de validation, et l'évaluation des risques transférés",
+      "Uniquement les performances finales"
+    ],
+    correctIndex: 2,
+    explanation: "Pour le transfer learning/fine-tuning, l'ISO 42001 exige de documenter : le modèle source (provenance, données d'entraînement initial si disponibles, limitations et biais connus), les données de fine-tuning (qualité, représentativité), les modifications apportées, les tests de validation effectués, l'évaluation des risques hérités et nouveaux, et les performances dans le contexte d'utilisation cible.",
+    tags: ["transfer-learning", "fine-tuning", "documentation", "traçabilité"]
+  },
+  {
+    id: "q-iso42001-ai-transparency",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Que doit inclure la transparence d'un système IA selon l'ISO 42001 ?",
+    choices: [
+      "Uniquement le code source public",
+      "Information sur l'objectif du système, les données utilisées, les limitations, les décisions automatisées, et comment contester une décision",
+      "Uniquement le manuel utilisateur",
+      "Aucune exigence de transparence"
+    ],
+    correctIndex: 1,
+    explanation: "La transparence selon ISO 42001 inclut : informer sur l'objectif et le fonctionnement du système IA, les types de données utilisées, les limitations et précision connues, l'existence de décisions automatisées, les modalités de surveillance humaine, et comment contester ou obtenir une explication d'une décision. Le niveau de transparence dépend du contexte et des parties intéressées.",
+    tags: ["transparence", "communication", "parties-intéressées"]
+  },
+  {
+    id: "q-iso42001-ai-system-retirement",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Lors de la mise hors service (retirement) d'un système IA, que doit prévoir l'ISO 42001 ?",
+    choices: [
+      "Simplement éteindre les serveurs",
+      "Planifier la transition, préserver les données nécessaires à la conformité, supprimer/anonymiser les données personnelles, documenter les raisons, et notifier les parties intéressées",
+      "Uniquement archiver le code",
+      "Aucune exigence particulière"
+    ],
+    correctIndex: 1,
+    explanation: "Le retirement d'un système IA exige : planifier la transition (système alternatif, impact sur les utilisateurs), préserver les données et logs nécessaires à la conformité réglementaire et aux audits, supprimer ou anonymiser les données personnelles selon RGPD, documenter les raisons du retirement, notifier les parties intéressées affectées, et conserver la documentation pour traçabilité.",
+    tags: ["cycle-de-vie", "retirement", "fin-de-vie", "transition"]
+  },
+  {
+    id: "q-iso42001-prompt-injection",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Les systèmes LLM peuvent être vulnérables au prompt injection. Comment l'ISO 42001 aborde-t-elle ce risque ?",
+    choices: [
+      "Ce n'est pas couvert par l'ISO 42001",
+      "Via l'évaluation des risques IA (identifier la vulnérabilité), le traitement des risques (validation des inputs, sandboxing), la surveillance (détection d'anomalies), et la documentation des limitations",
+      "Uniquement par des firewalls",
+      "C'est impossible à prévenir"
+    ],
+    correctIndex: 1,
+    explanation: "Le prompt injection est abordé via : évaluation des risques IA (identifier la vulnérabilité et les impacts potentiels), traitement des risques (validation et sanitization des inputs utilisateurs, sandboxing des exécutions, limitation des privilèges, prompts système robustes), surveillance (détection d'anomalies dans les requêtes et réponses), documentation des limitations connues, et formation des utilisateurs.",
+    tags: ["llm", "prompt-injection", "sécurité", "vulnérabilités"]
+  },
+  {
+    id: "q-iso42001-model-cards",
+    moduleId: "iso-42001",
+    difficulty: "easy",
+    question: "Qu'est-ce qu'une Model Card et pourquoi est-elle utile pour la conformité ISO 42001 ?",
+    choices: [
+      "Une carte de visite du data scientist",
+      "Un document standardisé décrivant un modèle IA (objectif, données, performances, limitations, biais connus, usage approprié)",
+      "Une carte de paiement pour les API",
+      "Un schéma d'architecture technique"
+    ],
+    correctIndex: 1,
+    explanation: "Une Model Card est un document standardisé qui décrit : l'objectif du modèle, les données d'entraînement, les performances (métriques, sur quels datasets), les limitations connues, les biais identifiés, les usages appropriés et inappropriés. Elle facilite la transparence, la documentation exigée par l'ISO 42001, et la communication avec les parties intéressées.",
+    tags: ["model-card", "documentation", "transparence", "bonnes-pratiques"]
+  },
+  {
+    id: "q-iso42001-ai-literacy",
+    moduleId: "iso-42001",
+    difficulty: "easy",
+    question: "Pourquoi la sensibilisation à l'IA (AI literacy) de tous les employés est-elle importante selon l'ISO 42001 ?",
+    choices: [
+      "Pour qu'ils sachent coder",
+      "Pour qu'ils comprennent les capacités et limitations de l'IA, les risques, l'utilisation responsable, et leur rôle dans l'AIMS",
+      "Pour réduire les coûts IT",
+      "Ce n'est pas important"
+    ],
+    correctIndex: 1,
+    explanation: "La clause 7.3 (Sensibilisation) exige que les personnes comprennent : la politique IA et les objectifs, les capacités et limitations des systèmes IA utilisés, les risques associés et l'utilisation responsable, leur rôle et contribution à l'efficacité de l'AIMS, et les implications de non-conformité. Cela réduit les usages inappropriés et les risques.",
+    tags: ["sensibilisation", "ai-literacy", "formation", "culture"]
+  },
+  {
+    id: "q-iso42001-benchmark-datasets",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Pourquoi utiliser des benchmark datasets standardisés est-il une bonne pratique ISO 42001 ?",
+    choices: [
+      "Pour économiser le temps de collecte de données",
+      "Pour permettre la comparaison objective des performances, la reproductibilité, et la validation sur des données représentatives et documentées",
+      "Uniquement pour les publications académiques",
+      "Ce n'est pas recommandé"
+    ],
+    correctIndex: 1,
+    explanation: "Les benchmark datasets standardisés permettent : comparaison objective avec d'autres modèles et versions, reproductibilité des résultats, validation sur des données représentatives et bien documentées, détection de régressions de performance, et crédibilité auprès des parties intéressées. Ils facilitent la démonstration de conformité aux exigences de performance.",
+    tags: ["validation", "benchmarks", "performances", "reproductibilité"]
+  },
+  {
+    id: "q-iso42001-edge-ai",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Les systèmes IA embarqués (Edge AI) sur devices (smartphones, IoT) présentent quels défis spécifiques ISO 42001 ?",
+    choices: [
+      "Aucun défi particulier",
+      "Surveillance et mise à jour difficiles, contraintes de ressources, exposition physique, difficulté de traçabilité et de contrôle à distance",
+      "Uniquement la taille du modèle",
+      "Uniquement la latence"
+    ],
+    correctIndex: 1,
+    explanation: "Edge AI pose des défis : surveillance et monitoring difficiles (devices distribués, parfois offline), mise à jour et patching complexes, contraintes de ressources (puissance de calcul, mémoire, batterie), exposition physique et risques de tampering, difficulté de traçabilité des décisions locales, et contrôle à distance limité. L'ISO 42001 exige des contrôles adaptés à ces contraintes.",
+    tags: ["edge-ai", "embarqué", "iot", "défis-techniques"]
+  },
+  {
+    id: "q-iso42001-ai-testing",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Quels types de tests doivent être réalisés pour un système IA selon l'ISO 42001 ?",
+    choices: [
+      "Uniquement les tests unitaires du code",
+      "Tests de performance (précision, rappel), tests d'équité (fairness), tests de robustesse (adversarial), tests de sécurité, tests d'intégration, et tests en conditions réelles",
+      "Uniquement les tests de charge",
+      "Aucun test n'est requis"
+    ],
+    correctIndex: 1,
+    explanation: "Les tests d'un système IA doivent couvrir : performance technique (précision, rappel, F1-score sur différents datasets), équité (métriques de fairness sur différents groupes), robustesse (adversarial attacks, edge cases, distribution shift), sécurité (vulnérabilités, injections), intégration (avec autres systèmes), et validation en conditions réelles. Le contrôle A.6.2.4 exige de définir ces mesures de vérification et validation.",
+    tags: ["tests", "validation", "vérification", "qualité"]
+  },
+  {
+    id: "q-iso42001-responsible-ai",
+    moduleId: "iso-42001",
+    difficulty: "easy",
+    question: "Que signifie 'IA responsable' (Responsible AI) dans le contexte ISO 42001 ?",
+    choices: [
+      "Avoir une assurance pour l'IA",
+      "Développer et utiliser l'IA de manière éthique, équitable, transparente, sécurisée et respectueuse des droits humains",
+      "Uniquement respecter les lois",
+      "Uniquement optimiser les performances"
+    ],
+    correctIndex: 1,
+    explanation: "L'IA responsable selon ISO 42001 signifie : développement et utilisation éthiques (respect des valeurs), équité (absence de discrimination), transparence (explicabilité appropriée), sécurité (protection contre les risques), respect des droits humains et de la vie privée, durabilité environnementale, et accountability (responsabilité documentée). C'est un principe transversal de l'AIMS.",
+    tags: ["responsible-ai", "éthique", "principes", "valeurs"]
+  },
+  {
+    id: "q-iso42001-regulatory-compliance",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Une entreprise européenne déploie un système IA de screening RH. Quelles régulations doit-elle considérer avec l'ISO 42001 ?",
+    choices: [
+      "Uniquement l'ISO 42001",
+      "RGPD (données personnelles, profilage), AI Act (système à haut risque RH), législation anti-discrimination, et droit du travail",
+      "Uniquement le code du travail",
+      "Aucune réglementation spécifique"
+    ],
+    correctIndex: 1,
+    explanation: "Pour un système IA RH en Europe : RGPD (traitement de données personnelles, décisions automatisées, profilage), AI Act européen (RH classé comme système à haut risque avec exigences strictes), législation anti-discrimination (égalité de traitement), droit du travail (information des employés/candidats). L'ISO 42001 fournit le cadre pour gérer ces exigences de conformité.",
+    tags: ["conformité", "rgpd", "ai-act", "rh", "réglementation", "cas-pratique"]
+  },
+  {
+    id: "q-iso42001-carbon-footprint",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Comment mesurer et réduire l'empreinte carbone d'un projet IA selon les bonnes pratiques ISO 42001 ?",
+    choices: [
+      "C'est impossible à mesurer",
+      "Mesurer via outils de tracking énergétique (entraînement, inférence), optimiser l'efficience des modèles, utiliser des datacenters verts, et documenter dans l'impact assessment",
+      "Uniquement éteindre les serveurs la nuit",
+      "Acheter des crédits carbone"
+    ],
+    correctIndex: 1,
+    explanation: "Mesure et réduction de l'empreinte carbone : mesurer via outils de tracking de consommation énergétique (entraînement et inférence), optimiser l'efficience des modèles (compression, quantization, distillation), choisir des datacenters alimentés par énergies renouvelables, planifier les entraînements dans des plages basse-consommation, et documenter l'impact environnemental dans l'AI System Impact Assessment.",
+    tags: ["environnement", "carbone", "durabilité", "green-ai"]
+  },
+  {
+    id: "q-iso42001-ai-skills-gap",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "L'organisation identifie un manque de compétences IA (AI skills gap). Quelles actions ISO 42001 clause 7.2 exige-t-elle ?",
+    choices: [
+      "Embaucher uniquement des externes",
+      "Ignorer et continuer avec les compétences actuelles",
+      "Déterminer les compétences requises, évaluer les écarts, mettre en œuvre des actions (formation, recrutement, mentorat, partenariats), et évaluer l'efficacité",
+      "Uniquement acheter des outils IA no-code"
+    ],
+    correctIndex: 2,
+    explanation: "La clause 7.2 (Compétence) exige : déterminer précisément les compétences IA nécessaires (techniques, éthiques, métier), évaluer les écarts de compétences actuels, mettre en œuvre des actions pour combler les écarts (formation interne, recrutement ciblé, mentorat, partenariats académiques/industriels), et évaluer l'efficacité des actions. Conserver les preuves documentées.",
+    tags: ["compétences", "formation", "skills-gap", "ressources-humaines"]
+  },
+  {
+    id: "q-iso42001-multi-stakeholder",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Un système IA de santé implique des patients, médecins, hôpitaux, régulateurs et assureurs. Comment gérer ces parties intéressées multiples selon ISO 42001 ?",
+    choices: [
+      "Prioriser uniquement les payeurs",
+      "Identifier toutes les parties, déterminer leurs exigences respectives, gérer les conflits d'intérêts, établir la communication appropriée, et documenter la prise en compte",
+      "Uniquement consulter les médecins",
+      "Ignorer les régulateurs jusqu'à l'audit"
+    ],
+    correctIndex: 1,
+    explanation: "La clause 4.2 exige : identifier toutes les parties intéressées pertinentes (patients, cliniciens, établissements, régulateurs, payeurs), déterminer leurs exigences et attentes (parfois conflictuelles), gérer les arbitrages (ex: performance vs explicabilité vs coût), établir une communication adaptée à chaque partie, et documenter comment leurs exigences sont prises en compte dans l'AIMS.",
+    tags: ["parties-intéressées", "multi-stakeholder", "santé", "conflits", "cas-pratique"]
+  },
+  {
+    id: "q-iso42001-ai-procurement",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Lors de l'achat d'une solution IA commerciale, quelles questions ISO 42001 doit-on poser au fournisseur ?",
+    choices: [
+      "Uniquement le prix et le SLA",
+      "Documentation du modèle, données d'entraînement, performances et limitations, biais connus, mesures de sécurité, conformité RGPD/AI Act, et responsabilités respectives",
+      "Uniquement les fonctionnalités",
+      "Uniquement la roadmap produit"
+    ],
+    correctIndex: 1,
+    explanation: "Questions essentielles pour procurement IA : documentation du modèle (Model Card), données d'entraînement utilisées, performances et métriques (accuracy, fairness), limitations et biais connus, mesures de sécurité et confidentialité, conformité RGPD/AI Act, responsabilités et liability (qui est responsable en cas d'erreur), capacité d'audit, possibilités de personnalisation, et plan de support/maintenance.",
+    tags: ["procurement", "achat", "fournisseurs", "due-diligence"]
+  },
+  {
+    id: "q-iso42001-ai-patents",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Les aspects de propriété intellectuelle (brevets, droits d'auteur) des systèmes IA doivent-ils être considérés dans l'AIMS ?",
+    choices: [
+      "Non, ce n'est pas lié",
+      "Oui, pour identifier les droits sur les modèles/données, éviter les infractions, et clarifier la propriété des outputs IA",
+      "Uniquement pour les grandes entreprises",
+      "Uniquement si on veut breveter"
+    ],
+    correctIndex: 1,
+    explanation: "La propriété intellectuelle doit être considérée : droits sur les données utilisées (licenses, RGPD), droits sur les modèles (propriété, open-source vs propriétaire), respect des brevets et copyrights de tiers, propriété des outputs générés par l'IA (question juridique évolutive), et documentation des droits dans la chaîne de valeur. Cela fait partie de la gouvernance et de la gestion des risques légaux.",
+    tags: ["propriété-intellectuelle", "brevets", "droits", "légal"]
+  },
+  {
+    id: "q-iso42001-shadow-ai",
+    moduleId: "iso-42001",
+    difficulty: "hard",
+    question: "Le 'Shadow AI' (utilisation non autorisée d'outils IA par les employés comme ChatGPT) pose quels risques ISO 42001 ?",
+    choices: [
+      "Aucun risque, c'est de l'innovation",
+      "Fuite de données confidentielles, non-conformité RGPD, manque de gouvernance, risques de sécurité, et perte de traçabilité",
+      "Uniquement des coûts supplémentaires",
+      "Uniquement de la productivité en plus"
+    ],
+    correctIndex: 1,
+    explanation: "Shadow AI pose des risques majeurs : fuite de données confidentielles/personnelles vers des tiers (violation RGPD), absence de contrôle et gouvernance, non-conformité aux politiques de sécurité, risques de prompts malveillants ou d'outputs biaisés/inexacts utilisés pour des décisions, perte de traçabilité. L'ISO 42001 exige : politique claire sur l'usage d'outils IA, sensibilisation des employés (clause 7.3), et contrôles appropriés.",
+    tags: ["shadow-ai", "gouvernance", "risques", "conformité", "sensibilisation"]
+  },
+  {
+    id: "q-iso42001-ai-ethics-committee",
+    moduleId: "iso-42001",
+    difficulty: "medium",
+    question: "Quel est le rôle d'un comité d'éthique IA dans le cadre ISO 42001 ?",
+    choices: [
+      "Ralentir tous les projets IA",
+      "Évaluer les implications éthiques des systèmes IA, conseiller sur les dilemmes, valider les AI Impact Assessments, et promouvoir l'IA responsable",
+      "Uniquement approuver les budgets",
+      "Uniquement gérer les réclamations"
+    ],
+    correctIndex: 1,
+    explanation: "Le comité d'éthique IA (qui peut faire partie de la gouvernance A.3) : évalue les implications éthiques des projets IA (équité, droits humains, impact sociétal), conseille sur les dilemmes éthiques complexes, valide ou challenge les AI System Impact Assessments, promeut la culture d'IA responsable, et assure l'alignement avec les valeurs de l'organisation. Composition pluridisciplinaire recommandée.",
+    tags: ["éthique", "comité", "gouvernance", "responsible-ai"]
+  },
+
   // Excellence Opérationnelle
   {
     id: "q-exop-5s",
