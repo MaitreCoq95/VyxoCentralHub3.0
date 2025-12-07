@@ -138,6 +138,16 @@ export const knowledgeModules: KnowledgeModule[] = [
     sectors: ["Agroalimentaire", "Restauration", "Industrie alimentaire", "Distribution alimentaire"],
     level: "advanced",
     tags: ["haccp", "sécurité-alimentaire", "7-principes", "pcc", "codex-alimentarius"]
+  },
+  {
+    id: "surete-112x",
+    code: "11.2.x",
+    title: "Formations Sûreté – Référentiel 11.2.x",
+    category: "Sûreté",
+    shortDescription: "Formations obligatoires de sûreté aérienne selon le Règlement (UE) 2015/1998 : contrôle d'accès, filtrage fret, surveillance zones sensibles, supervision et niveau renforcé.",
+    sectors: ["Fret aérien", "Transport", "Logistique", "Aviation"],
+    level: "advanced",
+    tags: ["sûreté", "aviation", "fret", "contrôle-accès", "filtrage", "zsar", "supervision"]
   }
 ];
 
