@@ -603,6 +603,188 @@ export const knowledgeItems: KnowledgeItem[] = [
     topic: "Annexe A.10 : Relations avec les tiers et clients",
     body: "Objectif : S'assurer que l'organisation comprend ses responsabilités et reste responsable, et que les risques sont appropriés quand des tiers sont impliqués à toute étape du cycle de vie du système IA. Contrôles principaux : A.10.2 Allocation de responsabilités - L'organisation doit s'assurer que les responsabilités au sein de leur cycle de vie de système IA sont allouées entre l'organisation, ses partenaires, fournisseurs, clients et tiers. A.10.3 Fournisseurs - L'organisation doit établir un processus pour s'assurer que son utilisation de services, produits ou matériels fournis par les fournisseurs s'aligne avec l'approche de l'organisation pour le développement et l'utilisation responsables de systèmes IA. A.10.4 Clients - L'organisation doit s'assurer que son approche responsable pour le développement et l'utilisation de systèmes IA considère les attentes et besoins de ses clients.",
     tags: ["annexe-a", "a10", "tiers", "fournisseurs", "clients"]
+  },
+
+  // FORMATIONS SÛRETÉ – RÉFÉRENTIEL 11.2.x
+  {
+    id: "surete-contexte-reglementaire",
+    moduleId: "surete-112x",
+    type: "concept",
+    topic: "Contexte réglementaire de la sûreté aérienne",
+    body: "Les formations de sûreté aérienne sont régies par le Règlement (UE) 2015/1998 de la Commission du 5 novembre 2015 et l'arrêté français du 21 septembre 2012. Ces textes définissent les exigences de formation pour tout personnel ayant accès aux zones de sûreté à accès réglementé (ZSAR) ou effectuant des contrôles de sûreté. Les modules 11.2.x constituent le référentiel de formation obligatoire pour garantir la sécurité du transport aérien face aux menaces terroristes et actes d'interférence illicite.",
+    tags: ["réglementation", "ue-2015-1998", "sûreté-aérienne", "formation-obligatoire"]
+  },
+  {
+    id: "surete-zones-reglementees",
+    moduleId: "surete-112x",
+    type: "concept",
+    topic: "Zones de sûreté à accès réglementé (ZSAR/ZES)",
+    body: "ZSAR (Zone de Sûreté à Accès Réglementé) : zones côté piste où l'accès est strictement contrôlé et soumis à autorisation préalable. Seules les personnes munies d'un titre de circulation et ayant suivi une formation sûreté peuvent y accéder. ZES (Zone d'Exclusion de Sûreté) : zones encore plus sensibles avec des exigences de sûreté renforcées. L'accès à ces zones requiert des contrôles d'identité, de badges, et potentiellement des inspections visuelles ou physiques.",
+    tags: ["zsar", "zes", "zones-réglementées", "contrôle-accès"]
+  },
+
+  // MODULE 11.2.2 — Contrôle d'accès et inspections visuelles
+  {
+    id: "surete-11-2-2-objectif",
+    moduleId: "surete-112x",
+    type: "requirement",
+    topic: "MODULE 11.2.2 — Contrôle d'accès et inspections visuelles",
+    body: "Objectif : Former les personnels chargés de contrôler les accès aux zones de sûreté, de vérifier l'identité et les autorisations, et d'effectuer des inspections visuelles basiques. Cette formation permet de tenir un poste de contrôle d'accès en zone ZSAR/ZES et de gérer les flux entrants et sortants en appliquant les protocoles de sûreté.",
+    tags: ["11.2.2", "contrôle-accès", "inspection-visuelle", "objectif"]
+  },
+  {
+    id: "surete-11-2-2-contenu",
+    moduleId: "surete-112x",
+    type: "checklist",
+    topic: "Contenu formation 11.2.2 — Contrôle d'accès",
+    body: "Contenu de la formation 11.2.2 : ✓ Notions fondamentales de sûreté de l'aviation civile, ✓ Typologie des zones réglementées (ZSAR, ZES), ✓ Vérification identité, badges, permissions, ✓ Authentification documentaire (CNI, passeport, titre de circulation), ✓ Gestion des flux entrants/sortants, ✓ Détection comportements suspects (nervosité, hésitation, incohérences), ✓ Procédures d'inspection visuelle des personnes et effets personnels, ✓ Gestion des situations non conformes (refus d'accès, escalade), ✓ Communication avec la CA (Compagnie Aérienne) / superviseur sûreté.",
+    tags: ["11.2.2", "contenu-formation", "programme", "checklist"]
+  },
+  {
+    id: "surete-11-2-2-competences",
+    moduleId: "surete-112x",
+    type: "concept",
+    topic: "Compétences acquises — MODULE 11.2.2",
+    body: "Compétences opérationnelles acquises à l'issue du MODULE 11.2.2 : ➤ Tenir un poste de contrôle d'accès en zone ZSAR/ZES, ➤ Refuser un accès illégitime en appliquant la réglementation, ➤ Appliquer les contrôles de premier niveau (identité, badge, autorisation), ➤ Réagir face à une anomalie ou suspicion (comportement suspect, document falsifié), ➤ Communiquer efficacement avec les autorités compétentes et superviseurs.",
+    tags: ["11.2.2", "compétences", "opérationnel"]
+  },
+
+  // MODULE 11.2.3.9 — Contrôle de sûreté du fret & courrier
+  {
+    id: "surete-11-2-3-9-objectif",
+    moduleId: "surete-112x",
+    type: "requirement",
+    topic: "MODULE 11.2.3.9 — Contrôle de sûreté du fret & courrier",
+    body: "Objectif : Former les agents à inspecter, filtrer et sécuriser le fret aérien et le courrier, détecter les articles prohibés, et appliquer les méthodes de filtrage agréées. Cette formation est essentielle pour garantir la sûreté de la chaîne du fret aérien et prévenir l'introduction d'articles dangereux ou prohibés à bord des aéronefs.",
+    tags: ["11.2.3.9", "fret", "courrier", "filtrage", "objectif"]
+  },
+  {
+    id: "surete-ra-ca",
+    moduleId: "surete-112x",
+    type: "concept",
+    topic: "RA/CA — Agent habilité et Chargeur connu",
+    body: "RA (Regulated Agent / Agent Habilité) : entreprise agréée par l'autorité nationale pour appliquer des contrôles de sûreté du fret aérien selon la réglementation. Le RA est responsable de filtrer, sécuriser et documenter le fret avant remise à la compagnie aérienne. CA (Known Consignor / Chargeur Connu) : expéditeur dont les procédures de sûreté sont validées et qui peut remettre du fret sécurisé directement à un RA. Le statut RA/CA garantit la traçabilité et l'intégrité de la chaîne de sûreté du fret aérien.",
+    tags: ["ra", "ca", "agent-habilité", "chargeur-connu", "fret-sécurisé"]
+  },
+  {
+    id: "surete-methodes-filtrage",
+    moduleId: "surete-112x",
+    type: "tool",
+    topic: "Méthodes de filtrage du fret agréées",
+    body: "Méthodes de filtrage agréées pour le contrôle de sûreté du fret aérien : 🔎 Inspection visuelle : examen physique du colis, de l'emballage et du contenu, 📄 Vérification documentaire : cohérence entre documents de transport et contenu réel, 💥 ETD (Explosive Trace Detection) : détection de traces d'explosifs par prélèvement et analyse chimique, 🐕 EDD (Explosive Detection Dog) : chiens détecteurs d'explosifs certifiés, 🔬 X-ray : radiographie pour visualiser le contenu sans ouverture du colis. Le choix de la méthode dépend du type de fret, du niveau de risque et des équipements disponibles.",
+    tags: ["filtrage", "etd", "edd", "x-ray", "méthodes", "inspection"]
+  },
+  {
+    id: "surete-11-2-3-9-contenu",
+    moduleId: "surete-112x",
+    type: "checklist",
+    topic: "Contenu formation 11.2.3.9 — Fret & courrier",
+    body: "Contenu de la formation 11.2.3.9 : ✓ Règlementation UE & française sur le fret sécurisé, ✓ Chaîne de sûreté du fret aérien (de l'expéditeur à l'aéronef), ✓ Exigences RA/CA (Agent habilité / Chargeur connu), ✓ Méthodes de filtrage (inspection visuelle, vérification documentaire, ETD, EDD, X-ray), ✓ Reconnaissance des articles prohibés / dangereux (armes, explosifs, matières dangereuses), ✓ Manipulation & sécurisation des marchandises sensibles, ✓ Documentation et traçabilité des contrôles (certificats de sûreté), ✓ Gestion d'anomalies, suspicion, refus d'embarquement.",
+    tags: ["11.2.3.9", "contenu-formation", "fret", "programme"]
+  },
+  {
+    id: "surete-11-2-3-9-competences",
+    moduleId: "surete-112x",
+    type: "concept",
+    topic: "Compétences acquises — MODULE 11.2.3.9",
+    body: "Compétences opérationnelles acquises à l'issue du MODULE 11.2.3.9 : ➤ Contrôler et filtrer du fret aérien selon les méthodes agréées, ➤ Appliquer les méthodes de sûreté (ETD, EDD, X-ray, inspection visuelle), ➤ Identifier un colis suspect et appliquer les procédures appropriées, ➤ Garantir la chaîne sécurisée du fret (traçabilité, documentation, scellés), ➤ Documenter les contrôles de sûreté et gérer les non-conformités.",
+    tags: ["11.2.3.9", "compétences", "filtrage-fret", "opérationnel"]
+  },
+
+  // MODULE 11.2.6.2 — Surveillance des zones sensibles & marchandises
+  {
+    id: "surete-11-2-6-2-objectif",
+    moduleId: "surete-112x",
+    type: "requirement",
+    topic: "MODULE 11.2.6.2 — Surveillance zones sensibles & marchandises",
+    body: "Objectif : Former le personnel chargé de surveiller les zones sensibles et marchandises pour prévenir les intrusions, sabotages et interférences illicites. Cette formation permet de réaliser des rondes de surveillance, contrôler l'intégrité des marchandises sensibles, et détecter les anomalies (scellés brisés, emballages altérés, positions inhabituelles).",
+    tags: ["11.2.6.2", "surveillance", "zones-sensibles", "objectif"]
+  },
+  {
+    id: "surete-11-2-6-2-contenu",
+    moduleId: "surete-112x",
+    type: "checklist",
+    topic: "Contenu formation 11.2.6.2 — Surveillance",
+    body: "Contenu de la formation 11.2.6.2 : ✓ Définition des zones critiques / sensibles (zones de stockage fret, zones ZSAR/ZES), ✓ Risques liés aux intrusions et manipulations frauduleuses, ✓ Sécurisation des zones de stockage (contrôle d'accès, périmètres, éclairage), ✓ Rondes de surveillance, points de contrôle, fréquences, ✓ Reconnaissance des anomalies (scellés brisés, emballages altérés, positions de marchandises modifiées), ✓ Gestion de la vigilance en environnement logistique, ✓ Processus d'alerte et remontées d'information, ✓ Protocoles en cas d'incident de sûreté.",
+    tags: ["11.2.6.2", "contenu-formation", "surveillance", "programme"]
+  },
+  {
+    id: "surete-11-2-6-2-competences",
+    moduleId: "surete-112x",
+    type: "concept",
+    topic: "Compétences acquises — MODULE 11.2.6.2",
+    body: "Compétences opérationnelles acquises à l'issue du MODULE 11.2.6.2 : ➤ Réaliser des rondes de surveillance et contrôles sûreté en zones sensibles, ➤ Détecter les anomalies sur marchandises sensibles (scellés, emballages, positions), ➤ Appliquer des mesures préventives contre les intrusions et manipulations, ➤ Alerter et remonter les incidents de sûreté selon les protocoles établis.",
+    tags: ["11.2.6.2", "compétences", "surveillance", "opérationnel"]
+  },
+
+  // MODULE 11.2.3.10 — Supervision du contrôle de sûreté
+  {
+    id: "surete-11-2-3-10-objectif",
+    moduleId: "surete-112x",
+    type: "requirement",
+    topic: "MODULE 11.2.3.10 — Supervision du contrôle de sûreté",
+    body: "Objectif : Former les encadrants à superviser les équipes effectuant le contrôle de sûreté. Cette formation permet de garantir la qualité et la conformité des opérations de filtrage, de manager les incidents sûreté, et d'assurer le respect des protocoles. Le superviseur sûreté est garant de l'efficacité du dispositif de contrôle et de la remontée d'informations vers les autorités compétentes.",
+    tags: ["11.2.3.10", "supervision", "management", "objectif"]
+  },
+  {
+    id: "surete-11-2-3-10-contenu",
+    moduleId: "surete-112x",
+    type: "checklist",
+    topic: "Contenu formation 11.2.3.10 — Supervision",
+    body: "Contenu de la formation 11.2.3.10 : ✓ Cadre légal & responsabilités du superviseur sûreté, ✓ Contrôle qualité des opérations de sûreté (vérification de la conformité des contrôles), ✓ Vérification de la conformité des procédures de filtrage, ✓ Briefing / débriefing des équipes sûreté, ✓ Gestion des incidents de sûreté / escalade vers autorités, ✓ Rédaction de rapports & traçabilité des opérations de sûreté, ✓ Analyse des écarts / mise en place d'actions correctives, ✓ Conduite d'audits internes sûreté, ✓ Gestion des comportements non conformes des agents.",
+    tags: ["11.2.3.10", "contenu-formation", "supervision", "programme"]
+  },
+  {
+    id: "surete-11-2-3-10-competences",
+    moduleId: "surete-112x",
+    type: "concept",
+    topic: "Compétences acquises — MODULE 11.2.3.10",
+    body: "Compétences opérationnelles acquises à l'issue du MODULE 11.2.3.10 : ➤ Superviser une équipe de contrôle sûreté, ➤ Garantir la qualité et la conformité du filtrage des personnes et du fret, ➤ Manager les incidents de sûreté et gérer l'escalade, ➤ Assurer le respect des protocoles et procédures de sûreté, ➤ Réaliser des audits internes et mettre en place des actions correctives.",
+    tags: ["11.2.3.10", "compétences", "supervision", "opérationnel"]
+  },
+
+  // MODULE 11.2.5 — Niveau de sûreté renforcé
+  {
+    id: "surete-11-2-5-objectif",
+    moduleId: "surete-112x",
+    type: "requirement",
+    topic: "MODULE 11.2.5 — Niveau de sûreté renforcé",
+    body: "Objectif : Former les personnels ayant besoin d'un niveau de connaissance élevé pour accéder à des zones très sensibles. Cette formation approfondit la compréhension du contexte géopolitique, de la menace terroriste, de l'analyse comportementale et des procédures de sûreté renforcées. Elle permet d'intervenir en zone à haute sensibilité et de gérer des situations d'urgence sûreté.",
+    tags: ["11.2.5", "niveau-renforcé", "haute-sensibilité", "objectif"]
+  },
+  {
+    id: "surete-11-2-5-contenu",
+    moduleId: "surete-112x",
+    type: "checklist",
+    topic: "Contenu formation 11.2.5 — Niveau renforcé",
+    body: "Contenu de la formation 11.2.5 : ✓ Contexte géopolitique & évolution de la menace terroriste, ✓ Analyse comportementale & détection de signaux faibles (profiling comportemental), ✓ Identification des incidents potentiels de sûreté, ✓ Risques intentionnels (sabotage, intrusion, corruption, espionnage), ✓ Procédures de sûreté niveau renforcé (fouilles approfondies, contrôles aléatoires), ✓ Gestion des situations d'urgence et de crise sûreté, ✓ Communication avec l'autorité compétente (DGAC, Préfecture), ✓ Protection des infrastructures / marchandises critiques, ✓ Lecture et application des plans de sûreté d'entreprise.",
+    tags: ["11.2.5", "contenu-formation", "niveau-renforcé", "programme"]
+  },
+  {
+    id: "surete-11-2-5-competences",
+    moduleId: "surete-112x",
+    type: "concept",
+    topic: "Compétences acquises — MODULE 11.2.5",
+    body: "Compétences opérationnelles acquises à l'issue du MODULE 11.2.5 : ➤ Accéder et opérer en zone très sensible avec niveau de sûreté renforcé, ➤ Détecter les comportements suspects via analyse comportementale, ➤ Gérer des incidents de sûreté de haut niveau, ➤ Appliquer des mesures de sûreté renforcées (fouilles, contrôles aléatoires, procédures d'urgence), ➤ Communiquer efficacement avec les autorités compétentes en situation de crise.",
+    tags: ["11.2.5", "compétences", "niveau-renforcé", "opérationnel"]
+  },
+
+  // Avantage stratégique pour Vyxo Consult
+  {
+    id: "surete-avantage-vyxo",
+    moduleId: "surete-112x",
+    type: "concept",
+    topic: "Avantage stratégique pour Vyxo Consult",
+    body: "Détenir les compétences sur les formations sûreté 11.2.x offre à Vyxo Consult un avantage stratégique majeur : ✅ DIFFÉRENCIATION : proposer des missions QSE + Sûreté intégrées (approche unique sur le marché), ✅ NOUVELLES MISSIONS : audits sûreté aérienne, accompagnement certification RA/CA, formation des équipes sûreté clients, ✅ SECTEURS CIBLÉS : fret aérien, logistique internationale, aéroports, plateformes cargo, ✅ CONFORMITÉ : accompagner les clients dans la conformité au Règlement (UE) 2015/1998, ✅ OFFRES PREMIUM : packages 'Sûreté + GDP + ISO 9001' pour clients logistique pharma/fret aérien, ✅ LÉGITIMITÉ : expertise reconnue pour intervenir en zones sensibles ZSAR/ZES.",
+    tags: ["vyxo-consult", "stratégie", "différenciation", "missions"]
+  },
+  {
+    id: "surete-missions-vendables",
+    moduleId: "surete-112x",
+    type: "tool",
+    topic: "Missions sûreté vendables par Vyxo Consult",
+    body: "Exemples de missions sûreté que Vyxo Consult peut vendre grâce aux compétences 11.2.x : 🎯 Audit de conformité sûreté aérienne (conformité Règlement UE 2015/1998), 🎯 Accompagnement certification RA (Regulated Agent / Agent Habilité), 🎯 Élaboration de plans de sûreté d'entreprise, 🎯 Formation des équipes contrôle d'accès, filtrage fret, surveillance, 🎯 Évaluation des risques sûreté (analyse de menace, vulnérabilités), 🎯 Audits internes sûreté et préparation aux inspections DGAC, 🎯 Conseil en organisation sûreté (procédures, flux, zones sécurisées), 🎯 Offres intégrées QSE + Sûreté + GDP pour clients transport/logistique pharma, 🎯 Support conformité réglementaire sûreté pour plateformes cargo et aéroports.",
+    tags: ["missions", "audit", "formation", "conseil", "ra-ca"]
   }
 ];
 
