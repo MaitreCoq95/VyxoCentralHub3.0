@@ -15,7 +15,10 @@ import {
   LogOut,
   Menu,
   Target,
-  BookOpen
+  BookOpen,
+  Lightbulb,
+  FolderKanban,
+  Building2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -64,6 +67,24 @@ export function Sidebar({ className }: SidebarProps) {
       icon: ClipboardCheck,
       href: "/audits",
       color: "text-pink-700",
+    },
+    {
+      label: "Vyxo Codir",
+      icon: Building2,
+      href: "/vyxo-codir",
+      color: "text-blue-500",
+    },
+    {
+      label: "Vyxo Bucket",
+      icon: Lightbulb,
+      href: "/vyxo-bucket",
+      color: "text-yellow-500",
+    },
+    {
+      label: "Vyxo Projets",
+      icon: FolderKanban,
+      href: "/vyxo-projets",
+      color: "text-green-500",
     },
     {
       label: t("nav.documents"),
