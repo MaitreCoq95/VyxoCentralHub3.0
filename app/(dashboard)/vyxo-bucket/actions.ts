@@ -111,6 +111,28 @@ export async function convertIdeaToProject(ideaId: string, projectData: any) {
         converted_project_id: project.id
     }).eq('id', ideaId);
 
+
     revalidatePath("/vyxo-bucket");
     revalidatePath("/vyxo-projets");
+}
+
+export async function updateIdeaScores(ideaId: string, scores: {
+    strategic_fit: number;
+    business_potential: number;
+    complexity: number;
+    risk_level: number;
+}) {
+    const { error } = await supabase.from("vch_idea_bucket").update({
+        strategic_fit: scores.strategic_fit,
+        business_potential: scores.business_potential,
+        complexity: scores.complexity,
+        risk_level: scores.risk_level,
+    }).eq("id", ideaId);
+
+    if (error) {
+        console.error("Error updating scores:", error);
+        throw new Error("Failed to update scores");
+    }
+
+    revalidatePath("/vyxo-bucket");
 }

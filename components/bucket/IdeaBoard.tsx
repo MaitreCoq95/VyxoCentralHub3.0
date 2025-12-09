@@ -102,8 +102,11 @@ export default function IdeaBoard({ ideas, members }: { ideas: IdeaWithVotes[], 
 
 // Subcomponent for creating new idea
 
+
 function NewIdeaDialog({ members, currentUser }: { members: CodirMember[], currentUser: CodirMember | null }) {
     const [open, setOpen] = useState(false);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [aiRationale, setAiRationale] = useState<string | null>(null);
     
     // Form state
     const [formData, setFormData] = useState({
@@ -111,8 +114,45 @@ function NewIdeaDialog({ members, currentUser }: { members: CodirMember[], curre
         description: "",
         category: "Consulting",
         subcategory: "",
-        time_horizon: "moyen terme"
+        time_horizon: "moyen terme",
+        // Scoring
+        strategic_fit: 3,
+        business_potential: 3,
+        complexity: 3,
+        risk_level: 3
     });
+
+    const handleAnalyzeAI = async () => {
+        if (!formData.title || !formData.description) return;
+        setIsAnalyzing(true);
+        try {
+            const res = await fetch('/api/ai/score-idea', {
+                method: 'POST',
+                body: JSON.stringify({
+                    title: formData.title,
+                    description: formData.description,
+                    category: formData.category,
+                    subcategory: formData.subcategory
+                })
+            });
+            const data = await res.json();
+            
+            if (data.strategic_fit) {
+                setFormData(prev => ({
+                    ...prev,
+                    strategic_fit: data.strategic_fit,
+                    business_potential: data.business_potential,
+                    complexity: data.complexity,
+                    risk_level: data.risk_level
+                }));
+                setAiRationale(data.rationale);
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -120,14 +160,14 @@ function NewIdeaDialog({ members, currentUser }: { members: CodirMember[], curre
         
         await createIdea({
             ...formData,
-            created_by: currentUser.id,
-            strategic_fit: 3, // Defaults
-            business_potential: 3,
-            complexity: 3,
-            risk_level: 3
+            created_by: currentUser.id
         });
         setOpen(false);
-        setFormData({ title: "", description: "", category: "Consulting", subcategory: "", time_horizon: "moyen terme" });
+        setFormData({ 
+            title: "", description: "", category: "Consulting", subcategory: "", time_horizon: "moyen terme",
+            strategic_fit: 3, business_potential: 3, complexity: 3, risk_level: 3
+        });
+        setAiRationale(null);
     };
 
     return (
@@ -137,7 +177,7 @@ function NewIdeaDialog({ members, currentUser }: { members: CodirMember[], curre
                     <Plus className="w-4 h-4 mr-2" /> Ajouter une idée
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Nouvelle Idée</DialogTitle>
                 </DialogHeader>
@@ -157,8 +197,23 @@ function NewIdeaDialog({ members, currentUser }: { members: CodirMember[], curre
                             value={formData.description} 
                             onChange={e => setFormData({...formData, description: e.target.value})} 
                             required 
+                            className="min-h-[100px]"
                         />
+                        <div className="flex justify-end">
+                             <Button 
+                                type="button" 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={handleAnalyzeAI}
+                                disabled={isAnalyzing || !formData.description}
+                                className="text-xs"
+                             >
+                                {isAnalyzing ? <span className="animate-spin mr-2">⏳</span> : "✨"} 
+                                {isAnalyzing ? "Analyse en cours..." : "Pré-noter avec l'IA"}
+                             </Button>
+                        </div>
                     </div>
+
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Catégorie</Label>
@@ -191,10 +246,46 @@ function NewIdeaDialog({ members, currentUser }: { members: CodirMember[], curre
                                 </SelectContent>
                             </Select>
                     </div>
+
+                    {/* AI Scoring Display */}
+                    <div className="bg-muted/50 p-4 rounded-lg border space-y-3">
+                        <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-sm">Notation Préliminaire</h4>
+                            {aiRationale && <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded">IA Suggestion</span>}
+                        </div>
+                        
+                        {aiRationale && (
+                            <p className="text-xs text-muted-foreground italic mb-3">
+                                &quot;{aiRationale}&quot;
+                            </p>
+                        )}
+
+                        <div className="grid grid-cols-2 gap-4 text-xs">
+                             <div className="space-y-1">
+                                <div className="flex justify-between"><span>Stratégie</span> <span>{formData.strategic_fit}/5</span></div>
+                                <div className="h-1 bg-gray-200 rounded overflow-hidden"><div className="h-full bg-blue-500" style={{width: `${formData.strategic_fit * 20}%`}}></div></div>
+                             </div>
+                             <div className="space-y-1">
+                                <div className="flex justify-between"><span>Business</span> <span>{formData.business_potential}/5</span></div>
+                                <div className="h-1 bg-gray-200 rounded overflow-hidden"><div className="h-full bg-green-500" style={{width: `${formData.business_potential * 20}%`}}></div></div>
+                             </div>
+                             <div className="space-y-1">
+                                <div className="flex justify-between"><span>Complexité</span> <span>{formData.complexity}/5</span></div>
+                                <div className="h-1 bg-gray-200 rounded overflow-hidden"><div className="h-full bg-red-400" style={{width: `${formData.complexity * 20}%`}}></div></div>
+                             </div>
+                             <div className="space-y-1">
+                                <div className="flex justify-between"><span>Risque</span> <span>{formData.risk_level}/5</span></div>
+                                <div className="h-1 bg-gray-200 rounded overflow-hidden"><div className="h-full bg-orange-400" style={{width: `${formData.risk_level * 20}%`}}></div></div>
+                             </div>
+                        </div>
+                    </div>
                     
-                    <Button type="submit" className="w-full">Créer l&apos;idée</Button>
+                    <Button type="submit" className="w-full bg-[hsl(var(--vyxo-navy))] text-[hsl(var(--vyxo-gold))] font-bold hover:bg-[hsl(var(--vyxo-navy))/90]">
+                        Créer l&apos;idée
+                    </Button>
                 </form>
             </DialogContent>
         </Dialog>
     )
 }
+

@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea"; // Assuming we have textarea or use Input
 import { useState, useTransition } from "react";
-import { voteOnIdea, convertIdeaToProject } from "@/app/(dashboard)/vyxo-bucket/actions";
+import { voteOnIdea, convertIdeaToProject, updateIdeaScores } from "@/app/(dashboard)/vyxo-bucket/actions";
 import { CodirMember } from "@/types/codir";
 
 interface IdeaDetailProps {
@@ -25,8 +25,41 @@ interface IdeaDetailProps {
 export default function IdeaDetail({ idea, members, currentUser, isOpen, onClose }: IdeaDetailProps) {
   const [isPending, startTransition] = useTransition();
   const [comment, setComment] = useState("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
+  // Use props directly for initial render, update comes from revalidate
   const score = (idea.strategic_fit || 0) + (idea.business_potential || 0) + (6 - (idea.complexity || 3)) + (6 - (idea.risk_level || 3));
+  
+  const handleAnalyzeAI = async () => {
+    setIsAnalyzing(true);
+    try {
+        const res = await fetch('/api/ai/score-idea', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: idea.title,
+                description: idea.description,
+                category: idea.category,
+                subcategory: idea.subcategory
+            })
+        });
+        const data = await res.json();
+        
+        if (data.strategic_fit) {
+            startTransition(async () => {
+                await updateIdeaScores(idea.id, {
+                    strategic_fit: data.strategic_fit,
+                    business_potential: data.business_potential,
+                    complexity: data.complexity,
+                    risk_level: data.risk_level
+                });
+            });
+        }
+    } catch (e) {
+        console.error(e);
+    } finally {
+        setIsAnalyzing(false);
+    }
+  };
   
   const votes = idea.votes || [];
   const yesVotes = votes.filter(v => v.vote === 'yes').length;
@@ -158,7 +191,18 @@ export default function IdeaDetail({ idea, members, currentUser, isOpen, onClose
             {/* Sidebar Stats */}
             <div className="space-y-6">
                 <div className="bg-muted p-4 rounded-lg">
-                    <h3 className="font-semibold text-sm mb-4">Vyxo Score: <span className="text-lg">{score}/20</span></h3>
+                    <div className="flex justify-between items-start mb-4">
+                        <h3 className="font-semibold text-sm">Vyxo Score: <span className="text-lg">{score}/20</span></h3>
+                         <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-6 px-2 text-xs"
+                            onClick={handleAnalyzeAI}
+                            disabled={isAnalyzing || isPending}
+                        >
+                            {isAnalyzing ? <span className="animate-spin">⏳</span> : "✨"} IA
+                        </Button>
+                    </div>
                     <div className="space-y-3 text-xs">
                         <div className="flex justify-between"><span>Stratégie</span> <span>{idea.strategic_fit}/5</span></div>
                         <Progress value={(idea.strategic_fit / 5) * 100} className="h-1" />

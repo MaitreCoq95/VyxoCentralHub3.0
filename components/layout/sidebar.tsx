@@ -18,7 +18,8 @@ import {
   BookOpen,
   Lightbulb,
   FolderKanban,
-  Building2
+  Building2,
+  LineChart
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -85,6 +86,12 @@ export function Sidebar({ className }: SidebarProps) {
       icon: FolderKanban,
       href: "/vyxo-projets",
       color: "text-green-500",
+    },
+    {
+      label: "Finance Hub",
+      icon: LineChart,
+      href: "/finance",
+      color: "text-rose-500",
     },
     {
       label: t("nav.documents"),
