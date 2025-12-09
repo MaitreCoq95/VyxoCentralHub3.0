@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useTransition } from "react";
 import { ProjectWithDetails } from "@/types/bucket-project";
 import { CodirMember } from "@/types/codir";
