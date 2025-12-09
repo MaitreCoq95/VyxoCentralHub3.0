@@ -3,7 +3,7 @@
  * Système de gestion de connaissances et d'entraînement quotidien
  */
 
-export type KnowledgeCategory = "ISO" | "ExOp" | "Pharma" | "Transport" | "ITSec";
+export type KnowledgeCategory = "ISO" | "ExOp" | "Pharma" | "Transport" | "ITSec" | "Sûreté";
 
 export type KnowledgeModule = {
   id: string;            // ex: "iso-9001"
