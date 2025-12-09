@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea"; // Assuming we have textarea or use Input
 import { useState, useTransition } from "react";
-import { voteOnIdea, convertIdeaToProject } from "@/app/vyxo-bucket/actions";
+import { voteOnIdea, convertIdeaToProject } from "@/app/(dashboard)/vyxo-bucket/actions";
 import { CodirMember } from "@/types/codir";
 
 interface IdeaDetailProps {

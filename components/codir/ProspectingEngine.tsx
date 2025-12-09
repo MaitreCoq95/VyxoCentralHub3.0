@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { matchMission } from "@/app/vyxo-codir/matching/actions";
+import { matchMission } from "@/app/(dashboard)/vyxo-codir/matching/actions";
 import { Loader2, Search, Rocket, User, FileText, Banknote, Sparkles } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 

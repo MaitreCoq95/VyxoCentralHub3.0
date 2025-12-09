@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { addCompetency, deleteCompetency } from "@/app/vyxo-codir/actions";
+import { addCompetency, deleteCompetency } from "@/app/(dashboard)/vyxo-codir/actions";
 import { Trash2, Plus, Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
