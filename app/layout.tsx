@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider"
 import { LanguageProvider } from "@/components/language-provider"
+import SupabaseProvider from "@/components/supabase-provider"
 import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 
@@ -28,8 +29,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LanguageProvider>
-            {children}
-            <Toaster />
+            <SupabaseProvider>
+              {children}
+              <Toaster />
+            </SupabaseProvider>
           </LanguageProvider>
         </ThemeProvider>
       </body>
