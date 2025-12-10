@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/codir-module/data-table";
 import { StatusBadge } from "@/components/codir-module/status-badge";
 import { ProgressBar } from "@/components/codir-module/progress-bar";
+import { CreateProjetDialog } from "@/components/codir-module/forms";
 import { getProjets } from "@/lib/codir-module";
 import { formatDate, formatCurrency } from "@/lib/codir-module/utils";
 import type { CodirProjet } from "@/types/codir-module";
@@ -14,6 +15,7 @@ import { FolderKanban, Plus, TrendingUp } from "lucide-react";
 export default function CodirProjetsPage() {
   const [projets, setProjets] = useState<CodirProjet[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   useEffect(() => {
     loadProjets();
@@ -57,7 +59,7 @@ export default function CodirProjetsPage() {
             Suivi des projets issus des décisions CODIR
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setShowCreateDialog(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Nouveau Projet
         </Button>
@@ -221,6 +223,12 @@ export default function CodirProjetsPage() {
           />
         </CardContent>
       </Card>
+
+      <CreateProjetDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        onSuccess={loadProjets}
+      />
     </div>
   );
 }

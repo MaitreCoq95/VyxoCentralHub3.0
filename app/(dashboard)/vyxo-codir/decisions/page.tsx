@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/codir-module/data-table";
 import { StatusBadge } from "@/components/codir-module/status-badge";
+import { CreateDecisionDialog } from "@/components/codir-module/forms";
 import { getDecisions } from "@/lib/codir-module";
 import { formatDate } from "@/lib/codir-module/utils";
 import type { CodirDecision } from "@/types/codir-module";
@@ -14,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function CodirDecisionsPage() {
   const [decisions, setDecisions] = useState<CodirDecision[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   useEffect(() => {
     loadDecisions();
@@ -58,7 +60,7 @@ export default function CodirDecisionsPage() {
             Suivi des décisions prises en CODIR
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setShowCreateDialog(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Nouvelle Décision
         </Button>
@@ -301,6 +303,12 @@ export default function CodirDecisionsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <CreateDecisionDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        onSuccess={loadDecisions}
+      />
     </div>
   );
 }

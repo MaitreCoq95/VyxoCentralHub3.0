@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/codir-module/data-table";
 import { StatusBadge } from "@/components/codir-module/status-badge";
+import { CreateReunionDialog } from "@/components/codir-module/forms";
 import { getReunions } from "@/lib/codir-module";
 import { formatDate, formatDateLong } from "@/lib/codir-module/utils";
 import type { CodirReunion } from "@/types/codir-module";
@@ -13,6 +14,7 @@ import { Calendar, Plus, Users } from "lucide-react";
 export default function CodirReunionsPage() {
   const [reunions, setReunions] = useState<CodirReunion[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   useEffect(() => {
     loadReunions();
@@ -54,7 +56,7 @@ export default function CodirReunionsPage() {
               </p>
             </div>
           </div>
-          <Button>
+          <Button onClick={() => setShowCreateDialog(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Nouvelle Réunion
           </Button>
@@ -158,6 +160,12 @@ export default function CodirReunionsPage() {
           />
         </CardContent>
       </Card>
+
+      <CreateReunionDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        onSuccess={loadReunions}
+      />
     </div>
   );
 }
