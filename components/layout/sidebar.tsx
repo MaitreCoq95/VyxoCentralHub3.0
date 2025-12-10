@@ -76,6 +76,12 @@ export function Sidebar({ className }: SidebarProps) {
       color: "text-blue-500",
     },
     {
+      label: "CODIR Dashboard",
+      icon: Building2,
+      href: "/codir-dashboard",
+      color: "text-indigo-600",
+    },
+    {
       label: "Vyxo Bucket",
       icon: Lightbulb,
       href: "/vyxo-bucket",
