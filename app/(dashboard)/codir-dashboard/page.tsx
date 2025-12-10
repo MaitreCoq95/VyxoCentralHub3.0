@@ -8,7 +8,7 @@ import { StatusBadge } from "@/components/codir-module/status-badge";
 import { ProgressBar } from "@/components/codir-module/progress-bar";
 import { DataTable } from "@/components/codir-module/data-table";
 import { getDashboardStats, getDecisions, getActions, getProjets, getReunions } from "@/lib/codir-module";
-import { formatDate, formatDateRelative, isOverdue } from "@/lib/codir-module/utils";
+import { formatDate, formatDateLong, formatDateRelative, isOverdue } from "@/lib/codir-module/utils";
 import type { CodirDashboardStats, CodirDecision, CodirAction, CodirProjet, CodirReunion } from "@/types/codir-module";
 import {
   Building2,
