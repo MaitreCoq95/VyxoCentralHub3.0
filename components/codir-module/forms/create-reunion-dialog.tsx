@@ -20,13 +20,24 @@ interface CreateReunionDialogProps {
 
 export function CreateReunionDialog({ open, onOpenChange, onSuccess }: CreateReunionDialogProps) {
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<CodirReunionForm>();
+  const [selectedParticipants, setSelectedParticipants] = useState<string[]>([]);
+
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<CodirReunionForm>({
+    defaultValues: {
+      statut: 'planifiee',
+    }
+  });
 
   async function onSubmit(data: CodirReunionForm) {
     try {
       setLoading(true);
-      await createReunion(data);
+      const formData = {
+        ...data,
+        participants: selectedParticipants,
+      };
+      await createReunion(formData);
       reset();
+      setSelectedParticipants([]);
       onOpenChange(false);
       onSuccess?.();
     } catch (error) {
@@ -35,6 +46,14 @@ export function CreateReunionDialog({ open, onOpenChange, onSuccess }: CreateReu
     } finally {
       setLoading(false);
     }
+  }
+
+  function toggleParticipant(membre: string) {
+    setSelectedParticipants(prev =>
+      prev.includes(membre)
+        ? prev.filter(m => m !== membre)
+        : [...prev, membre]
+    );
   }
 
   return (
@@ -82,13 +101,13 @@ export function CreateReunionDialog({ open, onOpenChange, onSuccess }: CreateReu
 
           <div className="space-y-2">
             <Label>Participants</Label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 p-3 border rounded-md">
               {CODIR_MEMBRES.map((membre) => (
-                <label key={membre} className="flex items-center gap-2">
+                <label key={membre} className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
-                    value={membre}
-                    {...register("participants")}
+                    checked={selectedParticipants.includes(membre)}
+                    onChange={() => toggleParticipant(membre)}
                     className="rounded"
                   />
                   <span className="text-sm">{membre}</span>
