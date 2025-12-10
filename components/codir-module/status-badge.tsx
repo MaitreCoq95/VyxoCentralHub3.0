@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "@/components/ui/card";
+// Badge component is created inline with span, no import needed
 import { cn } from "@/lib/utils";
 import { getEtatLabel, getEtatColor, getPrioriteLabel, getPrioriteColor, getImpactLabel, getImpactColor, getThemeColor } from "@/lib/codir-module/utils";
 import type { CodirImpact, CodirTheme } from "@/types/codir-module";
