@@ -433,19 +433,19 @@ export default function CodirDashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-            <Link href="/codir-reunions">
+            <Link href="/vyxo-codir/reunions">
               <Button variant="outline" className="w-full justify-start">
                 <Calendar className="h-4 w-4 mr-2" />
                 Nouvelle Réunion
               </Button>
             </Link>
-            <Link href="/codir-decisions">
+            <Link href="/vyxo-codir/decisions">
               <Button variant="outline" className="w-full justify-start">
                 <FileText className="h-4 w-4 mr-2" />
                 Nouvelle Décision
               </Button>
             </Link>
-            <Link href="/codir-projets">
+            <Link href="/vyxo-codir/projets">
               <Button variant="outline" className="w-full justify-start">
                 <Target className="h-4 w-4 mr-2" />
                 Nouveau Projet
