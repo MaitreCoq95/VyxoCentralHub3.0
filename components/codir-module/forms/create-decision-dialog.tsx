@@ -32,13 +32,24 @@ export function CreateDecisionDialog({ open, onOpenChange, onSuccess }: CreateDe
   async function onSubmit(data: CodirDecisionForm) {
     try {
       setLoading(true);
-      await createDecision(data);
+      console.log('📤 Données envoyées:', data);
+      const result = await createDecision(data);
+      console.log('✅ Décision créée:', result);
       reset();
       onOpenChange(false);
       onSuccess?.();
-    } catch (error) {
-      console.error('Erreur création décision:', error);
-      alert('Erreur lors de la création de la décision');
+    } catch (error: any) {
+      console.error('❌ Erreur création décision:', error);
+      console.error('Détails:', error.message, error.details, error.hint);
+
+      let errorMessage = 'Erreur lors de la création de la décision';
+      if (error.message?.includes('relation') && error.message?.includes('does not exist')) {
+        errorMessage = '⚠️ Les tables CODIR n\'existent pas encore.\n\nVeuillez exécuter la migration SQL:\nsupabase/migrations/20250210_create_codir_module.sql';
+      } else if (error.message) {
+        errorMessage = `Erreur: ${error.message}`;
+      }
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -35,14 +35,26 @@ export function CreateReunionDialog({ open, onOpenChange, onSuccess }: CreateReu
         ...data,
         participants: selectedParticipants,
       };
-      await createReunion(formData);
+      console.log('📤 Données envoyées:', formData);
+      const result = await createReunion(formData);
+      console.log('✅ Réunion créée:', result);
       reset();
       setSelectedParticipants([]);
       onOpenChange(false);
       onSuccess?.();
-    } catch (error) {
-      console.error('Erreur création réunion:', error);
-      alert('Erreur lors de la création de la réunion');
+    } catch (error: any) {
+      console.error('❌ Erreur création réunion:', error);
+      console.error('Détails:', error.message, error.details, error.hint);
+
+      // Better error message
+      let errorMessage = 'Erreur lors de la création de la réunion';
+      if (error.message?.includes('relation') && error.message?.includes('does not exist')) {
+        errorMessage = '⚠️ Les tables CODIR n\'existent pas encore.\n\nVeuillez exécuter la migration SQL:\nsupabase/migrations/20250210_create_codir_module.sql';
+      } else if (error.message) {
+        errorMessage = `Erreur: ${error.message}`;
+      }
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }

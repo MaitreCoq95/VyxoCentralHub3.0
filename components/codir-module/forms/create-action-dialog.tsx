@@ -31,13 +31,24 @@ export function CreateActionDialog({ open, onOpenChange, onSuccess }: CreateActi
   async function onSubmit(data: CodirActionForm) {
     try {
       setLoading(true);
-      await createAction(data);
+      console.log('📤 Données envoyées:', data);
+      const result = await createAction(data);
+      console.log('✅ Action créée:', result);
       reset();
       onOpenChange(false);
       onSuccess?.();
-    } catch (error) {
-      console.error('Erreur création action:', error);
-      alert('Erreur lors de la création de l\'action');
+    } catch (error: any) {
+      console.error('❌ Erreur création action:', error);
+      console.error('Détails:', error.message, error.details, error.hint);
+
+      let errorMessage = 'Erreur lors de la création de l\'action';
+      if (error.message?.includes('relation') && error.message?.includes('does not exist')) {
+        errorMessage = '⚠️ Les tables CODIR n\'existent pas encore.\n\nVeuillez exécuter la migration SQL:\nsupabase/migrations/20250210_create_codir_module.sql';
+      } else if (error.message) {
+        errorMessage = `Erreur: ${error.message}`;
+      }
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -42,15 +42,26 @@ export function CreateProjetDialog({ open, onOpenChange, onSuccess }: CreateProj
         equipe: selectedEquipe,
         tags: selectedTags,
       };
-      await createProjet(formData);
+      console.log('📤 Données envoyées:', formData);
+      const result = await createProjet(formData);
+      console.log('✅ Projet créé:', result);
       reset();
       setSelectedEquipe([]);
       setSelectedTags([]);
       onOpenChange(false);
       onSuccess?.();
-    } catch (error) {
-      console.error('Erreur création projet:', error);
-      alert('Erreur lors de la création du projet');
+    } catch (error: any) {
+      console.error('❌ Erreur création projet:', error);
+      console.error('Détails:', error.message, error.details, error.hint);
+
+      let errorMessage = 'Erreur lors de la création du projet';
+      if (error.message?.includes('relation') && error.message?.includes('does not exist')) {
+        errorMessage = '⚠️ Les tables CODIR n\'existent pas encore.\n\nVeuillez exécuter la migration SQL:\nsupabase/migrations/20250210_create_codir_module.sql';
+      } else if (error.message) {
+        errorMessage = `Erreur: ${error.message}`;
+      }
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
